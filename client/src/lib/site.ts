@@ -4,7 +4,7 @@
 export const ASSETS = {
   heroBg:
     "https://d2xsxph8kpxj0f.cloudfront.net/310519663184004032/n4HsdnCPFsDhTY9NVz5q9i/hero-bg-F4uycHxjSbLve2mstTQRps.webp",
-  logo: "https://d2xsxph8kpxj0f.cloudfront.net/310519663184004032/n4HsdnCPFsDhTY9NVz5q9i/logo-6DRbDgCFrwhVA4hn7uzrui.webp",
+  logo: "/manus-storage/physiofreiheit-logo-weiss_db1773b7.png",
   case1:
     "https://d2xsxph8kpxj0f.cloudfront.net/310519663184004032/n4HsdnCPFsDhTY9NVz5q9i/case-1-NF8jJ5cUCwwqSeZvcEzuaw.webp",
   case2:
@@ -20,7 +20,7 @@ export const ASSETS = {
 };
 
 export const BRAND = {
-  name: "Fast-Track",
+  name: "Physio Freiheit",
   system: "Online-Praxis-Umsatz Fast-Track System",
   parent: "Physio Freiheit | Bewegungsoptimierer",
 };

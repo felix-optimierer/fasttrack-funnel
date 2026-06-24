@@ -4,16 +4,11 @@ import { ShieldCheck, Star, Quote } from "lucide-react";
 
 export function Logo({ className = "" }: { className?: string }) {
   return (
-    <div className={`flex items-center gap-2.5 ${className}`}>
-      <img
-        src={ASSETS.logo}
-        alt={BRAND.name}
-        className="h-8 w-8 object-contain"
-      />
-      <span className="font-display text-lg font-extrabold tracking-tight text-foreground">
-        FAST<span className="text-gold">·</span>TRACK
-      </span>
-    </div>
+    <img
+      src={ASSETS.logo}
+      alt={BRAND.name}
+      className={`h-11 w-auto object-contain md:h-14 ${className}`}
+    />
   );
 }
 

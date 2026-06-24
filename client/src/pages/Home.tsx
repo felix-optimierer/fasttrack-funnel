@@ -21,7 +21,7 @@ export default function Home() {
       toast.error("Bitte fülle alle Felder aus.");
       return;
     }
-    toast.success("Perfekt! Du bekommst jetzt die 7 Fallstudien.");
+    toast.success("Perfekt! Hier kommen deine 7 Fallstudien.");
     setTimeout(() => navigate("/vsl"), 600);
   }
 
@@ -47,11 +47,11 @@ export default function Home() {
           </span>
         </div>
 
-        {/* Headline: Definitiver Weg ... */}
-        <h1 className="max-w-3xl text-balance text-3xl font-extrabold leading-[1.12] md:text-5xl">
-          Der definitive Weg, als Praxisinhaber deine{" "}
+        {/* Headline: kompakt, 2-3 Zeilen */}
+        <h1 className="max-w-4xl text-balance text-3xl font-extrabold leading-[1.1] md:text-5xl">
+          Als Praxisinhaber deine{" "}
           <span className="text-gradient-gold">Traumwebseite</span> in 60 Minuten
-          mit einfacher Sprache durch KI-Agenten bauen zu lassen.
+          per KI-Agent bauen lassen
         </h1>
 
         {/* Bullet-Trust */}
@@ -66,10 +66,18 @@ export default function Home() {
           )}
         </div>
 
+        {/* Satz über der Box, nach rechts ausgerichtet */}
+        <div className="mt-8 w-full max-w-sm">
+          <div className="mb-2 flex items-center justify-end gap-2 pr-1 text-right text-sm font-semibold text-gold">
+            <ArrowRight className="h-4 w-4" />
+            7 Fallstudien zugeschickt bekommen
+          </div>
+        </div>
+
         {/* Formular */}
         <form
           onSubmit={handleSubmit}
-          className="mt-8 w-full max-w-sm space-y-3 rounded-2xl border border-border bg-card/90 p-5 text-left shadow-2xl backdrop-blur"
+          className="w-full max-w-sm space-y-3 rounded-2xl border border-border bg-card/90 p-5 text-left shadow-2xl backdrop-blur"
         >
           <input
             type="text"
@@ -93,7 +101,7 @@ export default function Home() {
             className="w-full rounded-md border border-input bg-navy-deep/60 px-4 py-3.5 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/30"
           />
           <GoldButton type="submit" glow className="w-full text-base">
-            7 Fallstudien zuschicken
+            Los geht's
             <ArrowRight className="h-5 w-5" />
           </GoldButton>
           <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">

@@ -54,10 +54,10 @@ export default function Vsl() {
 
           {/* Sub-Headline */}
           <h1 className="mx-auto max-w-3xl text-balance text-xl font-extrabold leading-[1.18] md:text-3xl">
-            Wie unsere Kunden schon{" "}
-            <span className="text-gradient-gold">&gt;100 Praxis-Webseiten</span>{" "}
-            mit KI-Agenten in 2026 durch die neuen KI-Modelle DSGVO-konform
-            gebaut haben.
+            Wie{" "}
+            <span className="text-gradient-gold">&gt;100 unserer Kunden</span> schon
+            DSGVO-konforme Praxis-Webseiten in 2026 mit KI-Agenten durch die
+            neusten KI-Modelle gebaut haben
           </h1>
 
           {/* 4-Minuten-Hinweis */}
