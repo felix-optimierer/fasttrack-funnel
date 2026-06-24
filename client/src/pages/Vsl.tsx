@@ -52,24 +52,18 @@ export default function Vsl() {
             </span>
           </div>
 
-          {/* Kurze Headline, max 2 Zeilen */}
-          <h1 className="mx-auto max-w-2xl text-balance text-2xl font-extrabold leading-[1.12] md:text-4xl">
-            Der definitive Weg, deine{" "}
-            <span className="text-gradient-gold">Traumwebseite</span> in unter
-            60 Minuten zu bauen.
+          {/* Sub-Headline */}
+          <h1 className="mx-auto max-w-3xl text-balance text-xl font-extrabold leading-[1.18] md:text-3xl">
+            Wie unsere Kunden schon{" "}
+            <span className="text-gradient-gold">&gt;100 Praxis-Webseiten</span>{" "}
+            mit KI-Agenten in 2026 durch die neuen KI-Modelle DSGVO-konform
+            gebaut haben.
           </h1>
 
-          {/* Bullet-Trust */}
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm font-medium text-foreground/90">
-            {["ohne Technikkenntnisse", "ohne Agentur", "ohne Baukasten"].map(
-              (b) => (
-                <span key={b} className="inline-flex items-center gap-1.5">
-                  <Check className="h-4 w-4 text-gold" />
-                  {b}
-                </span>
-              ),
-            )}
-          </div>
+          {/* 4-Minuten-Hinweis */}
+          <p className="mt-4 text-sm font-medium text-muted-foreground">
+            Alle Infos in 4 Minuten (auf 2× Speed)
+          </p>
         </section>
 
         {/* Video + EIN CTA */}

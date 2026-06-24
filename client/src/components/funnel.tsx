@@ -129,6 +129,31 @@ export function CaseGrid() {
   );
 }
 
+export function DoubleSeals() {
+  return (
+    <div className="flex items-center justify-center gap-4">
+      <img
+        src={ASSETS.sealA}
+        alt="Geprüfte Qualität"
+        className="h-16 w-16 drop-shadow-[0_4px_14px_rgba(201,162,39,0.25)]"
+      />
+      <img
+        src={ASSETS.sealB}
+        alt="DSGVO-konform geprüft"
+        className="h-16 w-16 drop-shadow-[0_4px_14px_rgba(201,162,39,0.25)]"
+      />
+      <div className="text-left">
+        <div className="font-display text-base font-extrabold text-foreground">
+          Doppelt TÜV geprüft
+        </div>
+        <div className="text-xs text-muted-foreground">
+          Geprüfte Qualität & Sicherheit
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Footer() {
   return (
     <footer className="border-t border-border bg-navy-deep py-8">
