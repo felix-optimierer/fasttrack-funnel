@@ -1,10 +1,10 @@
-// OPT-IN PAGE — simpel wie ecomscaling.org/sta.
-// Ziel: EINE Aktion = Eintragen, danach Weiterleitung zur VSL-Seite.
+// OPT-IN PAGE — maximal on point (Vorbild: ecomscaling.org/sta).
+// Trust-Zahl oben, kurze Headline (max 2 Zeilen), 3 Felder, EIN CTA. Schluss.
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { ASSETS } from "@/lib/site";
-import { Logo, GoldButton, TrustBadges } from "@/components/funnel";
-import { ShieldCheck, Lock, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Logo, GoldButton } from "@/components/funnel";
+import { Lock, ArrowRight, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Home() {
@@ -21,15 +21,15 @@ export default function Home() {
       toast.error("Bitte fülle alle Felder aus.");
       return;
     }
-    toast.success("Perfekt! Wir leiten dich direkt zu den Fallstudien weiter.");
-    setTimeout(() => navigate("/vsl"), 700);
+    toast.success("Perfekt! Weiter zur Fallstudie.");
+    setTimeout(() => navigate("/vsl"), 600);
   }
 
   return (
     <div
-      className="relative min-h-screen overflow-hidden"
+      className="flex min-h-screen flex-col"
       style={{
-        backgroundImage: `linear-gradient(rgba(6,15,28,0.82), rgba(6,15,28,0.92)), url(${ASSETS.heroBg})`,
+        backgroundImage: `linear-gradient(rgba(6,15,28,0.85), rgba(6,15,28,0.93)), url(${ASSETS.heroBg})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
@@ -38,121 +38,60 @@ export default function Home() {
         <Logo />
       </header>
 
-      <main className="container flex flex-col items-center pb-16 pt-4 text-center">
-        {/* Proof-Zeile oben (wie ecomscaling) */}
-        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-4 py-1.5 text-xs font-semibold text-gold backdrop-blur">
-          <ShieldCheck className="h-3.5 w-3.5" />
-          Über 100 Physiopraxen begleitet · Doppelt TÜV-zertifiziert
+      <main className="container flex flex-1 flex-col items-center justify-center pb-12 text-center">
+        {/* Trust-Zahl oben — wie "über 30x bewiesen" */}
+        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-gold/40 bg-card/70 px-4 py-1.5 text-sm font-semibold text-gold backdrop-blur">
+          <ShieldCheck className="h-4 w-4" />
+          Über 100× bewiesen · 2× TÜV-zertifiziert
         </div>
 
-        <h1 className="max-w-3xl text-balance text-3xl font-extrabold leading-[1.12] md:text-5xl">
-          Wie Physiopraxen 2026{" "}
-          <span className="text-gradient-gold">planbare Online-Umsätze</span>{" "}
-          aufbauen – ohne Agentur und ohne mehr Stunden an der Bank
+        {/* Kurze Headline, max 2 Zeilen */}
+        <h1 className="max-w-2xl text-balance text-3xl font-extrabold leading-[1.1] md:text-5xl">
+          Deine Praxis{" "}
+          <span className="text-gradient-gold">kassenunabhängig</span> – in
+          Wochen, nicht Jahren.
         </h1>
 
-        <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
-          Trag dich ein und sieh dir die kostenlose Fallstudie an: Wie über 100
-          Praxen ihre Traumwebseite mit KI in unter einer Stunde gebaut und mit
-          ihrer eigenen Klienten-Coaching-App in wenigen Wochen Pakete verkauft
-          haben.
+        <p className="mt-4 max-w-lg text-base text-muted-foreground">
+          Trag dich ein und sieh dir die Fallstudie an.
         </p>
 
-        {/* Opt-In Formular */}
+        {/* Formular */}
         <form
           onSubmit={handleSubmit}
-          className="mt-9 w-full max-w-md rounded-2xl border border-border bg-card/90 p-6 text-left shadow-2xl backdrop-blur"
+          className="mt-8 w-full max-w-sm space-y-3 rounded-2xl border border-border bg-card/90 p-5 text-left shadow-2xl backdrop-blur"
         >
-          <div className="mb-4 text-center">
-            <div className="font-display text-lg font-bold text-foreground">
-              Jetzt kostenlosen Zugang sichern
-            </div>
-            <div className="text-xs text-muted-foreground">
-              Sofortiger Zugriff auf die Fallstudien-Präsentation
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <FormField
-              label="Dein Name"
-              placeholder="Max Mustermann"
-              value={form.name}
-              onChange={(v) => setForm({ ...form, name: v })}
-            />
-            <FormField
-              label="Deine E-Mail"
-              type="email"
-              placeholder="max@praxis.de"
-              value={form.email}
-              onChange={(v) => setForm({ ...form, email: v })}
-            />
-            <FormField
-              label="Deine Handynummer"
-              type="tel"
-              placeholder="+49 170 1234567"
-              value={form.phone}
-              onChange={(v) => setForm({ ...form, phone: v })}
-            />
-          </div>
-
-          <GoldButton type="submit" glow className="mt-5 w-full text-lg">
-            Ja, ich will die Fallstudien sehen
+          <input
+            type="text"
+            value={form.name}
+            placeholder="Dein Name"
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            className="w-full rounded-md border border-input bg-navy-deep/60 px-4 py-3.5 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/30"
+          />
+          <input
+            type="email"
+            value={form.email}
+            placeholder="Deine E-Mail"
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            className="w-full rounded-md border border-input bg-navy-deep/60 px-4 py-3.5 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/30"
+          />
+          <input
+            type="tel"
+            value={form.phone}
+            placeholder="Deine Handynummer"
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            className="w-full rounded-md border border-input bg-navy-deep/60 px-4 py-3.5 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/30"
+          />
+          <GoldButton type="submit" glow className="w-full text-base">
+            Fallstudie ansehen
             <ArrowRight className="h-5 w-5" />
           </GoldButton>
-
-          <div className="mt-3 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+          <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
             <Lock className="h-3 w-3" />
-            100 % kostenlos · Deine Daten sind sicher
+            100 % kostenlos · Daten sicher
           </div>
         </form>
-
-        {/* Mini-Benefit-Liste */}
-        <ul className="mt-8 flex flex-col items-start gap-2 text-sm text-foreground/90 sm:flex-row sm:gap-6">
-          {[
-            "KI-Webseite in < 1 Stunde",
-            "Eigene Coaching-App",
-            "Raus aus der Kassenabhängigkeit",
-          ].map((b) => (
-            <li key={b} className="inline-flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-gold" />
-              {b}
-            </li>
-          ))}
-        </ul>
-
-        <div className="mt-10">
-          <TrustBadges />
-        </div>
       </main>
     </div>
-  );
-}
-
-function FormField({
-  label,
-  value,
-  onChange,
-  type = "text",
-  placeholder,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  type?: string;
-  placeholder?: string;
-}) {
-  return (
-    <label className="block">
-      <span className="mb-1 block text-xs font-medium text-muted-foreground">
-        {label}
-      </span>
-      <input
-        type={type}
-        value={value}
-        placeholder={placeholder}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-md border border-input bg-navy-deep/60 px-3.5 py-3 text-sm text-foreground placeholder:text-muted-foreground/50 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/30"
-      />
-    </label>
   );
 }
