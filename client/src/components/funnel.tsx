@@ -77,7 +77,7 @@ export function TrustBadges() {
 
 export function CaseGrid() {
   return (
-    <div className="grid gap-6 md:grid-cols-2">
+    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {CASE_STUDIES.map((c, i) => (
         <article
           key={i}

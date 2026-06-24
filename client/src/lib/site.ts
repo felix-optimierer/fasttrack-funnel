@@ -11,6 +11,8 @@ export const ASSETS = {
     "https://d2xsxph8kpxj0f.cloudfront.net/310519663184004032/n4HsdnCPFsDhTY9NVz5q9i/case-2-JCzQWvBo5fprroMFaR9nNf.webp",
   dashboard:
     "https://d2xsxph8kpxj0f.cloudfront.net/310519663184004032/n4HsdnCPFsDhTY9NVz5q9i/dashboard-mock-mKS2XfQsJ7tWy7tiW9SZas.webp",
+  trustSeal:
+    "https://d2xsxph8kpxj0f.cloudfront.net/310519663184004032/n4HsdnCPFsDhTY9NVz5q9i/trust-seal-WQ8T2GFmJgkfLMn5YahH7M.webp",
 };
 
 export const BRAND = {
@@ -19,11 +21,18 @@ export const BRAND = {
   parent: "Physio Freiheit | Bewegungsoptimierer",
 };
 
+// Der EINE Hook (Engel/Angle) – überall konsistent.
+export const HOOK = {
+  promise: "Traumwebseite mit KI-Agenten in unter 60 Minuten",
+  without: "ohne Technikkenntnisse, ohne Agentur, ohne Baukasten",
+  trust: "Über 100× bewiesen · Doppelt TÜV-zertifiziert",
+};
+
 export const PROOF_STATS = [
   { value: "100+", label: "begleitete Physiopraxen" },
-  { value: "2×", label: "TÜV-zertifiziertes Wissen" },
-  { value: "< 1 Std.", label: "bis zur eigenen KI-Webseite" },
-  { value: "Wochen", label: "bis zum ersten Online-Umsatz" },
+  { value: "2×", label: "TÜV-zertifiziert" },
+  { value: "60 Min", label: "bis zur eigenen Webseite" },
+  { value: "0 €", label: "Agenturkosten" },
 ];
 
 export type CaseStudy = {
@@ -35,15 +44,15 @@ export type CaseStudy = {
   metrics: { label: string; value: string }[];
 };
 
-// Platzhalter-Fallstudien. ECHTE Kundennamen/Zahlen vor Live-Schaltung einsetzen.
+// 7 Platzhalter-Fallstudien. ECHTE Kundennamen/Fotos/Zahlen vor Live-Schaltung einsetzen.
 export const CASE_STUDIES: CaseStudy[] = [
   {
     name: "Praxisinhaber (Beispiel)",
     role: "Physiopraxis · Bayern",
     image: ASSETS.case1,
-    result: "Eigene KI-Webseite in 48 Minuten – ganz ohne Agentur.",
+    result: "Traumwebseite in 48 Minuten – ohne Agentur.",
     quote:
-      "Ich habe jahrelang auf meine Agentur gewartet. Mit dem Fast-Track-System stand meine Traumwebseite an einem Nachmittag – und sieht besser aus als alles davor.",
+      "Ich habe jahrelang auf meine Agentur gewartet. Mit dem KI-Agenten stand meine Webseite an einem Nachmittag – besser als alles davor.",
     metrics: [
       { label: "Webseite live", value: "48 Min" },
       { label: "Agenturkosten", value: "0 €" },
@@ -53,12 +62,67 @@ export const CASE_STUDIES: CaseStudy[] = [
     name: "Praxisinhaberin (Beispiel)",
     role: "Physiopraxis · NRW",
     image: ASSETS.case2,
-    result: "Eigene Klienten-Coaching-App gelauncht und erste Pakete verkauft.",
+    result: "Eigene Coaching-App gelauncht, erste Pakete verkauft.",
     quote:
-      "Innerhalb weniger Wochen hatte ich meine eigene Coaching-App und habe die ersten Selbstzahler-Pakete verkauft. Endlich Umsatz ohne mehr Stunden an der Bank.",
+      "In wenigen Wochen hatte ich meine eigene Coaching-App und die ersten Selbstzahler-Pakete verkauft. Endlich Umsatz ohne mehr Stunden an der Bank.",
     metrics: [
       { label: "App live", value: "3 Wochen" },
       { label: "Erste Pakete", value: "verkauft" },
+    ],
+  },
+  {
+    name: "Praxisinhaber (Beispiel)",
+    role: "Physiopraxis · Baden-Württemberg",
+    result: "Webseite in 52 Minuten – komplett selbst gebaut.",
+    quote:
+      "Null Technikkenntnisse, trotzdem stand die Seite in unter einer Stunde. Ich hätte nie gedacht, dass das so einfach geht.",
+    metrics: [
+      { label: "Webseite live", value: "52 Min" },
+      { label: "Technik-Vorwissen", value: "keins" },
+    ],
+  },
+  {
+    name: "Praxisinhaberin (Beispiel)",
+    role: "Physiopraxis · Hessen",
+    result: "Erste Selbstzahler-Anfragen über die neue Seite.",
+    quote:
+      "Schon in der ersten Woche kamen Anfragen über meine neue Webseite – ohne dass ich einen Cent für eine Agentur gezahlt habe.",
+    metrics: [
+      { label: "Erste Anfragen", value: "Woche 1" },
+      { label: "Agentur", value: "0 €" },
+    ],
+  },
+  {
+    name: "Praxisinhaber (Beispiel)",
+    role: "Physiopraxis · Sachsen",
+    result: "Raus aus dem Baukasten-Chaos – endlich Kontrolle.",
+    quote:
+      "Vorher habe ich mich mit einem Baukasten gequält. Mit dem KI-Agenten hatte ich in unter einer Stunde eine Seite, auf die ich stolz bin.",
+    metrics: [
+      { label: "Webseite live", value: "57 Min" },
+      { label: "Baukasten", value: "gekündigt" },
+    ],
+  },
+  {
+    name: "Praxisinhaberin (Beispiel)",
+    role: "Physiopraxis · Niedersachsen",
+    result: "Coaching-Pakete online verkauft – planbarer Umsatz.",
+    quote:
+      "Mit eigener Webseite und App verkaufe ich jetzt planbar Pakete. Das macht mich Schritt für Schritt unabhängiger von den Kassen.",
+    metrics: [
+      { label: "Pakete/Monat", value: "planbar" },
+      { label: "Kassenanteil", value: "sinkt" },
+    ],
+  },
+  {
+    name: "Praxisinhaber (Beispiel)",
+    role: "Physiopraxis · Berlin",
+    result: "Traumwebseite an einem Abend – ganz allein.",
+    quote:
+      "Ich habe abends nach der letzten Behandlung angefangen und war vor dem Schlafengehen fertig. Ohne Agentur, ohne Stress.",
+    metrics: [
+      { label: "Webseite live", value: "1 Abend" },
+      { label: "Hilfe nötig", value: "keine" },
     ],
   },
 ];

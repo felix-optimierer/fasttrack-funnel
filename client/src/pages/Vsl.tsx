@@ -1,7 +1,7 @@
 // VSL PAGE — maximal on point (Vorbild: ecomscaling.org/sta-vsl).
-// Trust-Zahl + kurze Headline + Video + 1 CTA, dann kompakte Fallstudien + Buchung. Kein Fülltext.
+// EIN Hook: Webseite mit KI-Agenten in unter 60 Min. Trust-Siegel + Video + 1 CTA, dann 7 Beweise + Buchung.
 import { useEffect, useState } from "react";
-import { ASSETS } from "@/lib/site";
+import { ASSETS, HOOK } from "@/lib/site";
 import {
   Logo,
   GoldButton,
@@ -10,7 +10,7 @@ import {
   TrustBadges,
   Footer,
 } from "@/components/funnel";
-import { Play, Volume2, Calendar, ArrowRight, ShieldCheck } from "lucide-react";
+import { Play, Volume2, Calendar, ArrowRight, Check } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Vsl() {
@@ -40,20 +40,39 @@ export default function Vsl() {
         }}
       >
         <section className="container pt-2 text-center">
-          {/* Trust-Zahl oben */}
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-gold/40 bg-card/70 px-4 py-1.5 text-sm font-semibold text-gold backdrop-blur">
-            <ShieldCheck className="h-4 w-4" />
-            Über 100× bewiesen · 2× TÜV-zertifiziert
+          {/* TÜV-Trust-Siegel + Trust-Zeile */}
+          <div className="mb-4 flex flex-col items-center gap-3">
+            <img
+              src={ASSETS.trustSeal}
+              alt="Doppelt zertifiziert & geprüft"
+              className="h-16 w-16 drop-shadow-[0_4px_16px_rgba(201,162,39,0.25)]"
+            />
+            <span className="rounded-full border border-gold/40 bg-card/70 px-4 py-1.5 text-sm font-semibold text-gold backdrop-blur">
+              {HOOK.trust}
+            </span>
           </div>
 
           {/* Kurze Headline, max 2 Zeilen */}
           <h1 className="mx-auto max-w-2xl text-balance text-2xl font-extrabold leading-[1.12] md:text-4xl">
-            Schau dir an, wie es{" "}
-            <span className="text-gradient-gold">funktioniert</span>.
+            Der definitive Weg, deine{" "}
+            <span className="text-gradient-gold">Traumwebseite</span> in unter
+            60 Minuten zu bauen.
           </h1>
+
+          {/* Bullet-Trust */}
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm font-medium text-foreground/90">
+            {["ohne Technikkenntnisse", "ohne Agentur", "ohne Baukasten"].map(
+              (b) => (
+                <span key={b} className="inline-flex items-center gap-1.5">
+                  <Check className="h-4 w-4 text-gold" />
+                  {b}
+                </span>
+              ),
+            )}
+          </div>
         </section>
 
-        {/* Video + EIN CTA darunter */}
+        {/* Video + EIN CTA */}
         <section className="container pb-8 pt-6">
           <div className="mx-auto max-w-3xl">
             <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-black shadow-2xl">
@@ -103,12 +122,15 @@ export default function Vsl() {
         </section>
       </main>
 
-      {/* Fallstudien — kompakt, ohne Fülltext */}
+      {/* 7 Beweise */}
       <section className="border-t border-border bg-navy py-14">
         <div className="container">
-          <h2 className="mb-8 text-center text-2xl font-extrabold md:text-3xl">
-            Echte Praxen. Echte Ergebnisse.
+          <h2 className="mb-2 text-center text-2xl font-extrabold md:text-3xl">
+            7 Beweise. Echte Praxen.
           </h2>
+          <p className="mb-9 text-center text-sm text-muted-foreground">
+            Über 100× bewiesen – hier sind 7 davon.
+          </p>
           <CaseGrid />
         </div>
       </section>

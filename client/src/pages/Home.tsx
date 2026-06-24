@@ -1,10 +1,10 @@
 // OPT-IN PAGE — maximal on point (Vorbild: ecomscaling.org/sta).
-// Trust-Zahl oben, kurze Headline (max 2 Zeilen), 3 Felder, EIN CTA. Schluss.
+// EIN Hook: Traumwebseite mit KI-Agenten in unter 60 Min. Trust-Siegel + Bullet-Trust + 3 Felder + 1 CTA.
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
-import { ASSETS } from "@/lib/site";
+import { ASSETS, HOOK } from "@/lib/site";
 import { Logo, GoldButton } from "@/components/funnel";
-import { Lock, ArrowRight, ShieldCheck } from "lucide-react";
+import { Lock, ArrowRight, Check } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Home() {
@@ -21,7 +21,7 @@ export default function Home() {
       toast.error("Bitte fülle alle Felder aus.");
       return;
     }
-    toast.success("Perfekt! Weiter zur Fallstudie.");
+    toast.success("Perfekt! Weiter zu den Beweisen.");
     setTimeout(() => navigate("/vsl"), 600);
   }
 
@@ -39,22 +39,35 @@ export default function Home() {
       </header>
 
       <main className="container flex flex-1 flex-col items-center justify-center pb-12 text-center">
-        {/* Trust-Zahl oben — wie "über 30x bewiesen" */}
-        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-gold/40 bg-card/70 px-4 py-1.5 text-sm font-semibold text-gold backdrop-blur">
-          <ShieldCheck className="h-4 w-4" />
-          Über 100× bewiesen · 2× TÜV-zertifiziert
+        {/* TÜV-Trust-Siegel + Trust-Zeile oben */}
+        <div className="mb-5 flex flex-col items-center gap-3">
+          <img
+            src={ASSETS.trustSeal}
+            alt="Doppelt zertifiziert & geprüft"
+            className="h-20 w-20 drop-shadow-[0_4px_16px_rgba(201,162,39,0.25)]"
+          />
+          <span className="rounded-full border border-gold/40 bg-card/70 px-4 py-1.5 text-sm font-semibold text-gold backdrop-blur">
+            {HOOK.trust}
+          </span>
         </div>
 
-        {/* Kurze Headline, max 2 Zeilen */}
+        {/* Kurze Headline, max 2 Zeilen, ein klarer Engel */}
         <h1 className="max-w-2xl text-balance text-3xl font-extrabold leading-[1.1] md:text-5xl">
-          Deine Praxis{" "}
-          <span className="text-gradient-gold">kassenunabhängig</span> – in
-          Wochen, nicht Jahren.
+          Deine <span className="text-gradient-gold">Traumwebseite</span> mit
+          KI-Agenten in unter 60 Minuten.
         </h1>
 
-        <p className="mt-4 max-w-lg text-base text-muted-foreground">
-          Trag dich ein und sieh dir die Fallstudie an.
-        </p>
+        {/* Bullet-Trust: ohne XY */}
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm font-medium text-foreground/90">
+          {["ohne Technikkenntnisse", "ohne Agentur", "ohne Baukasten"].map(
+            (b) => (
+              <span key={b} className="inline-flex items-center gap-1.5">
+                <Check className="h-4 w-4 text-gold" />
+                {b}
+              </span>
+            ),
+          )}
+        </div>
 
         {/* Formular */}
         <form
@@ -83,7 +96,7 @@ export default function Home() {
             className="w-full rounded-md border border-input bg-navy-deep/60 px-4 py-3.5 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/30"
           />
           <GoldButton type="submit" glow className="w-full text-base">
-            Fallstudie ansehen
+            Beweise ansehen
             <ArrowRight className="h-5 w-5" />
           </GoldButton>
           <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
