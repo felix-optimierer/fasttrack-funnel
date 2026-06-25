@@ -66,12 +66,15 @@ export default function Home() {
           )}
         </div>
 
-        {/* Satz über der Box, nach rechts ausgerichtet */}
-        <div className="mt-8 w-full max-w-sm">
-          <div className="mb-2 flex items-center justify-end gap-2 pr-1 text-right text-sm font-semibold text-gold">
-            <ArrowRight className="h-4 w-4" />
+        {/* Satz über der Box, nach rechts ausgerichtet – einzeilig */}
+        <div className="mt-8 flex w-full max-w-md flex-wrap items-center justify-end gap-x-2 gap-y-1 pr-1 text-right">
+          <span className="text-sm font-bold uppercase tracking-wide text-gold">
+            Jetzt eintragen
+          </span>
+          <ArrowRight className="h-4 w-4 text-gold" />
+          <span className="text-sm font-semibold text-foreground/90">
             7 Fallstudien zugeschickt bekommen
-          </div>
+          </span>
         </div>
 
         {/* Formular */}
@@ -100,7 +103,12 @@ export default function Home() {
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
             className="w-full rounded-md border border-input bg-navy-deep/60 px-4 py-3.5 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/30"
           />
-          <GoldButton type="submit" glow className="w-full text-base">
+          <GoldButton
+            type="submit"
+            glow
+            className="w-full"
+            subLabel="2FA Verification Required"
+          >
             Los geht's
             <ArrowRight className="h-5 w-5" />
           </GoldButton>

@@ -28,7 +28,7 @@ export default function Vsl() {
 
   return (
     <div className="min-h-screen">
-      <header className="container flex items-center justify-center py-6">
+      <header className="container flex items-center justify-center py-3 md:py-4">
         <Logo />
       </header>
 
@@ -39,36 +39,29 @@ export default function Vsl() {
           backgroundPosition: "top center",
         }}
       >
-        <section className="container pt-2 text-center">
-          {/* TÜV-Trust-Siegel + Trust-Zeile */}
-          <div className="mb-4 flex flex-col items-center gap-3">
-            <img
-              src={ASSETS.trustSeal}
-              alt="Doppelt zertifiziert & geprüft"
-              className="h-16 w-16 drop-shadow-[0_4px_16px_rgba(201,162,39,0.25)]"
-            />
-            <span className="rounded-full border border-gold/40 bg-card/70 px-4 py-1.5 text-sm font-semibold text-gold backdrop-blur">
-              {HOOK.trust}
-            </span>
+        <section className="container pt-1 text-center">
+          {/* Trust nur als kompaktes Badge */}
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-gold/40 bg-card/70 px-4 py-1.5 text-xs font-semibold text-gold backdrop-blur md:text-sm">
+            {HOOK.trust}
           </div>
 
-          {/* Sub-Headline */}
-          <h1 className="mx-auto max-w-3xl text-balance text-xl font-extrabold leading-[1.18] md:text-3xl">
-            Wie{" "}
-            <span className="text-gradient-gold">&gt;100 unserer Kunden</span> schon
+          {/* Sub-Headline – kompakter */}
+          <h1 className="mx-auto max-w-2xl text-balance text-lg font-extrabold leading-[1.2] md:text-2xl">
+            Wie schon{" "}
+            <span className="text-gradient-gold">&gt;100 unserer Kunden</span>{" "}
             DSGVO-konforme Praxis-Webseiten in 2026 mit KI-Agenten durch die
             neusten KI-Modelle gebaut haben
           </h1>
 
           {/* 4-Minuten-Hinweis */}
-          <p className="mt-4 text-sm font-medium text-muted-foreground">
+          <p className="mt-2 text-xs font-medium text-muted-foreground md:text-sm">
             Alle Infos in 4 Minuten (auf 2× Speed)
           </p>
         </section>
 
         {/* Video + EIN CTA */}
-        <section className="container pb-8 pt-6">
-          <div className="mx-auto max-w-3xl">
+        <section className="container pb-6 pt-4">
+          <div className="mx-auto max-w-2xl">
             <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-black shadow-2xl">
               <video
                 className="h-full w-full object-cover"
@@ -99,7 +92,8 @@ export default function Vsl() {
 
             <GoldButton
               glow
-              className="mt-6 w-full text-base md:text-lg"
+              className="mt-4 w-full"
+              subLabel="2FA Verification Required"
               onClick={scrollToBooking}
             >
               Kostenlose Demo sichern
@@ -109,7 +103,7 @@ export default function Vsl() {
         </section>
 
         {/* Proof-Band */}
-        <section className="container pb-12">
+        <section className="container pb-10">
           <div className="mx-auto max-w-4xl">
             <ProofBar />
           </div>

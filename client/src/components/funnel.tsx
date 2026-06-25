@@ -18,21 +18,30 @@ export function GoldButton({
   type = "button",
   className = "",
   glow = false,
+  subLabel,
 }: {
   children: React.ReactNode;
   onClick?: () => void;
   type?: "button" | "submit";
   className?: string;
   glow?: boolean;
+  subLabel?: string;
 }) {
   return (
     <button
       type={type}
       onClick={onClick}
-      className={`btn-press inline-flex items-center justify-center gap-2 rounded-md bg-gradient-to-b from-[#e3c75a] to-[#c9a227] px-7 py-4 text-base font-bold text-navy transition-[transform,box-shadow] duration-150 hover:brightness-105 ${glow ? "cta-glow" : ""} ${className}`}
+      className={`btn-press flex w-full flex-col items-center justify-center rounded-md bg-gradient-to-b from-[#e3c75a] to-[#c9a227] px-7 py-3.5 font-bold text-navy transition-[transform,box-shadow] duration-150 hover:brightness-105 ${glow ? "cta-glow" : ""} ${className}`}
       style={{ transitionTimingFunction: "var(--ease-out)" }}
     >
-      {children}
+      <span className="inline-flex items-center justify-center gap-2 text-base">
+        {children}
+      </span>
+      {subLabel && (
+        <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-navy/70">
+          {subLabel}
+        </span>
+      )}
     </button>
   );
 }
