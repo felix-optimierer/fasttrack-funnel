@@ -1,6 +1,7 @@
 // VSL PAGE — maximal on point (Vorbild: ecomscaling.org/sta-vsl).
 // EIN Hook: Webseite mit KI-Agenten in unter 60 Min. Trust-Siegel + Video + 1 CTA, dann 7 Beweise + Buchung.
 import { useEffect, useState } from "react";
+import { useLocation } from "wouter";
 import { ASSETS, HOOK } from "@/lib/site";
 import {
   Logo,
@@ -10,20 +11,18 @@ import {
   TrustBadges,
   Footer,
 } from "@/components/funnel";
-import { Play, Volume2, Calendar, ArrowRight, Check } from "lucide-react";
-import { toast } from "sonner";
+import { Play, Volume2, Calendar, ArrowRight } from "lucide-react";
 
 export default function Vsl() {
   const [muted, setMuted] = useState(true);
+  const [, navigate] = useLocation();
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  function scrollToBooking() {
-    document
-      .getElementById("buchung")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  function goToTermin() {
+    navigate("/termin");
   }
 
   return (
@@ -90,12 +89,7 @@ export default function Vsl() {
               </button>
             </div>
 
-            <GoldButton
-              glow
-              className="mt-4 w-full"
-              subLabel="2FA Verification Required"
-              onClick={scrollToBooking}
-            >
+            <GoldButton glow className="mt-4 w-full" onClick={goToTermin}>
               Kostenlose Demo sichern
               <ArrowRight className="h-5 w-5" />
             </GoldButton>
@@ -123,30 +117,23 @@ export default function Vsl() {
         </div>
       </section>
 
-      {/* Buchung */}
-      <section id="buchung" className="bg-navy-deep py-14">
+      {/* CTA -> /termin */}
+      <section className="bg-navy-deep py-14">
         <div className="container max-w-2xl text-center">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-gold/40 bg-card px-4 py-1.5 text-sm font-semibold text-gold">
             <Calendar className="h-4 w-4" />
             Begrenzte Plätze
           </div>
           <h2 className="text-2xl font-extrabold md:text-3xl">
-            Sichere dir deine Demo.
+            Sichere dir deine kostenlose Demo.
           </h2>
-
-          <div className="mt-7 rounded-2xl border border-dashed border-gold/40 bg-card p-8">
-            <Calendar className="mx-auto h-9 w-9 text-gold" />
-            <p className="mt-3 text-sm text-muted-foreground">
-              Buchungs-Kalender hier einbetten (Calendly / TidyCal).
-            </p>
-            <GoldButton
-              glow
-              className="mt-5"
-              onClick={() =>
-                toast.info("Hier den echten Kalender-Link einsetzen.")
-              }
-            >
-              Termin wählen
+          <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">
+            Wähle im nächsten Schritt deinen Wunschtermin – wir zeigen dir live,
+            wie deine Praxis-Webseite in unter 60 Minuten entsteht.
+          </p>
+          <div className="mt-7 flex justify-center">
+            <GoldButton glow className="max-w-sm" onClick={goToTermin}>
+              Jetzt Termin sichern
               <ArrowRight className="h-5 w-5" />
             </GoldButton>
           </div>

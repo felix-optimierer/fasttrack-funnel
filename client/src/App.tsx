@@ -6,6 +6,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Vsl from "./pages/Vsl";
+import Termin from "./pages/Termin";
 import NotFound from "./pages/NotFound";
 
 function ScrollToTop() {
@@ -23,6 +24,7 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/vsl" component={Vsl} />
+        <Route path="/termin" component={Termin} />
         <Route component={NotFound} />
       </Switch>
     </>
