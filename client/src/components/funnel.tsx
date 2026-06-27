@@ -133,27 +133,37 @@ export function CaseGrid() {
   );
 }
 
-export function DoubleSeals() {
+export function DoubleSeals({
+  className = "",
+}: {
+  className?: string;
+}) {
   return (
-    <div className="flex items-center justify-center gap-4">
-      <img
-        src={ASSETS.sealA}
-        alt="Geprüfte Qualität"
-        className="h-16 w-16 drop-shadow-[0_4px_14px_rgba(201,162,39,0.25)]"
-      />
-      <img
-        src={ASSETS.sealB}
-        alt="DSGVO-konform geprüft"
-        className="h-16 w-16 drop-shadow-[0_4px_14px_rgba(201,162,39,0.25)]"
-      />
-      <div className="text-left">
-        <div className="font-display text-base font-extrabold text-foreground">
-          Doppelt TÜV geprüft
-        </div>
-        <div className="text-xs text-muted-foreground">
-          Geprüfte Qualität & Sicherheit
-        </div>
-      </div>
+    <div className={`flex flex-wrap items-center justify-center gap-3 ${className}`}>
+      <a
+        href="https://www.certipedia.com/quality_marks/0217466534"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="transition hover:brightness-105"
+      >
+        <img
+          src={ASSETS.tuv1}
+          alt="TÜV Rheinland zertifiziert – ID 0217466534"
+          className="h-16 w-auto rounded-md bg-white p-1.5 shadow-lg md:h-[72px]"
+        />
+      </a>
+      <a
+        href="https://www.certipedia.com/quality_marks/0217466539"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="transition hover:brightness-105"
+      >
+        <img
+          src={ASSETS.tuv2}
+          alt="TÜV Rheinland zertifiziert – ID 0217466539"
+          className="h-16 w-auto rounded-md bg-white p-1.5 shadow-lg md:h-[72px]"
+        />
+      </a>
     </div>
   );
 }

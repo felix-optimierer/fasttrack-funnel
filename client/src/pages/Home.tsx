@@ -118,9 +118,12 @@ export default function Home() {
           </div>
         </form>
 
-        {/* Doppel-TÜV-Siegel unter dem Formular */}
-        <div className="mt-8">
+        {/* Echte TÜV-Rheinland-Siegel unter dem Formular */}
+        <div className="mt-9 flex flex-col items-center gap-3">
           <DoubleSeals />
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            Doppelt TÜV-zertifiziert
+          </p>
         </div>
       </main>
     </div>

@@ -9,6 +9,7 @@ import {
   ProofBar,
   CaseGrid,
   TrustBadges,
+  DoubleSeals,
   Footer,
 } from "@/components/funnel";
 import { Play, Volume2, Calendar, ArrowRight } from "lucide-react";
@@ -93,6 +94,14 @@ export default function Vsl() {
               Kostenlose Demo sichern
               <ArrowRight className="h-5 w-5" />
             </GoldButton>
+
+            {/* Echte TÜV-Rheinland-Siegel unter dem Video */}
+            <div className="mt-6 flex flex-col items-center gap-2.5">
+              <DoubleSeals />
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                Doppelt TÜV-zertifiziert
+              </p>
+            </div>
           </div>
         </section>
 
