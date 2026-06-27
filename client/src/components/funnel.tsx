@@ -149,7 +149,7 @@ export function DoubleSeals({
         <img
           src={ASSETS.tuv1}
           alt="TÜV Rheinland zertifiziert – ID 0217466534"
-          className="h-16 w-auto rounded-md bg-white p-1.5 shadow-lg md:h-[72px]"
+          className="h-[68px] w-auto rounded-xl shadow-lg md:h-20"
         />
       </a>
       <a
@@ -161,7 +161,7 @@ export function DoubleSeals({
         <img
           src={ASSETS.tuv2}
           alt="TÜV Rheinland zertifiziert – ID 0217466539"
-          className="h-16 w-auto rounded-md bg-white p-1.5 shadow-lg md:h-[72px]"
+          className="h-[68px] w-auto rounded-xl shadow-lg md:h-20"
         />
       </a>
     </div>

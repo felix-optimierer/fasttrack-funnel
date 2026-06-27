@@ -18,8 +18,8 @@ export const ASSETS = {
   sealB:
     "https://d2xsxph8kpxj0f.cloudfront.net/310519663184004032/n4HsdnCPFsDhTY9NVz5q9i/seal-b-DhsEryTV6E7xcirMM4E2fH.webp",
   // Echte TÜV Rheinland Zertifikate (ID 0217466534 & 0217466539)
-  tuv1: "/manus-storage/tuv-1_4f2b641d.png",
-  tuv2: "/manus-storage/tuv-2_ea1f97cb.png",
+  tuv1: "/manus-storage/tuv-1-card_eb0056d7.png",
+  tuv2: "/manus-storage/tuv-2-card_afe71785.png",
 };
 
 export const BRAND = {
