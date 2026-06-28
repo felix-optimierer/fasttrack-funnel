@@ -66,8 +66,8 @@ export default function Home() {
           )}
         </div>
 
-        {/* Satz über der Box, nach rechts ausgerichtet – einzeilig */}
-        <div className="mb-5 mt-8 flex w-full max-w-xl flex-wrap items-center justify-start gap-x-2 gap-y-1">
+        {/* Satz über der Box, mittig ausgerichtet – einzeilig */}
+        <div className="mb-5 mt-8 flex w-full max-w-xl flex-wrap items-center justify-center gap-x-2 gap-y-1">
           <span className="text-sm font-bold uppercase tracking-wide text-gold">
             Jetzt eintragen
           </span>
