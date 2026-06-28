@@ -68,9 +68,11 @@ export default function Home() {
         </div>
 
         {/* Headline: kompakt, 2-3 Zeilen */}
-        <h1 className="max-w-4xl text-balance text-xl font-extrabold leading-[1.15] sm:text-3xl md:text-[2.6rem] md:leading-[1.1]">
+        <h1 className="max-w-4xl text-balance text-xl font-extrabold leading-[1.15] sm:text-3xl md:max-w-none md:[text-wrap:initial] md:text-[2.85rem] md:leading-[1.15]">
           Als Praxisinhaber deine{" "}
-          <span className="text-gradient-gold">Traumwebseite</span> in 60 Minuten
+          <br className="hidden md:inline" />
+          <span className="text-gradient-gold">Traumwebseite</span> in 60 Minuten{" "}
+          <br className="hidden md:inline" />
           per KI-Agent bauen lassen
         </h1>
 
