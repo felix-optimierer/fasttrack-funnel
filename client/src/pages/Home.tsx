@@ -51,7 +51,7 @@ export default function Home() {
         </div>
 
         {/* Headline: kompakt, 2-3 Zeilen */}
-        <h1 className="max-w-4xl text-balance text-2xl font-extrabold leading-[1.12] sm:text-3xl md:text-[2.6rem] md:leading-[1.1]">
+        <h1 className="max-w-4xl text-balance text-xl font-extrabold leading-[1.15] sm:text-3xl md:text-[2.6rem] md:leading-[1.1]">
           Als Praxisinhaber deine{" "}
           <span className="text-gradient-gold">Traumwebseite</span> in 60 Minuten
           per KI-Agent bauen lassen
@@ -59,14 +59,18 @@ export default function Home() {
 
         {/* Bullet-Trust */}
         <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-xs font-medium text-foreground/90 sm:mt-4 sm:gap-x-5 sm:text-sm">
-          {["ohne Technikkenntnisse", "ohne Agentur", "ohne Baukasten"].map(
-            (b) => (
-              <span key={b} className="inline-flex items-center gap-1.5">
-                <Check className="h-4 w-4 text-gold" />
-                {b}
-              </span>
-            ),
-          )}
+          <span className="inline-flex items-center gap-1.5">
+            <Check className="h-4 w-4 text-gold" />
+            ohne Technikkenntnisse
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <Check className="h-4 w-4 text-gold" />
+            ohne Agentur
+          </span>
+          <span className="hidden items-center gap-1.5 sm:inline-flex">
+            <Check className="h-4 w-4 text-gold" />
+            ohne Baukasten
+          </span>
         </div>
 
         {/* Satz über der Box, mittig ausgerichtet – einzeilig */}
@@ -90,21 +94,21 @@ export default function Home() {
             value={form.name}
             placeholder="Dein Name"
             onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="w-full rounded-md border border-input bg-navy-deep/60 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/30"
+            className="w-full rounded-md border border-input bg-white px-4 py-3 text-sm text-neutral-900 placeholder:text-neutral-500 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/40"
           />
           <input
             type="email"
             value={form.email}
             placeholder="Deine E-Mail"
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="w-full rounded-md border border-input bg-navy-deep/60 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/30"
+            className="w-full rounded-md border border-input bg-white px-4 py-3 text-sm text-neutral-900 placeholder:text-neutral-500 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/40"
           />
           <input
             type="tel"
             value={form.phone}
             placeholder="Deine Handynummer"
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            className="w-full rounded-md border border-input bg-navy-deep/60 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/30"
+            className="w-full rounded-md border border-input bg-white px-4 py-3 text-sm text-neutral-900 placeholder:text-neutral-500 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/40"
           />
           <GoldButton
             type="submit"
