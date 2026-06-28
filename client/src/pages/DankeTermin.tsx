@@ -1,4 +1,4 @@
-// DANKE PAGE — Bestätigungsseite nach gebuchtem Analysegespräch.
+// DANKE-TERMIN PAGE — Bestätigungsseite nach gebuchtem Analysegespräch.
 import { useEffect } from "react";
 import { ASSETS } from "@/lib/site";
 import { Logo, DoubleSeals, Footer } from "@/components/funnel";
@@ -22,7 +22,7 @@ const STEPS = [
   },
 ];
 
-export default function Danke() {
+export default function DankeTermin() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);

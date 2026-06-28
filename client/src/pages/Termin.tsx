@@ -31,7 +31,7 @@ export default function Termin() {
           e.data?.event &&
           String(e.data.event).indexOf("calendly.event_scheduled") === 0)
       ) {
-        navigate("/danke");
+        navigate("/danke-termin");
       }
     };
     window.addEventListener("message", onMessage);

@@ -7,7 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Anleitung from "./pages/Anleitung";
 import Termin from "./pages/Termin";
-import Danke from "./pages/Danke";
+import DankeTermin from "./pages/DankeTermin";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -27,7 +27,7 @@ function Router() {
         <Route path="/" component={Home} />
         <Route path="/anleitung" component={Anleitung} />
         <Route path="/termin" component={Termin} />
-        <Route path="/danke" component={Danke} />
+        <Route path="/danke-termin" component={DankeTermin} />
         <Route path="/admin" component={Admin} />
         <Route component={NotFound} />
       </Switch>
