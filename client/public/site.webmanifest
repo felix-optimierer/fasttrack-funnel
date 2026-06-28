@@ -1,0 +1,21 @@
+{
+  "name": "Physio Freiheit – Praxis-Webseite in 60 Minuten",
+  "short_name": "Physio Freiheit",
+  "icons": [
+    {
+      "src": "/manus-storage/favicon-192_596b5b54.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/manus-storage/favicon-512_af9f1347.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "theme_color": "#0a1628",
+  "background_color": "#0a1628",
+  "display": "standalone"
+}

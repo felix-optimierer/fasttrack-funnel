@@ -41,3 +41,14 @@
 - [x] Admin-Label "Besucher VSL" -> "Besucher Anleitung"
 - [x] Tracking-Skript im <head> eingefügt: tracker.js?site-id=VT-3EDD3323-48250
 - [x] Cookie-Skript im <body> eingefügt: cookie.js?site-id=VT-3EDD3323-48250
+
+## Änderungen (Runde 3) – Favicon & SEO
+- [x] Favicon-Set aus echtem PhysioFreiheit-Symbol erzeugt (16/32/48 ico, 96/180/192/512 png)
+- [x] Kleine Favicons mit weißem, abgerundetem Hintergrund (Sichtbarkeit im dunklen Browser-Tab)
+- [x] favicon.ico + 16/32 png in client/public; größere PNGs via /manus-storage
+- [x] site.webmanifest mit 192/512 Icons + theme/background color
+- [x] Apple-Touch-Icon (180, weißer Hintergrund)
+- [x] OG-Bild 1200x630 (Symbol auf Navy) erzeugt & verlinkt
+- [x] SEO: Title, Description, canonical, author, theme-color sauber gesetzt
+- [x] OpenGraph (url/site_name/locale/image+Maße) + Twitter-Card vollständig
+- [x] Auslieferung verifiziert (favicon.ico, png, manifest, og-image = HTTP 200)
