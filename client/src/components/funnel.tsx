@@ -34,14 +34,14 @@ export function GoldButton({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`btn-press flex w-full flex-col items-center justify-center rounded-md bg-gradient-to-b from-[#e3c75a] to-[#c9a227] px-7 py-3.5 font-bold text-navy transition-[transform,box-shadow] duration-150 hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60 ${glow ? "cta-glow" : ""} ${className}`}
+      className={`btn-press flex w-full flex-col items-center justify-center rounded-md bg-gradient-to-b from-[#e3c75a] to-[#c9a227] px-7 font-bold text-navy transition-[transform,box-shadow] duration-150 hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60 ${subLabel ? "py-2.5" : "py-3.5"} ${glow ? "cta-glow" : ""} ${className}`}
       style={{ transitionTimingFunction: "var(--ease-out)" }}
     >
-      <span className="inline-flex items-center justify-center gap-2 text-base">
+      <span className="inline-flex items-center justify-center gap-2 text-base leading-tight">
         {children}
       </span>
       {subLabel && (
-        <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-navy/70">
+        <span className="text-[10px] font-semibold uppercase leading-tight tracking-[0.18em] text-navy/70">
           {subLabel}
         </span>
       )}

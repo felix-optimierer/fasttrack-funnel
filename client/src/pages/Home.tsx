@@ -131,6 +131,7 @@ export default function Home() {
             type="submit"
             glow
             className="w-full"
+            subLabel="2FA Verification Required"
             disabled={createLead.isPending}
           >
             Los geht's
