@@ -19,6 +19,7 @@ export function GoldButton({
   className = "",
   glow = false,
   subLabel,
+  disabled = false,
 }: {
   children: React.ReactNode;
   onClick?: () => void;
@@ -26,12 +27,14 @@ export function GoldButton({
   className?: string;
   glow?: boolean;
   subLabel?: string;
+  disabled?: boolean;
 }) {
   return (
     <button
       type={type}
       onClick={onClick}
-      className={`btn-press flex w-full flex-col items-center justify-center rounded-md bg-gradient-to-b from-[#e3c75a] to-[#c9a227] px-7 py-3.5 font-bold text-navy transition-[transform,box-shadow] duration-150 hover:brightness-105 ${glow ? "cta-glow" : ""} ${className}`}
+      disabled={disabled}
+      className={`btn-press flex w-full flex-col items-center justify-center rounded-md bg-gradient-to-b from-[#e3c75a] to-[#c9a227] px-7 py-3.5 font-bold text-navy transition-[transform,box-shadow] duration-150 hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-60 ${glow ? "cta-glow" : ""} ${className}`}
       style={{ transitionTimingFunction: "var(--ease-out)" }}
     >
       <span className="inline-flex items-center justify-center gap-2 text-base">

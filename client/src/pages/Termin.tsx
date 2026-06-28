@@ -5,6 +5,7 @@ import { ASSETS, HOOK } from "@/lib/site";
 import { Logo, TrustBadges, Footer } from "@/components/funnel";
 import { Calendar, Check, ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
+import { usePageView } from "@/hooks/usePageView";
 
 // === CALENDLY ===
 // Trage hier deinen echten Calendly-Link ein, dann wird der Kalender eingebettet.
@@ -13,6 +14,8 @@ const CALENDLY_URL = "";
 
 export default function Termin() {
   const [, navigate] = useLocation();
+
+  usePageView("termin");
 
   useEffect(() => {
     window.scrollTo(0, 0);

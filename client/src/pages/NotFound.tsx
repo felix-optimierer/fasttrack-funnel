@@ -22,10 +22,10 @@ export default function NotFound() {
         Diese Abkürzung führt ins Leere
       </h1>
       <p className="mt-3 max-w-sm text-sm text-muted-foreground">
-        Die Seite gibt es nicht – aber der schnellste Weg zu planbaren
-        Online-Umsätzen wartet auf der Startseite.
+        Die Seite gibt es nicht – aber der schnellste Weg zu deiner
+        Traumwebseite wartet auf der Startseite.
       </p>
-      <GoldButton className="mt-7" onClick={() => navigate("/")}>
+      <GoldButton className="mt-7 w-auto px-8" onClick={() => navigate("/")}>
         Zurück zum Fast-Track
         <ArrowRight className="h-5 w-5" />
       </GoldButton>

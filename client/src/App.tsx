@@ -7,6 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Vsl from "./pages/Vsl";
 import Termin from "./pages/Termin";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 function ScrollToTop() {
@@ -16,8 +17,8 @@ function ScrollToTop() {
   }, [location]);
   return null;
 }
-
 function Router() {
+  // make sure to consider if you need authentication for certain routes
   return (
     <>
       <ScrollToTop />
@@ -25,6 +26,7 @@ function Router() {
         <Route path="/" component={Home} />
         <Route path="/vsl" component={Vsl} />
         <Route path="/termin" component={Termin} />
+        <Route path="/admin" component={Admin} />
         <Route component={NotFound} />
       </Switch>
     </>

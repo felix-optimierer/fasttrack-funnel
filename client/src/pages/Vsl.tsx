@@ -13,10 +13,13 @@ import {
   Footer,
 } from "@/components/funnel";
 import { Play, Volume2, Calendar, ArrowRight } from "lucide-react";
+import { usePageView } from "@/hooks/usePageView";
 
 export default function Vsl() {
   const [muted, setMuted] = useState(true);
   const [, navigate] = useLocation();
+
+  usePageView("vsl");
 
   useEffect(() => {
     window.scrollTo(0, 0);

@@ -6,10 +6,15 @@ import { ASSETS } from "@/lib/site";
 import { Logo, GoldButton, DoubleSeals } from "@/components/funnel";
 import { Lock, ArrowRight, Check } from "lucide-react";
 import { toast } from "sonner";
+import { trpc } from "@/lib/trpc";
+import { usePageView } from "@/hooks/usePageView";
 
 export default function Home() {
   const [, navigate] = useLocation();
   const [form, setForm] = useState({ name: "", email: "", phone: "" });
+  const createLead = trpc.leads.create.useMutation();
+
+  usePageView("home");
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -21,8 +26,20 @@ export default function Home() {
       toast.error("Bitte fülle alle Felder aus.");
       return;
     }
-    toast.success("Perfekt! Hier kommen deine 7 Fallstudien.");
-    setTimeout(() => navigate("/vsl"), 600);
+    createLead.mutate(
+      { name: form.name, email: form.email, phone: form.phone, source: "home" },
+      {
+        onSuccess: () => {
+          toast.success("Perfekt! Hier kommen deine 7 Fallstudien.");
+          setTimeout(() => navigate("/vsl"), 600);
+        },
+        onError: () => {
+          // Auch bei Backend-Fehler den Nutzer nicht blockieren
+          toast.success("Perfekt! Hier kommen deine 7 Fallstudien.");
+          setTimeout(() => navigate("/vsl"), 600);
+        },
+      },
+    );
   }
 
   return (
@@ -114,7 +131,7 @@ export default function Home() {
             type="submit"
             glow
             className="w-full"
-            subLabel="2FA Verification Required"
+            disabled={createLead.isPending}
           >
             Los geht's
             <ArrowRight className="h-5 w-5" />
