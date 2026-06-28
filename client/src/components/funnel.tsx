@@ -91,7 +91,7 @@ export function CaseGrid() {
           className="rise-in flex flex-col overflow-hidden rounded-2xl border border-border bg-card"
           style={{ animationDelay: `${i * 70}ms` }}
         >
-          {c.image && (
+          {c.image ? (
             <div className="relative h-52 w-full overflow-hidden">
               <img
                 src={c.image}
@@ -105,11 +105,24 @@ export function CaseGrid() {
                 </p>
               </div>
             </div>
+          ) : (
+            <div className="relative flex h-52 w-full items-center justify-center overflow-hidden bg-gradient-to-br from-navy to-navy-deep">
+              <span className="font-display text-6xl font-extrabold text-gold/30">
+                {c.name.charAt(0)}
+              </span>
+              <div className="absolute inset-0 flex items-end">
+                <div className="w-full bg-gradient-to-t from-card via-card/40 to-transparent px-4 pb-3 pt-10">
+                  <p className="font-display text-sm font-bold text-gold">
+                    {c.result}
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
           <div className="flex flex-1 flex-col p-5">
             <Quote className="mb-2 h-5 w-5 text-gold/60" />
             <p className="flex-1 text-sm leading-relaxed text-foreground/90">
-              „{c.quote}"
+              {c.isQuote === false ? c.quote : `„${c.quote}“`}
             </p>
             <div className="mt-4 flex items-center gap-4">
               {c.metrics.map((m) => (
@@ -128,6 +141,16 @@ export function CaseGrid() {
                 {c.name}
               </div>
               <div className="text-xs text-muted-foreground">{c.role}</div>
+              {c.sourceUrl && (
+                <a
+                  href={c.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-medium text-gold/80 hover:text-gold"
+                >
+                  {c.sourceLabel ?? "Quelle ansehen"} ↗
+                </a>
+              )}
             </div>
           </div>
         </article>

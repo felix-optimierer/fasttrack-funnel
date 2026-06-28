@@ -32,3 +32,12 @@
 - [x] Vitest: Admin-Auth (Login, Cookie, Token, Schutz, Logout) – 8 Tests grün
 - [x] Manueller API-Test des kompletten Flows (Login, Tracking, Lead, Stats, Webhook)
 - [x] Testdaten aufgeräumt
+
+## Änderungen (Runde 2)
+- [x] /vsl in /anleitung umbenennen (Route, Datei, alle internen Verweise; /vsl leitet auf /anleitung um)
+- [x] Echte Fallstudien recherchiert (Torben Möller, Alexander Reichl, Anica Bommert + echte 5★-Stimmen Marion, Nadine Peter, Desiré Nowak, Frederik Gerber)
+- [x] Echte Fallstudien-Bilder gesichert & hochgeladen (Torben, Reichl); kleine/unscharfe Profilbilder durch elegante Monogramm-Karten ersetzt
+- [x] Fallstudien authentisch auf /anleitung eingebaut (mit anklickbaren Quellen-Links)
+- [x] Admin-Label "Besucher VSL" -> "Besucher Anleitung"
+- [x] Tracking-Skript im <head> eingefügt: tracker.js?site-id=VT-3EDD3323-48250
+- [x] Cookie-Skript im <body> eingefügt: cookie.js?site-id=VT-3EDD3323-48250

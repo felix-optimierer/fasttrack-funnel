@@ -1,4 +1,4 @@
-// TERMIN PAGE — Calendly-Buchungsseite (Ziel des VSL-CTAs).
+// TERMIN PAGE — Calendly-Buchungsseite (Ziel des Anleitung-CTAs).
 // Hier den echten Calendly-Embed einsetzen (siehe Markierung unten).
 import { useEffect } from "react";
 import { ASSETS, HOOK } from "@/lib/site";
@@ -95,7 +95,7 @@ export default function Termin() {
 
           {/* Zurück-Link */}
           <button
-            onClick={() => navigate("/vsl")}
+            onClick={() => navigate("/anleitung")}
             className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" />

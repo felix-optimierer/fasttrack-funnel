@@ -1,5 +1,5 @@
-// VSL PAGE — maximal on point (Vorbild: ecomscaling.org/sta-vsl).
-// EIN Hook: Webseite mit KI-Agenten in unter 60 Min. Trust-Siegel + Video + 1 CTA, dann 7 Beweise + Buchung.
+// ANLEITUNG PAGE (vormals /vsl) — maximal on point.
+// EIN Hook: Webseite mit KI-Agenten in unter 60 Min. Trust-Siegel + Video + 1 CTA, dann echte Fallstudien + Buchung.
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { ASSETS, HOOK } from "@/lib/site";
@@ -15,7 +15,7 @@ import {
 import { Play, Volume2, Calendar, ArrowRight } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 
-export default function Vsl() {
+export default function Anleitung() {
   const [muted, setMuted] = useState(true);
   const [, navigate] = useLocation();
 
@@ -120,10 +120,10 @@ export default function Vsl() {
       <section className="border-t border-border bg-navy py-14">
         <div className="container">
           <h2 className="mb-2 text-center text-2xl font-extrabold md:text-3xl">
-            7 Beweise. Echte Praxen.
+            Echte Praxen. Echte Ergebnisse.
           </h2>
           <p className="mb-9 text-center text-sm text-muted-foreground">
-            Über 100× bewiesen – hier sind 7 davon.
+            Über 100× bewiesen – hier sind echte Stimmen unserer Kunden.
           </p>
           <CaseGrid />
         </div>

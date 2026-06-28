@@ -20,6 +20,9 @@ export const ASSETS = {
   // Echte TÜV Rheinland Zertifikate (ID 0217466534 & 0217466539)
   tuv1: "/manus-storage/tuv-1-round_44a2fd80.png",
   tuv2: "/manus-storage/tuv-2-round_d5e3f886.png",
+  // Echte Fallstudien-Bilder (von den Original-Webseiten)
+  caseTorben: "/manus-storage/torben_moeller_ef873c93.jpeg",
+  caseReichl: "/manus-storage/alexander_reichl_c936ba49.webp",
 };
 
 export const BRAND = {
@@ -49,87 +52,112 @@ export type CaseStudy = {
   result: string;
   quote: string;
   metrics: { label: string; value: string }[];
+  sourceUrl?: string;
+  sourceLabel?: string;
+  // true = wörtliches Kundenzitat; false/undefined = redaktioneller Faktentext
+  isQuote?: boolean;
 };
 
 // 7 Platzhalter-Fallstudien. ECHTE Kundennamen/Fotos/Zahlen vor Live-Schaltung einsetzen.
 export const CASE_STUDIES: CaseStudy[] = [
   {
-    name: "Praxisinhaber (Beispiel)",
-    role: "Physiopraxis · Bayern",
-    image: ASSETS.case1,
-    result: "Traumwebseite in 48 Minuten – ohne Agentur.",
+    name: "Torben Möller",
+    role: "Mobile Physiotherapie · Geesthacht",
+    image: ASSETS.caseTorben,
+    result: "Eigene Webseite, über die laufend Patienten-Anfragen reinkommen.",
     quote:
-      "Ich habe jahrelang auf meine Agentur gewartet. Mit dem KI-Agenten stand meine Webseite an einem Nachmittag – besser als alles davor.",
+      "Mobile Physiotherapie mit eigener Webseite und App: Anfragen laufen direkt online rein – ohne Agentur und ohne Wartezimmer. Über 1.000 Patienten wurden bereits begleitet, bei 5,0 ★ auf Google.",
     metrics: [
-      { label: "Webseite live", value: "48 Min" },
-      { label: "Agenturkosten", value: "0 €" },
+      { label: "Google-Bewertung", value: "5,0 ★" },
+      { label: "Patienten", value: "1.000+" },
     ],
+    sourceUrl: "https://www.physiotherapie-torben-moeller.de/",
+    sourceLabel: "physiotherapie-torben-moeller.de",
+    isQuote: false,
   },
   {
-    name: "Praxisinhaberin (Beispiel)",
-    role: "Physiopraxis · NRW",
-    image: ASSETS.case2,
-    result: "Eigene Coaching-App gelauncht, erste Pakete verkauft.",
+    name: "Alexander Reichl",
+    role: "Physiotherapie Reichl · Neumarkt i.d.OPf.",
+    image: ASSETS.caseReichl,
+    result: "Moderne Online-Präsenz mit Online-Terminbuchung statt nur Telefon.",
     quote:
-      "In wenigen Wochen hatte ich meine eigene Coaching-App und die ersten Selbstzahler-Pakete verkauft. Endlich Umsatz ohne mehr Stunden an der Bank.",
+      "Traditionspraxis seit 1980 mit moderner Webseite: Terminanfragen laufen heute direkt online statt nur übers Telefon – ausgezeichnet mit 4,9 ★ aus über 40 Google-Bewertungen.",
     metrics: [
-      { label: "App live", value: "3 Wochen" },
-      { label: "Erste Pakete", value: "verkauft" },
+      { label: "Google-Bewertung", value: "4,9 ★" },
+      { label: "Erfahrung", value: "44+ Jahre" },
     ],
+    sourceUrl: "https://physiotherapie-neumarkt.com/",
+    sourceLabel: "physiotherapie-neumarkt.com",
+    isQuote: false,
   },
   {
-    name: "Praxisinhaber (Beispiel)",
-    role: "Physiopraxis · Baden-Württemberg",
-    result: "Webseite in 52 Minuten – komplett selbst gebaut.",
+    name: "Anica Bommert",
+    role: "Physio & Gesundheitscoach · Gelsenkirchen",
+    result: "Erste zwei Klienten für 5.000 € im ersten Monat abgeschlossen.",
     quote:
-      "Null Technikkenntnisse, trotzdem stand die Seite in unter einer Stunde. Ich hätte nie gedacht, dass das so einfach geht.",
+      "Das Fast-Track-System zu buchen war die beste Entscheidung, um in die Online-Selbstständigkeit zu starten. Klare, praxisnahe Schritte und eine unglaublich intensive, persönliche Betreuung – das habe ich in keinem Coaching vorher erlebt.",
     metrics: [
-      { label: "Webseite live", value: "52 Min" },
+      { label: "Bewertung", value: "5,0 ★" },
+      { label: "1. Monat", value: "2 × 5K" },
+    ],
+    sourceUrl:
+      "https://www.expertenmarkt.de/experte/bewegungsoptimierer-gmbh-bechhofen/erfahrung",
+    sourceLabel: "Verifizierte Bewertung",
+  },
+  {
+    name: "Marion",
+    role: "Therapie & Coaching · Fast-Track-Teilnehmerin",
+    result: "Nach 3 Wochen stolze Besitzerin der eigenen Webseite.",
+    quote:
+      "Ich hatte keine Website und war quasi unsichtbar. Seit heute Vormittag bin ich stolze Besitzerin einer Webseite – unglaublich, wie schnell und einfach das funktioniert. Und ich bin nicht mal Physiotherapeutin, es lässt sich also auf jeden Bereich übertragen.",
+    metrics: [
+      { label: "Bewertung", value: "5,0 ★" },
+      { label: "Webseite live", value: "3 Wochen" },
+    ],
+    sourceUrl:
+      "https://www.expertenmarkt.de/experte/bewegungsoptimierer-gmbh-bechhofen/erfahrung",
+    sourceLabel: "Verifizierte Bewertung",
+  },
+  {
+    name: "Nadine Peter",
+    role: "Fast-Track-Teilnehmerin",
+    result: "Schritt-für-Schritt-Umsetzung mit persönlichem Support.",
+    quote:
+      "Man bekommt einen spitzen Support bei den besprochenen Projekten. Perfekte Umsetzung – vielen Dank dafür!",
+    metrics: [
+      { label: "Bewertung", value: "5,0 ★" },
+      { label: "Support", value: "persönlich" },
+    ],
+    sourceUrl:
+      "https://www.expertenmarkt.de/experte/bewegungsoptimierer-gmbh-bechhofen/erfahrung",
+    sourceLabel: "Verifizierte Bewertung",
+  },
+  {
+    name: "Desiré Nowak",
+    role: "Fast-Track-Teilnehmerin",
+    result: "Auch ohne Technik-Vorwissen sicher zur eigenen Seite.",
+    quote:
+      "Kompetente und problemorientierte Beratung – auch für Personen, die technisch sehr wenig bewandert sind. Einfach TOP.",
+    metrics: [
+      { label: "Bewertung", value: "5,0 ★" },
       { label: "Technik-Vorwissen", value: "keins" },
     ],
+    sourceUrl:
+      "https://www.expertenmarkt.de/experte/bewegungsoptimierer-gmbh-bechhofen/erfahrung",
+    sourceLabel: "Verifizierte Bewertung",
   },
   {
-    name: "Praxisinhaberin (Beispiel)",
-    role: "Physiopraxis · Hessen",
-    result: "Erste Selbstzahler-Anfragen über die neue Seite.",
+    name: "Frederik Gerber",
+    role: "Physio Mastermind · Teilnehmer",
+    result: "Austausch mit anderen selbstständigen Physiotherapeuten.",
     quote:
-      "Schon in der ersten Woche kamen Anfragen über meine neue Webseite – ohne dass ich einen Cent für eine Agentur gezahlt habe.",
+      "Das Physio Mastermind ist eine richtig schöne Plattform, um sich mit anderen selbstständigen Physiotherapeuten auszutauschen. Danke dafür!",
     metrics: [
-      { label: "Erste Anfragen", value: "Woche 1" },
-      { label: "Agentur", value: "0 €" },
+      { label: "Bewertung", value: "5,0 ★" },
+      { label: "Community", value: "aktiv" },
     ],
-  },
-  {
-    name: "Praxisinhaber (Beispiel)",
-    role: "Physiopraxis · Sachsen",
-    result: "Raus aus dem Baukasten-Chaos – endlich Kontrolle.",
-    quote:
-      "Vorher habe ich mich mit einem Baukasten gequält. Mit dem KI-Agenten hatte ich in unter einer Stunde eine Seite, auf die ich stolz bin.",
-    metrics: [
-      { label: "Webseite live", value: "57 Min" },
-      { label: "Baukasten", value: "gekündigt" },
-    ],
-  },
-  {
-    name: "Praxisinhaberin (Beispiel)",
-    role: "Physiopraxis · Niedersachsen",
-    result: "Coaching-Pakete online verkauft – planbarer Umsatz.",
-    quote:
-      "Mit eigener Webseite und App verkaufe ich jetzt planbar Pakete. Das macht mich Schritt für Schritt unabhängiger von den Kassen.",
-    metrics: [
-      { label: "Pakete/Monat", value: "planbar" },
-      { label: "Kassenanteil", value: "sinkt" },
-    ],
-  },
-  {
-    name: "Praxisinhaber (Beispiel)",
-    role: "Physiopraxis · Berlin",
-    result: "Traumwebseite an einem Abend – ganz allein.",
-    quote:
-      "Ich habe abends nach der letzten Behandlung angefangen und war vor dem Schlafengehen fertig. Ohne Agentur, ohne Stress.",
-    metrics: [
-      { label: "Webseite live", value: "1 Abend" },
-      { label: "Hilfe nötig", value: "keine" },
-    ],
+    sourceUrl:
+      "https://www.expertenmarkt.de/experte/bewegungsoptimierer-gmbh-bechhofen/erfahrung",
+    sourceLabel: "Verifizierte Bewertung",
   },
 ];

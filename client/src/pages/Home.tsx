@@ -31,12 +31,12 @@ export default function Home() {
       {
         onSuccess: () => {
           toast.success("Perfekt! Hier kommen deine 7 Fallstudien.");
-          setTimeout(() => navigate("/vsl"), 600);
+          setTimeout(() => navigate("/anleitung"), 600);
         },
         onError: () => {
           // Auch bei Backend-Fehler den Nutzer nicht blockieren
           toast.success("Perfekt! Hier kommen deine 7 Fallstudien.");
-          setTimeout(() => navigate("/vsl"), 600);
+          setTimeout(() => navigate("/anleitung"), 600);
         },
       },
     );

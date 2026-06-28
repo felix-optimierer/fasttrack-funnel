@@ -193,7 +193,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           />
           <StatCard
             icon={<Eye className="h-5 w-5" />}
-            label="Besucher VSL"
+            label="Besucher Anleitung"
             value={stats?.views.vsl}
             loading={statsQuery.isLoading}
           />
