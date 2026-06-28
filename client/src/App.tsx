@@ -1,12 +1,13 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Redirect, Route, Switch, useLocation } from "wouter";
+import { Route, Switch, useLocation } from "wouter";
 import { useEffect } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Anleitung from "./pages/Anleitung";
 import Termin from "./pages/Termin";
+import Danke from "./pages/Danke";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -25,11 +26,8 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/anleitung" component={Anleitung} />
-        {/* Alte URL weiterleiten, damit bestehende Links nicht ins Leere laufen */}
-        <Route path="/vsl">
-          <Redirect to="/anleitung" />
-        </Route>
         <Route path="/termin" component={Termin} />
+        <Route path="/danke" component={Danke} />
         <Route path="/admin" component={Admin} />
         <Route component={NotFound} />
       </Switch>

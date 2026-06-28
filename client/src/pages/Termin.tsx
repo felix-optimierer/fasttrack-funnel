@@ -1,16 +1,14 @@
-// TERMIN PAGE — Calendly-Buchungsseite (Ziel des Anleitung-CTAs).
-// Hier den echten Calendly-Embed einsetzen (siehe Markierung unten).
+// TERMIN PAGE — Calendly-Buchungsseite für das kostenlose KI-Analysegespräch.
 import { useEffect } from "react";
 import { ASSETS, HOOK } from "@/lib/site";
-import { Logo, TrustBadges, Footer } from "@/components/funnel";
-import { Calendar, Check, ArrowLeft } from "lucide-react";
+import { Logo, DoubleSeals, Footer } from "@/components/funnel";
+import { ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
 import { usePageView } from "@/hooks/usePageView";
 
 // === CALENDLY ===
-// Trage hier deinen echten Calendly-Link ein, dann wird der Kalender eingebettet.
-// Beispiel: "https://calendly.com/deine-praxis/demo"
-const CALENDLY_URL = "";
+const CALENDLY_URL =
+  "https://calendly.com/d/d3f9-kc7-rc3/kostenloses-ki-analysegesprach";
 
 export default function Termin() {
   const [, navigate] = useLocation();
@@ -19,16 +17,30 @@ export default function Termin() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    if (!CALENDLY_URL) return;
     // Calendly-Widget-Skript laden
     const script = document.createElement("script");
     script.src = "https://assets.calendly.com/assets/external/widget.js";
     script.async = true;
     document.body.appendChild(script);
+
+    // Nach erfolgreicher Buchung automatisch auf die Danke-Seite leiten
+    const onMessage = (e: MessageEvent) => {
+      if (
+        e.data?.event === "calendly.event_scheduled" ||
+        (typeof e.data === "object" &&
+          e.data?.event &&
+          String(e.data.event).indexOf("calendly.event_scheduled") === 0)
+      ) {
+        navigate("/danke");
+      }
+    };
+    window.addEventListener("message", onMessage);
+
     return () => {
+      window.removeEventListener("message", onMessage);
       document.body.removeChild(script);
     };
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen">
@@ -51,46 +63,31 @@ export default function Termin() {
 
           {/* Headline */}
           <h1 className="mx-auto max-w-2xl text-balance text-2xl font-extrabold leading-[1.15] md:text-4xl">
-            Wähle deinen <span className="text-gradient-gold">Wunschtermin</span>
+            Sichere dir dein kostenloses{" "}
+            <span className="text-gradient-gold">Analysegespräch</span>
           </h1>
-          <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground md:text-base">
-            Im kostenlosen Demo-Termin zeigen wir dir live, wie deine
-            Praxis-Webseite in unter 60 Minuten per KI-Agent entsteht.
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
+            Im kostenlosen Analysegespräch finden wir heraus, ob eine
+            Praxiswebseite in unter 60 Minuten per KI-Agent auch für dich möglich
+            ist – und ob du dich dadurch von kassenabhängig zu kassenunabhängig
+            entwickeln und dir einen Umsatz aufbauen kannst.
           </p>
-
-          {/* Mini-Trust-Punkte */}
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm font-medium text-foreground/90">
-            {["100 % kostenlos", "ca. 30 Minuten", "ohne Verpflichtung"].map(
-              (b) => (
-                <span key={b} className="inline-flex items-center gap-1.5">
-                  <Check className="h-4 w-4 text-gold" />
-                  {b}
-                </span>
-              ),
-            )}
-          </div>
 
           {/* Calendly-Embed */}
           <div className="mx-auto mt-8 max-w-3xl">
-            {CALENDLY_URL ? (
-              <div
-                className="calendly-inline-widget overflow-hidden rounded-2xl border border-border bg-card shadow-2xl"
-                data-url={CALENDLY_URL}
-                style={{ minWidth: "320px", height: "680px" }}
-              />
-            ) : (
-              <div className="rounded-2xl border border-dashed border-gold/40 bg-card p-10">
-                <Calendar className="mx-auto h-10 w-10 text-gold" />
-                <p className="mt-4 text-base font-semibold text-foreground">
-                  Calendly hier einbetten
-                </p>
-                <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-                  Trage in <code className="text-gold">Termin.tsx</code> deinen
-                  Calendly-Link bei <code className="text-gold">CALENDLY_URL</code>{" "}
-                  ein – der Kalender erscheint dann automatisch an dieser Stelle.
-                </p>
-              </div>
-            )}
+            <div
+              className="calendly-inline-widget overflow-hidden rounded-2xl border border-border bg-card shadow-2xl"
+              data-url={CALENDLY_URL}
+              style={{ minWidth: "320px", height: "700px" }}
+            />
+          </div>
+
+          {/* TÜV-Siegel */}
+          <div className="mt-10 flex flex-col items-center gap-2 sm:gap-3">
+            <DoubleSeals />
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">
+              Doppelt TÜV-zertifiziert
+            </p>
           </div>
 
           {/* Zurück-Link */}
@@ -99,12 +96,8 @@ export default function Termin() {
             className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" />
-            Zurück zum Video
+            Zurück zur Anleitung
           </button>
-
-          <div className="mt-8">
-            <TrustBadges />
-          </div>
         </section>
       </main>
 

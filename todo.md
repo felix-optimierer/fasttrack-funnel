@@ -52,3 +52,12 @@
 - [x] SEO: Title, Description, canonical, author, theme-color sauber gesetzt
 - [x] OpenGraph (url/site_name/locale/image+Maße) + Twitter-Card vollständig
 - [x] Auslieferung verifiziert (favicon.ico, png, manifest, og-image = HTTP 200)
+
+## Änderungen (Runde 4) – Termin & Danke
+- [x] TÜV-Logos (DoubleSeals) auf /termin eingebunden
+- [x] Calendly-Analysegespräch eingebettet (calendly.com/d/d3f9-kc7-rc3/kostenloses-ki-analysegesprach)
+- [x] Analysegespräch-Text auf /termin (kassenabhängig -> kassenunabhängig, Umsatz)
+- [x] Sub-Headline + "100 % kostenlos"/"ca. 30 Minuten"/"ohne Verpflichtung"-Häkchen entfernt
+- [x] /danke-Seite mit drei nächsten Schritten erstellt + TÜV-Siegel
+- [x] Auto-Weiterleitung auf /danke nach Calendly-Buchung (event_scheduled)
+- [x] Alte /vsl-Redirect-Route entfernt (Vsl.tsx existiert nicht mehr)
