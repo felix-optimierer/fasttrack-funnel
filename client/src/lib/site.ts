@@ -64,9 +64,9 @@ export const CASE_STUDIES: CaseStudy[] = [
     name: "Torben Möller",
     role: "Mobile Physiotherapie · Geesthacht",
     image: ASSETS.caseTorben,
-    result: "Eigene Webseite, über die laufend Patienten-Anfragen reinkommen.",
+    result: "Eigene KI Webseite, über die laufend Anfragen reinkommen.",
     quote:
-      "Mobile Physiotherapie mit eigener Webseite und App: Anfragen laufen direkt online rein – ohne Agentur und ohne Wartezimmer. Über 1.000 Patienten wurden bereits begleitet, bei 5,0 ★ auf Google.",
+      "Mobile Physiotherapie mit eigener Webseite und App: Anfragen laufen direkt online rein ohne Agentur und ohne Wartezimmer. Über 1.000 Patienten wurden bereits begleitet, bei 5,0 ★ auf Google.",
     metrics: [
       { label: "Google-Bewertung", value: "5,0 ★" },
       { label: "Patienten", value: "1.000+" },
