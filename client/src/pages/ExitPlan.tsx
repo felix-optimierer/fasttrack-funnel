@@ -1,7 +1,8 @@
-// EXIT-PLAN PAGE — Lead-Magnet-Landingpage nach Vorbild speedscaling.de/roas-5
-// Zweispaltiges Layout: Text links, Mockup rechts. Heller Hintergrund.
+// EXIT-PLAN PAGE — Lead-Magnet-Landingpage im PhysioFreiheit Navy-Gold-Design
+// Zweispaltiges Layout: Text links, Mockup rechts. Dunkler Hintergrund.
 import { useEffect } from "react";
 import { ASSETS } from "@/lib/site";
+import { Logo, GoldButton, DoubleSeals, Footer } from "@/components/funnel";
 import { Download, Check } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 
@@ -22,44 +23,49 @@ export default function ExitPlan() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white text-neutral-900">
+    <div
+      className="flex min-h-screen flex-col"
+      style={{
+        backgroundImage: `linear-gradient(rgba(6,15,28,0.88), rgba(6,15,28,0.95)), url(${ASSETS.heroBg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       {/* Header / Logo */}
-      <header className="container flex items-center py-5 md:py-6">
-        <img
-          src={ASSETS.logo}
-          alt="PhysioFreiheit"
-          className="h-8 w-auto md:h-10"
-        />
+      <header className="container flex items-center py-4 md:py-5">
+        <Logo />
       </header>
 
       {/* Main Content */}
-      <main className="container pb-16 pt-4 md:pt-8">
+      <main className="container flex flex-1 flex-col justify-center pb-12 pt-4 md:pt-6">
         <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-start lg:gap-16">
           {/* Left Column – Text */}
           <div className="flex-1 max-w-2xl">
             {/* Header Badge */}
-            <div className="mb-5 inline-block rounded-sm border border-neutral-800 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.15em] text-neutral-800 md:text-xs">
+            <div className="mb-5 inline-block rounded-sm border border-gold/50 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.15em] text-gold md:text-xs">
               Internes Dokument (inkl. Umsetzungs-Roadmap)
             </div>
 
             {/* Subheadline */}
-            <p className="mb-2 text-base font-medium italic text-amber-600 md:text-lg">
+            <p className="mb-2 font-display text-base font-medium italic text-gold md:text-lg">
               Der 5-Schritte Exit-Plan
             </p>
 
             {/* Headline */}
-            <h1 className="mb-5 text-2xl font-extrabold uppercase leading-[1.1] tracking-tight text-neutral-900 md:text-[2rem] lg:text-[2.4rem]">
+            <h1 className="mb-5 font-display text-2xl font-extrabold uppercase leading-[1.1] tracking-tight text-foreground md:text-[2rem] lg:text-[2.4rem]">
               Raus aus der Zeit-gegen-Geld-Falle
             </h1>
 
             {/* Body Copy */}
-            <p className="mb-7 max-w-xl text-sm leading-relaxed text-neutral-700 md:text-base">
+            <p className="mb-7 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
               Entdecke den exakten 5 Schritte-Plan, mit{" "}
-              <strong>100+ Praxis-Inhaber ihre Behandlungszeit reduziert haben</strong>{" "}
+              <strong className="text-foreground">
+                100+ Praxis-Inhaber ihre Behandlungszeit reduziert haben
+              </strong>{" "}
               bei mehr Gewinn auf dem Konto durch modernste KI-Agenten &amp;
               kassenunabhängige online Umsätze ohne noch mehr Patienten behandeln
               zu müssen.{" "}
-              <em>
+              <em className="text-foreground/80">
                 Inklusive: Der 5-Schritte-Plan von Kassensystem-Abhängigkeit zu
                 online Umsatzquellen + die konkrete Roadmap für deinen
                 "Patienten freien Freitag" + konkrete KI-Beispiele
@@ -67,8 +73,9 @@ export default function ExitPlan() {
             </p>
 
             {/* CTA Button */}
-            <button
-              className="mb-7 inline-flex items-center gap-3 rounded-full bg-emerald-500 px-8 py-4 text-sm font-bold uppercase tracking-wide text-white shadow-lg transition hover:bg-emerald-600 hover:shadow-xl active:scale-[0.97] md:text-base"
+            <GoldButton
+              glow
+              className="mb-7 w-auto px-8"
               onClick={() => {
                 // TODO: Lead-Erfassung / Download-Logik
                 window.alert("Download-Funktion wird noch verknüpft.");
@@ -76,20 +83,28 @@ export default function ExitPlan() {
             >
               <Download className="h-5 w-5" />
               Jetzt kostenlos herunterladen
-            </button>
+            </GoldButton>
 
             {/* Benefit Points */}
             <ul className="space-y-3">
               {BENEFITS.map((b, i) => (
                 <li
                   key={i}
-                  className="flex items-start gap-3 text-sm text-neutral-800 md:text-base"
+                  className="flex items-start gap-3 text-sm text-foreground/90 md:text-base"
                 >
-                  <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-neutral-700" />
+                  <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-gold" />
                   <span>{b}</span>
                 </li>
               ))}
             </ul>
+
+            {/* TÜV-Siegel */}
+            <div className="mt-8 flex flex-col items-start gap-2">
+              <DoubleSeals />
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                Doppelt TÜV-zertifiziert
+              </p>
+            </div>
           </div>
 
           {/* Right Column – Mockup */}
@@ -101,8 +116,8 @@ export default function ExitPlan() {
                 className="w-full max-w-md rounded-lg shadow-2xl lg:max-w-lg"
               />
             ) : (
-              <div className="flex h-80 w-full max-w-md items-center justify-center rounded-2xl border-2 border-dashed border-neutral-300 bg-neutral-50 lg:h-[28rem] lg:max-w-lg">
-                <p className="text-center text-sm text-neutral-400">
+              <div className="flex h-80 w-full max-w-md items-center justify-center rounded-2xl border-2 border-dashed border-gold/30 bg-card/50 backdrop-blur lg:h-[28rem] lg:max-w-lg">
+                <p className="text-center text-sm text-muted-foreground">
                   Mockup-Bild<br />
                   <span className="text-xs">(wird noch eingefügt)</span>
                 </p>
@@ -113,39 +128,7 @@ export default function ExitPlan() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-neutral-200 bg-neutral-100 py-6">
-        <div className="container flex flex-col items-center gap-3 text-center">
-          <p className="text-xs text-neutral-500">
-            © {new Date().getFullYear()} Bewegungsoptimierer GmbH – Alle Rechte
-            vorbehalten.
-          </p>
-          <div className="flex gap-5 text-xs text-neutral-500">
-            <a
-              href="https://physiofrei.de/impressum?utm_source=fasttrack-funnel&utm_medium=footer&utm_campaign=exit-plan"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-neutral-900"
-            >
-              Impressum
-            </a>
-            <a
-              href="https://physiofrei.de/datenschutz?utm_source=fasttrack-funnel&utm_medium=footer&utm_campaign=exit-plan"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-neutral-900"
-            >
-              Datenschutz
-            </a>
-          </div>
-          <p className="max-w-2xl text-[11px] leading-relaxed text-neutral-400">
-            Wir verwenden die im Rahmen der Anmeldung erhobene E-Mail-Adresse,
-            um dich per E-Mail über inhaltlich ähnliche eigene Angebote zu
-            informieren. Die Verarbeitung erfolgt auf Grundlage von § 7 Abs. 3
-            UWG. Du kannst der Verwendung deiner E-Mail-Adresse jederzeit mit
-            Wirkung für die Zukunft widersprechen.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
