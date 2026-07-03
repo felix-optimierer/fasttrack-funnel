@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { ASSETS } from "@/lib/site";
-import { Logo, GoldButton, DoubleSeals } from "@/components/funnel";
+import { Logo, GoldButton, DoubleSeals, Footer } from "@/components/funnel";
 import { Lock, ArrowRight, Check } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
@@ -153,6 +153,7 @@ export default function Home() {
           </p>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

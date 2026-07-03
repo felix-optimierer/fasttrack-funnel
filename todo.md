@@ -61,3 +61,7 @@
 - [x] /danke-Seite mit drei nächsten Schritten erstellt + TÜV-Siegel
 - [x] Auto-Weiterleitung auf /danke nach Calendly-Buchung (event_scheduled)
 - [x] Alte /vsl-Redirect-Route entfernt (Vsl.tsx existiert nicht mehr)
+
+## Änderungen (Runde 5) – Exit-Plan & Impressum
+- [x] Impressum/Datenschutz-Links auf allen Seiten auf physiofrei.de mit UTM-Parametern gesetzt
+- [x] Neue /exit-plan-Seite nach Vorbild speedscaling.de/roas-5 mit PhysioFreiheit-Design und gegebenen Texten (Mockup-Platzhalter bis Bild kommt)

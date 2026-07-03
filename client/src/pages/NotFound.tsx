@@ -1,6 +1,6 @@
 import { useLocation } from "wouter";
 import { ASSETS } from "@/lib/site";
-import { Logo, GoldButton } from "@/components/funnel";
+import { Logo, GoldButton, Footer } from "@/components/funnel";
 import { ArrowRight } from "lucide-react";
 
 export default function NotFound() {
@@ -29,6 +29,7 @@ export default function NotFound() {
         Zurück zum Fast-Track
         <ArrowRight className="h-5 w-5" />
       </GoldButton>
+      <Footer />
     </div>
   );
 }

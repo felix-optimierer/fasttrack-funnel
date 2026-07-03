@@ -9,6 +9,7 @@ import Anleitung from "./pages/Anleitung";
 import Termin from "./pages/Termin";
 import DankeTermin from "./pages/DankeTermin";
 import Admin from "./pages/Admin";
+import ExitPlan from "./pages/ExitPlan";
 import NotFound from "./pages/NotFound";
 
 function ScrollToTop() {
@@ -29,6 +30,7 @@ function Router() {
         <Route path="/termin" component={Termin} />
         <Route path="/danke-termin" component={DankeTermin} />
         <Route path="/admin" component={Admin} />
+        <Route path="/exit-plan" component={ExitPlan} />
         <Route component={NotFound} />
       </Switch>
     </>

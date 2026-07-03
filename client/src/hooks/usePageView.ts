@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { trpc } from "@/lib/trpc";
 
-type Page = "home" | "vsl" | "termin";
+type Page = "home" | "vsl" | "termin" | "exit-plan";
 
 const STORAGE_KEY = "ft_visitor_id";
 

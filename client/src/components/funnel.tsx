@@ -204,13 +204,17 @@ export function Footer() {
         </p>
         <div className="flex gap-5 text-xs text-muted-foreground">
           <a
-            href="https://bewegungsoptimierer.de/impressum"
+            href="https://physiofrei.de/impressum?utm_source=fasttrack-funnel&utm_medium=footer&utm_campaign=exit-plan"
+            target="_blank"
+            rel="noopener noreferrer"
             className="hover:text-gold"
           >
             Impressum
           </a>
           <a
-            href="https://bewegungsoptimierer.de/datenschutz"
+            href="https://physiofrei.de/datenschutz?utm_source=fasttrack-funnel&utm_medium=footer&utm_campaign=exit-plan"
+            target="_blank"
+            rel="noopener noreferrer"
             className="hover:text-gold"
           >
             Datenschutz
