@@ -7,7 +7,8 @@ import { Download, Check } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import { LeadPopup } from "@/components/LeadPopup";
 
-const MOCKUP_URL = "/manus-storage/ki-report-mockup-v2_cab156d3.webp";
+const BG_BLURRED_URL = "/manus-storage/ki-report-bg-blurred_a5104646.webp";
+const MOCKUP_SHARP_URL = "/manus-storage/ki-report-mockup-sharp_b06b329d.webp";
 
 const BENEFITS = [
   "7 getestete KI-Agenten Prompts speziell für Physiopraxen",
@@ -35,18 +36,28 @@ export default function KiReport() {
         }}
       />
 
-      {/* Right side mockup background – full height, like SpeedScaling */}
-      <div
-        className="absolute right-0 top-0 bottom-0 -z-10 hidden w-[45%] lg:block"
-        style={{
-          backgroundImage: `url(${MOCKUP_URL})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
+      {/* Right side: Blurred background image + sharp mockup overlay */}
+      <div className="absolute right-0 top-0 bottom-0 -z-10 hidden w-[45%] lg:block">
+        {/* Blurred background image */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url(${BG_BLURRED_URL})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
+        {/* Sharp book mockup centered on top */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <img
+            src={MOCKUP_SHARP_URL}
+            alt="KI-Report Mockup"
+            className="h-[75%] w-auto max-w-[80%] object-contain drop-shadow-2xl"
+          />
+        </div>
         {/* Gradient overlay to blend into navy on the left */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[rgba(6,15,28,1)] via-[rgba(6,15,28,0.7)] to-[rgba(6,15,28,0.15)]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[rgba(6,15,28,1)] via-[rgba(6,15,28,0.6)] to-[rgba(6,15,28,0.05)]" />
       </div>
 
       {/* Header / Logo */}
@@ -122,12 +133,12 @@ export default function KiReport() {
             </div>
           </div>
 
-          {/* Right Column – Mobile fallback (shows image on mobile) */}
+          {/* Right Column – Mobile fallback (shows sharp mockup on mobile) */}
           <div className="flex flex-1 items-center justify-center lg:hidden">
             <img
-              src={MOCKUP_URL}
+              src={MOCKUP_SHARP_URL}
               alt="KI-Report Vorschau"
-              className="w-full max-w-sm rounded-lg opacity-80"
+              className="w-full max-w-xs rounded-lg opacity-90"
             />
           </div>
         </div>

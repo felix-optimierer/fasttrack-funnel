@@ -71,3 +71,9 @@
 - [x] Popup-Formular auf /exit-plan und /ki-report: Name, E-Mail, WhatsApp (mit DE-Flagge), Checkbox, Validierung, X-Close, goldener Button
 - [x] /ki-report als Duplikat von /exit-plan mit neuen Texten (KI-Report 2026)
 - [x] Route /ki-report registrieren + Tracking ergänzen
+
+## Änderungen (Runde 7) – KI-Report Mockup-Bilder
+- [x] /ki-report rechte Seite: Blurred-Hintergrundbild + scharfes Buch-Mockup zentriert darüber (wie SpeedScaling-Referenz)
+- [x] Weißer Hintergrund bei beiden Bildern entfernt, als WebP hochgeladen
+- [x] Gradient-Overlay blendet links sauber in Navy über
+- [x] Mobile-Fallback zeigt scharfes Mockup direkt an
