@@ -43,17 +43,12 @@ export default function ExitPlan() {
           <div className="flex-1 max-w-2xl">
             {/* Header Badge */}
             <div className="mb-5 inline-block rounded-sm border border-gold/50 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.15em] text-gold md:text-xs">
-              Internes Dokument (inkl. Umsetzungs-Roadmap)
+              Interne Schritt für Schritt Anleitung
             </div>
-
-            {/* Subheadline */}
-            <p className="mb-2 font-display text-base font-medium italic text-gold md:text-lg">
-              Der 5-Schritte Exit-Plan
-            </p>
 
             {/* Headline */}
             <h1 className="mb-5 font-display text-2xl font-extrabold uppercase leading-[1.1] tracking-tight text-foreground md:text-[2rem] lg:text-[2.4rem]">
-              Raus aus der Zeit-gegen-Geld-Falle
+              Der 5-Schritte<br className="hidden md:inline" /> "Zeit-Gegen-Geld" Exit-Plan
             </h1>
 
             {/* Body Copy */}
