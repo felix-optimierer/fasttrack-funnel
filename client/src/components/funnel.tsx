@@ -221,6 +221,19 @@ export function Footer() {
           </a>
         </div>
         <p className="max-w-2xl text-[11px] leading-relaxed text-muted-foreground/70">
+          Wir verwenden die im Rahmen der Anmeldung zu unserem kostenlosen
+          Webinaren und Infomaterialien erhobene E‑Mail‑Adresse, um Sie per
+          E‑Mail über inhaltlich ähnliche eigene Angebote zu informieren,
+          insbesondere zu weiteren Terminen, Vertiefungen und ergänzenden
+          Leistungen in den Bereichen Coaching und digitale Beratung. Die
+          Verarbeitung erfolgt auf Grundlage von § 7 Abs. 3 UWG. Sie können
+          der Verwendung Ihrer E‑Mail‑Adresse zu Werbezwecken jederzeit mit
+          Wirkung für die Zukunft widersprechen, ohne dass hierfür andere als
+          die Übermittlungskosten nach den Basistarifen entstehen. Ihren
+          Widerspruch können Sie z.&nbsp;B. über den Abmeldelink in jeder E‑Mail
+          oder per E‑Mail an support@bewegungsoptimierer.de erklären.
+        </p>
+        <p className="max-w-2xl text-[11px] leading-relaxed text-muted-foreground/70">
           Diese Seite ist nicht Teil der Facebook-Website oder von Meta Platforms
           Inc. Ergebnisse sind individuell und keine Garantie.
         </p>
