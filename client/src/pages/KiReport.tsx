@@ -7,8 +7,7 @@ import { Download, Check } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import { LeadPopup } from "@/components/LeadPopup";
 
-// Mockup-Bild: Platzhalter bis echtes Bild übergeben wird
-const MOCKUP_URL = ""; // TODO: Echtes Mockup-Bild hier einfügen
+const MOCKUP_URL = "/manus-storage/ki-report-mockup-navy_77f05d49.webp";
 
 const BENEFITS = [
   "7 getestete KI-Agenten Prompts speziell für Physiopraxen",
@@ -25,21 +24,38 @@ export default function KiReport() {
   }, []);
 
   return (
-    <div
-      className="flex min-h-screen flex-col"
-      style={{
-        backgroundImage: `linear-gradient(rgba(6,15,28,0.88), rgba(6,15,28,0.95)), url(${ASSETS.heroBg})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
+    <div className="relative flex min-h-screen flex-col overflow-hidden">
+      {/* Background: Navy base */}
+      <div
+        className="absolute inset-0 -z-20"
+        style={{
+          backgroundImage: `linear-gradient(rgba(6,15,28,0.88), rgba(6,15,28,0.95)), url(${ASSETS.heroBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      />
+
+      {/* Right side mockup background – full height, like SpeedScaling */}
+      <div
+        className="absolute right-0 top-0 bottom-0 -z-10 hidden w-[45%] lg:block"
+        style={{
+          backgroundImage: `url(${MOCKUP_URL})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        {/* Gradient overlay to blend into navy on the left */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[rgba(6,15,28,1)] via-[rgba(6,15,28,0.7)] to-[rgba(6,15,28,0.15)]" />
+      </div>
+
       {/* Header / Logo */}
-      <header className="container flex items-center py-3">
+      <header className="container relative flex items-center py-3">
         <Logo />
       </header>
 
       {/* Main Content */}
-      <main className="container flex flex-1 flex-col justify-center pb-4 pt-2">
+      <main className="container relative flex flex-1 flex-col justify-center pb-4 pt-2">
         <div className="flex flex-col items-center gap-6 lg:flex-row lg:items-start lg:gap-10">
           {/* Left Column – Text (breiter) */}
           <div className="flex-[1.4] max-w-3xl">
@@ -106,22 +122,13 @@ export default function KiReport() {
             </div>
           </div>
 
-          {/* Right Column – Mockup */}
-          <div className="flex flex-1 items-center justify-center lg:justify-end">
-            {MOCKUP_URL ? (
-              <img
-                src={MOCKUP_URL}
-                alt="KI-Report Mockup"
-                className="w-full max-w-sm rounded-lg shadow-2xl lg:max-w-md"
-              />
-            ) : (
-              <div className="flex h-64 w-full max-w-sm items-center justify-center rounded-2xl border-2 border-dashed border-gold/30 bg-card/50 backdrop-blur lg:h-[22rem] lg:max-w-md">
-                <p className="text-center text-sm text-muted-foreground">
-                  Mockup-Bild<br />
-                  <span className="text-xs">(wird noch eingefügt)</span>
-                </p>
-              </div>
-            )}
+          {/* Right Column – Mobile fallback (shows image on mobile) */}
+          <div className="flex flex-1 items-center justify-center lg:hidden">
+            <img
+              src={MOCKUP_URL}
+              alt="KI-Report Vorschau"
+              className="w-full max-w-sm rounded-lg opacity-80"
+            />
           </div>
         </div>
       </main>
