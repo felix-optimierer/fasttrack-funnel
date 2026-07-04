@@ -65,3 +65,9 @@
 ## Änderungen (Runde 5) – Exit-Plan & Impressum
 - [x] Impressum/Datenschutz-Links auf allen Seiten auf physiofrei.de mit UTM-Parametern gesetzt
 - [x] Neue /exit-plan-Seite nach Vorbild speedscaling.de/roas-5 mit PhysioFreiheit-Design und gegebenen Texten (Mockup-Platzhalter bis Bild kommt)
+
+## Änderungen (Runde 6) – Exit-Plan Fix, KI-Report, Popup
+- [x] /exit-plan: Badge zurück auf "INTERNES DOKUMENT (INKL. UMSETZUNGS-ROADMAP)", Über-Headline "Interne Schritt für Schritt Anleitung" kursiv darüber
+- [x] Popup-Formular auf /exit-plan und /ki-report: Name, E-Mail, WhatsApp (mit DE-Flagge), Checkbox, Validierung, X-Close, goldener Button
+- [x] /ki-report als Duplikat von /exit-plan mit neuen Texten (KI-Report 2026)
+- [x] Route /ki-report registrieren + Tracking ergänzen

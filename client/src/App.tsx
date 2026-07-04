@@ -10,6 +10,7 @@ import Termin from "./pages/Termin";
 import DankeTermin from "./pages/DankeTermin";
 import Admin from "./pages/Admin";
 import ExitPlan from "./pages/ExitPlan";
+import KiReport from "./pages/KiReport";
 import NotFound from "./pages/NotFound";
 
 function ScrollToTop() {
@@ -31,6 +32,7 @@ function Router() {
         <Route path="/danke-termin" component={DankeTermin} />
         <Route path="/admin" component={Admin} />
         <Route path="/exit-plan" component={ExitPlan} />
+        <Route path="/ki-report" component={KiReport} />
         <Route component={NotFound} />
       </Switch>
     </>

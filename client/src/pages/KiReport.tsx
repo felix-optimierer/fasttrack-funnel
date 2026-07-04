@@ -1,5 +1,5 @@
-// EXIT-PLAN PAGE — Lead-Magnet-Landingpage im PhysioFreiheit Navy-Gold-Design
-// Zweispaltiges Layout: Text links, Mockup rechts. Dunkler Hintergrund.
+// KI-REPORT PAGE — Lead-Magnet-Landingpage im PhysioFreiheit Navy-Gold-Design
+// Duplikat von /exit-plan mit angepassten Texten (KI-Report 2026)
 import { useEffect, useState } from "react";
 import { ASSETS } from "@/lib/site";
 import { Logo, GoldButton, DoubleSeals, Footer } from "@/components/funnel";
@@ -11,13 +11,13 @@ import { LeadPopup } from "@/components/LeadPopup";
 const MOCKUP_URL = ""; // TODO: Echtes Mockup-Bild hier einfügen
 
 const BENEFITS = [
-  "Der 5-Schritte-Plan: Von Kassensystem-Abhängigkeit zum Hybrid-Modell",
-  "Wie du dir deinen \"Patienten freien Freitag\" sicherst",
-  "1:1 Praxis Analyse",
+  "7 getestete KI-Agenten Prompts speziell für Physiopraxen",
+  "Konkrete Tool Empfehlungen + 1:1 KI Praxis Analyse",
+  "Der digitale KI Mitarbeiter ohne Gehalt, Urlaub oder Krankheit",
 ];
 
-export default function ExitPlan() {
-  usePageView("exit-plan");
+export default function KiReport() {
+  usePageView("ki-report");
   const [popupOpen, setPopupOpen] = useState(false);
 
   useEffect(() => {
@@ -45,33 +45,32 @@ export default function ExitPlan() {
           <div className="flex-1 max-w-2xl">
             {/* Header Badge */}
             <div className="mb-3 inline-block rounded-sm border border-gold/50 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.15em] text-gold md:text-xs">
-              Internes Dokument (inkl. Umsetzungs-Roadmap)
+              Internes Dokument (inkl. KI-Agenten &amp; Prompts für Physiopraxen)
             </div>
 
             {/* Über-Headline */}
             <p className="mb-2 font-display text-base font-medium italic text-gold md:text-lg">
-              Interne Schritt für Schritt Anleitung
+              Von 60-Stunden-Wochen zum 3-Tage-Wochenende
             </p>
 
             {/* Headline */}
             <h1 className="mb-5 font-display text-2xl font-extrabold uppercase leading-[1.1] tracking-tight text-foreground md:text-[2rem] lg:text-[2.4rem]">
-              Der 5-Schritte<br className="hidden md:inline" /> "Zeit-Gegen-Geld" Exit-Plan
+              Der Physiopraxis<br className="hidden md:inline" /> KI-Report 2026
             </h1>
 
             {/* Body Copy */}
             <p className="mb-7 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
-              Entdecke den exakten 5 Schritte-Plan, mit dem{" "}
+              Entdecke die exakten KI-Strategien, die seit 2026 für moderne
+              Physiopraxen möglich sind, um{" "}
               <strong className="text-foreground">
-                100+ Praxis-Inhaber ihre Behandlungszeit reduziert haben
-              </strong>{" "}
-              bei mehr Gewinn auf dem Konto durch modernste KI-Agenten &amp;
-              kassenunabhängige online Umsätze ohne noch mehr Patienten behandeln
-              zu müssen.
+                kinderleicht ihren online Auftritt zu optimieren, ihre Webseite
+                neuzugestalten und einen Vollzeit KI Mitarbeiter zu gewinnen
+              </strong>
+              , alles mit einfacher Sprache ohne Technikkenntnisse.
               <br /><br />
               <em className="text-foreground/80">
-                Inklusive: Bewiesenem Weg von Kassenabhängigkeit zu online
-                Umsatzquellen + die konkrete Roadmap für deinen "Patienten
-                freien Freitag"
+                Inklusive: Den 5 häufigsten Fehlern &amp; echten Praxen als
+                Fallbeispiele
               </em>
             </p>
 
@@ -112,7 +111,7 @@ export default function ExitPlan() {
             {MOCKUP_URL ? (
               <img
                 src={MOCKUP_URL}
-                alt="Exit-Plan Mockup"
+                alt="KI-Report Mockup"
                 className="w-full max-w-md rounded-lg shadow-2xl lg:max-w-lg"
               />
             ) : (
@@ -134,9 +133,9 @@ export default function ExitPlan() {
       <LeadPopup
         open={popupOpen}
         onClose={() => setPopupOpen(false)}
-        headline="An wen dürfen wir den Exit-Plan senden?"
+        headline="An wen dürfen wir den KI-Report senden?"
         subtext="Die Inhalte kommen per WhatsApp – deswegen gib bitte deine WhatsApp Nummer ein (ohne 0)"
-        source="exit-plan"
+        source="ki-report"
       />
     </div>
   );
