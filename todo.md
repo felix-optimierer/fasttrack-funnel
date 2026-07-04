@@ -77,3 +77,7 @@
 - [x] Weißer Hintergrund bei beiden Bildern entfernt, als WebP hochgeladen
 - [x] Gradient-Overlay blendet links sauber in Navy über
 - [x] Mobile-Fallback zeigt scharfes Mockup direkt an
+- [x] /ki-report: Button schmaler (nicht volle Breite, von rechts kürzer)
+- [x] /ki-report: Headline umbrechen: "Der Physiopraxis" / "KI-Report 2026" (2 Zeilen)
+- [x] /ki-report: Sub-Headline darf mehrzeilig sein (nicht erzwungen einzeilig)
+- [x] /ki-report: Bild-System wie SpeedScaling: Blurred-Bild als Hintergrund rechts, scharfes Mockup zentriert darüber
