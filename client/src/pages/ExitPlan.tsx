@@ -34,32 +34,32 @@ export default function ExitPlan() {
       }}
     >
       {/* Header / Logo */}
-      <header className="container flex items-center py-4 md:py-5">
+      <header className="container flex items-center py-3">
         <Logo />
       </header>
 
       {/* Main Content */}
-      <main className="container flex flex-1 flex-col justify-center pb-12 pt-4 md:pt-6">
-        <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-start lg:gap-16">
-          {/* Left Column – Text */}
-          <div className="flex-1 max-w-2xl">
+      <main className="container flex flex-1 flex-col justify-center pb-4 pt-2">
+        <div className="flex flex-col items-center gap-6 lg:flex-row lg:items-start lg:gap-10">
+          {/* Left Column – Text (breiter) */}
+          <div className="flex-[1.4] max-w-3xl">
             {/* Header Badge */}
-            <div className="mb-3 inline-block rounded-sm border border-gold/50 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.15em] text-gold md:text-xs">
+            <div className="mb-2 inline-block rounded-sm border border-gold/50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-gold md:text-[11px]">
               Internes Dokument (inkl. Umsetzungs-Roadmap)
             </div>
 
             {/* Über-Headline */}
-            <p className="mb-2 font-display text-base font-medium italic text-gold md:text-lg">
+            <p className="mb-1 font-display text-sm font-medium italic text-gold md:text-base">
               Interne Schritt für Schritt Anleitung
             </p>
 
-            {/* Headline */}
-            <h1 className="mb-5 font-display text-2xl font-extrabold uppercase leading-[1.1] tracking-tight text-foreground md:text-[2rem] lg:text-[2.4rem]">
-              Der 5-Schritte<br className="hidden md:inline" /> "Zeit-Gegen-Geld" Exit-Plan
+            {/* Headline – max 2 Zeilen */}
+            <h1 className="mb-3 font-display text-lg font-extrabold uppercase leading-[1.1] tracking-tight text-foreground md:text-[1.5rem] lg:text-[1.65rem]">
+              Der 5-Schritte "Zeit-Gegen-Geld" Exit-Plan
             </h1>
 
             {/* Body Copy */}
-            <p className="mb-7 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
+            <p className="mb-4 text-[13px] leading-relaxed text-muted-foreground md:text-sm">
               Entdecke den exakten 5 Schritte-Plan, mit dem{" "}
               <strong className="text-foreground">
                 100+ Praxis-Inhaber ihre Behandlungszeit reduziert haben
@@ -67,41 +67,40 @@ export default function ExitPlan() {
               bei mehr Gewinn auf dem Konto durch modernste KI-Agenten &amp;
               kassenunabhängige online Umsätze ohne noch mehr Patienten behandeln
               zu müssen.
-              <br /><br />
-              <em className="text-foreground/80">
-                Inklusive: Bewiesenem Weg von Kassenabhängigkeit zu online
-                Umsatzquellen + die konkrete Roadmap für deinen "Patienten
-                freien Freitag"
-              </em>
+            </p>
+
+            {/* Inklusive – max 2 Zeilen */}
+            <p className="mb-4 text-[13px] italic text-foreground/80 md:text-sm">
+              Inklusive: Bewiesenem Weg von Kassenabhängigkeit zu online Umsatzquellen + die konkrete Roadmap für deinen "Patienten freien Freitag"
             </p>
 
             {/* CTA Button */}
             <GoldButton
               glow
-              className="mb-7 w-auto px-8"
+              className="mb-4 w-auto px-8"
               onClick={() => setPopupOpen(true)}
             >
               <Download className="h-5 w-5" />
               Jetzt kostenlos herunterladen
             </GoldButton>
 
-            {/* Benefit Points */}
-            <ul className="space-y-3">
+            {/* Benefit Points – einzeilig */}
+            <ul className="space-y-1.5">
               {BENEFITS.map((b, i) => (
                 <li
                   key={i}
-                  className="flex items-start gap-3 text-sm text-foreground/90 md:text-base"
+                  className="flex items-center gap-2 text-[13px] text-foreground/90 md:text-sm"
                 >
-                  <Check className="mt-0.5 h-5 w-5 flex-shrink-0 text-gold" />
-                  <span>{b}</span>
+                  <Check className="h-4 w-4 flex-shrink-0 text-gold" />
+                  <span className="whitespace-nowrap">{b}</span>
                 </li>
               ))}
             </ul>
 
             {/* TÜV-Siegel */}
-            <div className="mt-8 flex flex-col items-start gap-2">
+            <div className="mt-4 flex flex-col items-start gap-1.5">
               <DoubleSeals />
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Doppelt TÜV-zertifiziert
               </p>
             </div>
@@ -113,10 +112,10 @@ export default function ExitPlan() {
               <img
                 src={MOCKUP_URL}
                 alt="Exit-Plan Mockup"
-                className="w-full max-w-md rounded-lg shadow-2xl lg:max-w-lg"
+                className="w-full max-w-sm rounded-lg shadow-2xl lg:max-w-md"
               />
             ) : (
-              <div className="flex h-80 w-full max-w-md items-center justify-center rounded-2xl border-2 border-dashed border-gold/30 bg-card/50 backdrop-blur lg:h-[28rem] lg:max-w-lg">
+              <div className="flex h-64 w-full max-w-sm items-center justify-center rounded-2xl border-2 border-dashed border-gold/30 bg-card/50 backdrop-blur lg:h-[22rem] lg:max-w-md">
                 <p className="text-center text-sm text-muted-foreground">
                   Mockup-Bild<br />
                   <span className="text-xs">(wird noch eingefügt)</span>
