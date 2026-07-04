@@ -64,7 +64,8 @@ export default function ExitPlan() {
               </strong>{" "}
               bei mehr Gewinn auf dem Konto durch modernste KI-Agenten &amp;
               kassenunabhängige online Umsätze ohne noch mehr Patienten behandeln
-              zu müssen.{" "}
+              zu müssen.
+              <br /><br />
               <em className="text-foreground/80">
                 Inklusive: Der 5-Schritte-Plan von Kassensystem-Abhängigkeit zu
                 online Umsatzquellen + die konkrete Roadmap für deinen
