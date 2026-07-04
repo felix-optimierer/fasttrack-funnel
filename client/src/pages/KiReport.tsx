@@ -7,7 +7,7 @@ import { Download, Check } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import { LeadPopup } from "@/components/LeadPopup";
 
-const BG_BLURRED_URL = "/manus-storage/ki-report-bg-original_ce4dc247.webp";
+const BG_BLURRED_URL = "/manus-storage/ki-report-bg-nobg_43d60ea2.webp";
 const MOCKUP_SHARP_URL = "/manus-storage/ki-report-mockup-sharp_b06b329d.webp";
 
 const BENEFITS = [

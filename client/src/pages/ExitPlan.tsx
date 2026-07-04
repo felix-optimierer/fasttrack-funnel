@@ -8,7 +8,7 @@ import { usePageView } from "@/hooks/usePageView";
 import { LeadPopup } from "@/components/LeadPopup";
 
 // Gleicher Blurred-Hintergrund wie KI-Report (Original-WebP)
-const BG_BLURRED_URL = "/manus-storage/ki-report-bg-original_ce4dc247.webp";
+const BG_BLURRED_URL = "/manus-storage/ki-report-bg-nobg_43d60ea2.webp";
 // Mockup-Bild: Platzhalter bis echtes Bild übergeben wird
 const MOCKUP_URL = ""; // TODO: Echtes Exit-Plan-Mockup-Bild hier einfügen
 
