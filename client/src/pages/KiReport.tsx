@@ -7,7 +7,7 @@ import { Download, Check } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import { LeadPopup } from "@/components/LeadPopup";
 
-const MOCKUP_URL = "/manus-storage/ki-report-mockup-navy_77f05d49.webp";
+const MOCKUP_URL = "/manus-storage/ki-report-mockup-v2_cab156d3.webp";
 
 const BENEFITS = [
   "7 getestete KI-Agenten Prompts speziell für Physiopraxen",
@@ -24,7 +24,7 @@ export default function KiReport() {
   }, []);
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden">
+    <div className="relative flex flex-col overflow-hidden">
       {/* Background: Navy base */}
       <div
         className="absolute inset-0 -z-20"
@@ -54,28 +54,28 @@ export default function KiReport() {
         <Logo />
       </header>
 
-      {/* Main Content */}
-      <main className="container relative flex flex-1 flex-col justify-center pb-4 pt-2">
+      {/* Main Content – fills viewport, footer scrolls below */}
+      <main className="container relative flex min-h-[calc(100vh-3.5rem)] flex-col justify-center pb-8 pt-4">
         <div className="flex flex-col items-center gap-6 lg:flex-row lg:items-start lg:gap-10">
           {/* Left Column – Text (breiter) */}
           <div className="flex-[1.4] max-w-3xl">
             {/* Header Badge */}
-            <div className="mb-2 inline-block rounded-sm border border-gold/50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-gold md:text-[11px]">
+            <div className="mb-3 inline-block rounded-sm border border-gold/50 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.15em] text-gold md:text-xs">
               Internes Dokument (inkl. KI-Agenten &amp; Prompts für Physiopraxen)
             </div>
 
             {/* Über-Headline */}
-            <p className="mb-1 font-display text-sm font-medium italic text-gold md:text-base">
+            <p className="mb-2 font-display text-sm font-medium italic text-gold md:text-base">
               Von 60-Stunden-Wochen zum 3-Tage-Wochenende
             </p>
 
             {/* Headline – max 2 Zeilen */}
-            <h1 className="mb-3 font-display text-xl font-extrabold uppercase leading-[1.1] tracking-tight text-foreground md:text-[1.7rem] lg:text-[2.1rem]">
+            <h1 className="mb-4 font-display text-2xl font-extrabold uppercase leading-[1.1] tracking-tight text-foreground md:text-[2rem] lg:text-[2.4rem]">
               Der Physiopraxis KI-Report 2026
             </h1>
 
             {/* Body Copy */}
-            <p className="mb-4 text-[13px] leading-relaxed text-muted-foreground md:text-sm">
+            <p className="mb-5 text-sm leading-relaxed text-muted-foreground md:text-base">
               Entdecke die exakten KI-Strategien, die seit 2026 für moderne
               Physiopraxen möglich sind, um{" "}
               <strong className="text-foreground">
@@ -86,14 +86,14 @@ export default function KiReport() {
             </p>
 
             {/* Inklusive – max 2 Zeilen */}
-            <p className="mb-4 text-[13px] italic text-foreground/80 md:text-sm">
+            <p className="mb-5 text-sm italic text-foreground/80 md:text-base">
               Inklusive: Den 5 häufigsten Fehlern &amp; echten Praxen als Fallbeispiele
             </p>
 
             {/* CTA Button */}
             <GoldButton
               glow
-              className="mb-4 w-auto px-8"
+              className="mb-5 w-auto px-10"
               onClick={() => setPopupOpen(true)}
             >
               <Download className="h-5 w-5" />
@@ -101,11 +101,11 @@ export default function KiReport() {
             </GoldButton>
 
             {/* Benefit Points – einzeilig */}
-            <ul className="space-y-1.5">
+            <ul className="space-y-2">
               {BENEFITS.map((b, i) => (
                 <li
                   key={i}
-                  className="flex items-center gap-2 text-[13px] text-foreground/90 md:text-sm"
+                  className="flex items-center gap-2.5 text-sm text-foreground/90 md:text-base"
                 >
                   <Check className="h-4 w-4 flex-shrink-0 text-gold" />
                   <span className="whitespace-nowrap">{b}</span>
@@ -114,7 +114,7 @@ export default function KiReport() {
             </ul>
 
             {/* TÜV-Siegel */}
-            <div className="mt-4 flex flex-col items-start gap-1.5">
+            <div className="mt-6 flex flex-col items-start gap-2">
               <DoubleSeals />
               <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Doppelt TÜV-zertifiziert
