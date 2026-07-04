@@ -85,3 +85,6 @@
 - [x] /ki-report: Mockup sauber zentriert über dem Blurred-Hintergrund
 - [x] /ki-report Mobile: Reihenfolge = Text → Button → TÜV-Logos → Mockup → Häkchen
 - [x] /ki-report Mobile: Hintergrund über die ganze Seite (wie SpeedScaling mobil)
+- [x] /ki-report: Badge-Kasten mobil fixen (kein Overflow nach rechts)
+- [x] /ki-report: Original-Bild (LeadmagnetKIReportMockupsBlurredweniger.png) direkt als WebP konvertieren OHNE Bearbeitung als Hintergrund nutzen
+- [x] /exit-plan: Gleiches SpeedScaling-Layout-System anwenden (Fullscreen-BG + Mobile-Reihenfolge)

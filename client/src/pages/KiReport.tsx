@@ -7,7 +7,7 @@ import { Download, Check } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import { LeadPopup } from "@/components/LeadPopup";
 
-const BG_BLURRED_URL = "/manus-storage/ki-report-bg-blurred_a5104646.webp";
+const BG_BLURRED_URL = "/manus-storage/ki-report-bg-original_ce4dc247.webp";
 const MOCKUP_SHARP_URL = "/manus-storage/ki-report-mockup-sharp_b06b329d.webp";
 
 const BENEFITS = [
@@ -64,8 +64,8 @@ export default function KiReport() {
         <div className="flex flex-col lg:flex-row lg:items-center lg:gap-8">
           {/* === Left Column: Text content (limited width) === */}
           <div className="max-w-lg lg:max-w-xl lg:flex-[1.3]">
-            {/* Header Badge */}
-            <div className="mb-3 inline-block whitespace-nowrap rounded-sm border border-gold/50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-gold md:text-[11px]">
+            {/* Header Badge – kein whitespace-nowrap damit es auf Mobile umbricht */}
+            <div className="mb-3 inline-block rounded-sm border border-gold/50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-gold md:text-[11px] md:whitespace-nowrap">
               Internes Dokument (inkl. KI-Agenten &amp; Prompts für Physiopraxen)
             </div>
 
