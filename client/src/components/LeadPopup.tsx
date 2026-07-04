@@ -204,7 +204,7 @@ export function LeadPopup({ open, onClose, headline, subtext, source }: LeadPopu
                     className="mt-0.5 h-5 w-5 rounded border-neutral-300 text-gold accent-gold"
                   />
                   <span className="text-sm text-neutral-700">
-                    Ja, ich möchte von Physio Freiheit mit relevanten Infos per WhatsApp kontaktiert werden.
+                    Ja, ich möchte von der Bewegungsoptimierer GmbH gelegentlich mit relevanten Infos per WhatsApp kontaktiert werden.
                   </span>
                 </label>
                 {errors.consent && <p className="mt-1 text-xs font-medium text-red-500">{errors.consent}</p>}
