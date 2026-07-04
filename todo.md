@@ -81,3 +81,7 @@
 - [x] /ki-report: Headline umbrechen: "Der Physiopraxis" / "KI-Report 2026" (2 Zeilen)
 - [x] /ki-report: Sub-Headline darf mehrzeilig sein (nicht erzwungen einzeilig)
 - [x] /ki-report: Bild-System wie SpeedScaling: Blurred-Bild als Hintergrund rechts, scharfes Mockup zentriert darüber
+- [x] /ki-report: Blurred-Bild als Fullscreen-Hintergrund (über ganze Seite, wie SpeedScaling mobil)
+- [x] /ki-report: Mockup sauber zentriert über dem Blurred-Hintergrund
+- [x] /ki-report Mobile: Reihenfolge = Text → Button → TÜV-Logos → Mockup → Häkchen
+- [x] /ki-report Mobile: Hintergrund über die ganze Seite (wie SpeedScaling mobil)
