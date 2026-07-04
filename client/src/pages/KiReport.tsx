@@ -7,7 +7,7 @@ import { Download, Check } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import { LeadPopup } from "@/components/LeadPopup";
 
-const BG_BLURRED_URL = "/manus-storage/ki-report-bg-nobg_43d60ea2.webp";
+const BG_BLURRED_URL = "/manus-storage/ki-report-bg-final_eaf43965.webp";
 const MOCKUP_SHARP_URL = "/manus-storage/ki-report-mockup-sharp_b06b329d.webp";
 
 const BENEFITS = [
@@ -29,12 +29,12 @@ export default function KiReport() {
       {/* === FULLSCREEN BACKGROUND: Blurred image covering entire section === */}
       {/* Like SpeedScaling: absolute, inset 0, z-index -1, covers entire page */}
       <div className="absolute inset-0 -z-10">
-        {/* Blurred collage image as full background */}
+        {/* Collage image as background – nicht überdimensioniert, rechts positioniert */}
         <img
           src={BG_BLURRED_URL}
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute right-0 top-1/2 h-auto max-h-full w-auto max-w-[70%] -translate-y-1/2 object-contain lg:max-w-[55%]"
         />
         {/* Desktop gradient: Navy fades from left (protects text) to transparent right (shows image) */}
         <div

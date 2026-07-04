@@ -8,7 +8,7 @@ import { usePageView } from "@/hooks/usePageView";
 import { LeadPopup } from "@/components/LeadPopup";
 
 // Gleicher Blurred-Hintergrund wie KI-Report (Original-WebP)
-const BG_BLURRED_URL = "/manus-storage/ki-report-bg-nobg_43d60ea2.webp";
+const BG_BLURRED_URL = "/manus-storage/ki-report-bg-final_eaf43965.webp";
 // Mockup-Bild: Platzhalter bis echtes Bild übergeben wird
 const MOCKUP_URL = ""; // TODO: Echtes Exit-Plan-Mockup-Bild hier einfügen
 
@@ -30,12 +30,12 @@ export default function ExitPlan() {
     <div className="relative flex flex-col overflow-hidden">
       {/* === FULLSCREEN BACKGROUND: Blurred image covering entire section === */}
       <div className="absolute inset-0 -z-10">
-        {/* Blurred collage image as full background */}
+        {/* Collage image as background – nicht überdimensioniert, rechts positioniert */}
         <img
           src={BG_BLURRED_URL}
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute right-0 top-1/2 h-auto max-h-full w-auto max-w-[70%] -translate-y-1/2 object-contain lg:max-w-[55%]"
         />
         {/* Desktop gradient: Navy fades from left (protects text) to transparent right (shows image) */}
         <div
