@@ -58,7 +58,7 @@ export default function ExitPlan() {
 
             {/* Body Copy */}
             <p className="mb-7 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
-              Entdecke den exakten 5 Schritte-Plan, mit{" "}
+              Entdecke den exakten 5 Schritte-Plan, mit dem{" "}
               <strong className="text-foreground">
                 100+ Praxis-Inhaber ihre Behandlungszeit reduziert haben
               </strong>{" "}
@@ -67,9 +67,9 @@ export default function ExitPlan() {
               zu müssen.
               <br /><br />
               <em className="text-foreground/80">
-                Inklusive: Der 5-Schritte-Plan von Kassensystem-Abhängigkeit zu
-                online Umsatzquellen + die konkrete Roadmap für deinen
-                "Patienten freien Freitag" + konkrete KI-Beispiele
+                Inklusive: Bewiesenem Weg von Kassenabhängigkeit zu online
+                Umsatzquellen + die konkrete Roadmap für deinen "Patienten
+                freien Freitag"
               </em>
             </p>
 
