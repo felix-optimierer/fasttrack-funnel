@@ -30,12 +30,12 @@ export default function ExitPlan() {
     <div className="relative flex flex-col overflow-hidden">
       {/* === FULLSCREEN BACKGROUND: Blurred image covering entire section === */}
       <div className="absolute inset-0 -z-10">
-        {/* Collage image as background – nicht überdimensioniert, rechts positioniert */}
+        {/* Collage image as full background */}
         <img
           src={BG_BLURRED_URL}
           alt=""
           aria-hidden="true"
-          className="absolute right-0 top-1/2 h-auto max-h-full w-auto max-w-[70%] -translate-y-1/2 object-contain lg:max-w-[55%]"
+          className="absolute inset-0 h-full w-full object-cover"
         />
         {/* Desktop gradient: Navy fades from left (protects text) to transparent right (shows image) */}
         <div
