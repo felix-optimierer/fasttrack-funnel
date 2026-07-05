@@ -1,4 +1,4 @@
-// DANKE-TERMIN PAGE — Bestätigungsseite nach gebuchtem Analysegespräch.
+// DANKE-TERMIN PAGE — Bestätigungsseite nach gebuchter Praxisanalyse.
 import { useEffect } from "react";
 import { ASSETS } from "@/lib/site";
 import { Logo, DoubleSeals, Footer } from "@/components/funnel";
@@ -18,7 +18,7 @@ const STEPS = [
   {
     icon: Video,
     title: "3. Auf das Gespräch vorbereiten",
-    text: "Überlege dir kurz, wo du aktuell stehst und was du mit deiner Praxis erreichen willst. So holen wir im Analysegespräch das Maximum für dich heraus.",
+    text: "Überlege dir kurz, wo du aktuell stehst und was du mit deiner Praxis erreichen willst. So holen wir in der Praxisanalyse das Maximum für dich heraus.",
   },
 ];
 
@@ -51,8 +51,8 @@ export default function DankeTermin() {
             Dein Termin ist <span className="text-gradient-gold">reserviert!</span>
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
-            Stark, dass du den ersten Schritt gemacht hast. Damit dein
-            kostenloses Analysegespräch ein voller Erfolg wird, sind das deine
+            Stark, dass du den ersten Schritt gemacht hast. Damit deine
+            kostenlose Praxisanalyse ein voller Erfolg wird, sind das deine
             nächsten drei Schritte:
           </p>
 

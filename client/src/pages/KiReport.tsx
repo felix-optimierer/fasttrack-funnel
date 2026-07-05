@@ -137,7 +137,7 @@ export default function KiReport() {
 
             {/* === MOBILE: Mockup nach TÜV – GRÖSSER + klickbar === */}
             <div
-              className="mb-5 flex cursor-pointer items-center justify-center lg:hidden"
+              className="mb-2 flex cursor-pointer items-center justify-center lg:hidden"
               onClick={() => setPopupOpen(true)}
             >
               <img

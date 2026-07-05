@@ -6,7 +6,6 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Anleitung from "./pages/Anleitung";
-import Termin from "./pages/Termin";
 import WebseiteTermin from "./pages/WebseiteTermin";
 import KiReportTermin from "./pages/KiReportTermin";
 import ExitPlanTermin from "./pages/ExitPlanTermin";
@@ -14,6 +13,7 @@ import DankeTermin from "./pages/DankeTermin";
 import Admin from "./pages/Admin";
 import ExitPlan from "./pages/ExitPlan";
 import KiReport from "./pages/KiReport";
+import Traumwebseite from "./pages/Traumwebseite";
 import NotFound from "./pages/NotFound";
 
 function ScrollToTop() {
@@ -31,7 +31,6 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/anleitung" component={Anleitung} />
-        <Route path="/termin" component={Termin} />
         <Route path="/webseite-termin" component={WebseiteTermin} />
         <Route path="/ki-report-termin" component={KiReportTermin} />
         <Route path="/exit-plan-termin" component={ExitPlanTermin} />
@@ -39,6 +38,7 @@ function Router() {
         <Route path="/admin" component={Admin} />
         <Route path="/exit-plan" component={ExitPlan} />
         <Route path="/ki-report" component={KiReport} />
+        <Route path="/traumwebseite" component={Traumwebseite} />
         <Route component={NotFound} />
       </Switch>
     </>

@@ -97,3 +97,12 @@
 - [x] Nach Opt-in auf /ki-report → Weiterleitung zu /ki-report-termin
 - [x] Nach Opt-in auf /exit-plan → Weiterleitung zu /exit-plan-termin
 - [x] Alle neuen Routen in App.tsx registrieren
+
+## Änderungen (Runde 9) – Hauptseite als Übersicht + Cleanup
+- [x] /danke-termin: "Analysegespräch" → "Praxisanalyse" (grammatikalisch korrekt)
+- [x] /termin komplett löschen (Route + Datei Termin.tsx)
+- [x] Aktuelle Hauptseite (/) duplizieren auf /traumwebseite
+- [x] Neue Hauptseite (/): Headline "Sichere dir unsere kostenlosen Inhalte", 3 Container (Traumwebseite, KI-Report, Exit-Plan) mit Beschreibung + Mockup + CTA-Button, TÜV-Logos, physiofreiheit.de-Link
+- [x] Popup mobil: Trust-Hinweise (Daten sicher + SSL) einzeilig machen
+- [x] Popup mobil: X-Button über der Headline mit eigenem Abstand (nicht auf der Headline)
+- [x] /ki-report + /exit-plan Mobile: Abstand unter Mockup reduziert (mb-5 → mb-2)

@@ -95,7 +95,7 @@ export const appRouter = router({
     pageView: publicProcedure
       .input(
         z.object({
-          page: z.enum(["home", "vsl", "termin", "webseite-termin", "ki-report-termin", "exit-plan-termin", "exit-plan", "ki-report"]),
+          page: z.enum(["home", "vsl", "termin", "webseite-termin", "ki-report-termin", "exit-plan-termin", "exit-plan", "ki-report", "traumwebseite"]),
           visitorId: z.string().max(64).optional(),
         }),
       )

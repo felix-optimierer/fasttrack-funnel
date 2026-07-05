@@ -125,15 +125,17 @@ export function LeadPopup({ open, onClose, headline, subtext, source, redirectTo
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
       onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
     >
-      <div className="relative w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl sm:p-8 animate-in fade-in zoom-in-95 duration-200">
-        {/* X-Close */}
-        <button
-          onClick={handleClose}
-          className="absolute right-4 top-4 rounded-full p-1.5 text-neutral-400 transition hover:bg-neutral-100 hover:text-neutral-700"
-          aria-label="Schließen"
-        >
-          <X className="h-5 w-5" />
-        </button>
+      <div className="relative w-full max-w-lg rounded-2xl bg-white p-5 pt-3 shadow-2xl sm:p-8 sm:pt-4 animate-in fade-in zoom-in-95 duration-200">
+        {/* X-Close – eigene Zeile über der Headline */}
+        <div className="mb-2 flex justify-end">
+          <button
+            onClick={handleClose}
+            className="rounded-full p-1.5 text-neutral-400 transition hover:bg-neutral-100 hover:text-neutral-700"
+            aria-label="Schließen"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
 
         {submitted ? (
           <div className="flex flex-col items-center gap-4 py-8 text-center">
@@ -230,12 +232,12 @@ export function LeadPopup({ open, onClose, headline, subtext, source, redirectTo
                 {leadMutation.isPending ? "Wird gesendet..." : "Jetzt kostenlos herunterladen"}
               </GoldButton>
 
-              {/* Trust-Hinweise */}
-              <div className="flex items-center justify-center gap-4 pt-2 text-xs text-neutral-500">
-                <span className="flex items-center gap-1">
+              {/* Trust-Hinweise – immer einzeilig */}
+              <div className="flex items-center justify-center gap-3 whitespace-nowrap pt-2 text-[11px] text-neutral-500 sm:text-xs">
+                <span className="inline-flex items-center gap-1">
                   🔒 Deine Daten sind sicher
                 </span>
-                <span className="flex items-center gap-1">
+                <span className="inline-flex items-center gap-1">
                   🛡️ SSL verschlüsselt
                 </span>
               </div>
