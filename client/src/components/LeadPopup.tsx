@@ -220,6 +220,16 @@ export function LeadPopup({ open, onClose, headline, subtext, source }: LeadPopu
                 <Download className="h-5 w-5" />
                 {leadMutation.isPending ? "Wird gesendet..." : "Jetzt kostenlos herunterladen"}
               </GoldButton>
+
+              {/* Trust-Hinweise */}
+              <div className="flex items-center justify-center gap-4 pt-2 text-xs text-neutral-500">
+                <span className="flex items-center gap-1">
+                  🔒 Deine Daten sind sicher
+                </span>
+                <span className="flex items-center gap-1">
+                  🛡️ SSL verschlüsselt
+                </span>
+              </div>
             </form>
           </>
         )}
