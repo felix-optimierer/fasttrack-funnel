@@ -67,10 +67,9 @@ export default function Termin() {
             <span className="text-gradient-gold">Analysegespräch</span>
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base">
-            Im kostenlosen Analysegespräch finden wir heraus, ob eine
+            In der kostenlosen Praxisanalyse finden wir heraus, ob eine
             Praxiswebseite in unter 60 Minuten per KI-Agent auch für dich möglich
-            ist – und ob du dich dadurch von kassenabhängig zu kassenunabhängig
-            entwickeln und dir einen Umsatz aufbauen kannst.
+            ist.
           </p>
 
           {/* Calendly-Embed */}
