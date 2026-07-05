@@ -1,6 +1,6 @@
 // EXIT-PLAN PAGE — Lead-Magnet-Landingpage im PhysioFreiheit Navy-Gold-Design
 // Layout wie SpeedScaling/KI-Report: Blurred-Bild als Fullscreen-Hintergrund, Mockup zentriert darüber
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ASSETS } from "@/lib/site";
 import { Logo, GoldButton, DoubleSeals, Footer } from "@/components/funnel";
 import { Download, Check } from "lucide-react";
@@ -19,10 +19,30 @@ const BENEFITS = [
 export default function ExitPlan() {
   usePageView("exit-plan");
   const [popupOpen, setPopupOpen] = useState(false);
+  const exitIntentFired = useRef(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Exit-Intent: Popup öffnen wenn Maus den Viewport nach oben verlässt (einmal pro Session)
+  useEffect(() => {
+    const SESSION_KEY = "exit-plan-exit-intent-fired";
+    if (sessionStorage.getItem(SESSION_KEY)) {
+      exitIntentFired.current = true;
+    }
+
+    function handleMouseLeave(e: MouseEvent) {
+      if (e.clientY <= 0 && !exitIntentFired.current && !popupOpen) {
+        exitIntentFired.current = true;
+        sessionStorage.setItem(SESSION_KEY, "true");
+        setPopupOpen(true);
+      }
+    }
+
+    document.addEventListener("mouseleave", handleMouseLeave);
+    return () => document.removeEventListener("mouseleave", handleMouseLeave);
+  }, [popupOpen]);
 
   return (
     <div className="relative flex flex-col overflow-hidden">
@@ -63,18 +83,18 @@ export default function ExitPlan() {
         <div className="flex flex-col lg:flex-row lg:items-center lg:gap-8">
           {/* === Left Column: Text content (limited width) === */}
           <div className="max-w-lg lg:max-w-xl lg:flex-[1.3]">
-            {/* Header Badge – kein whitespace-nowrap damit es auf Mobile umbricht */}
+            {/* Header Badge */}
             <div className="mb-3 inline-block rounded-sm border border-gold/50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-gold md:text-[11px] md:whitespace-nowrap">
               Internes Dokument (inkl. Umsetzungs-Roadmap)
             </div>
 
-            {/* Über-Headline (Sub-Headline – mehrzeilig erlaubt) */}
+            {/* Über-Headline (Sub-Headline) */}
             <p className="mb-2 font-display text-sm font-medium italic text-gold md:text-base">
               Interne Schritt für Schritt Anleitung
             </p>
 
-            {/* Headline */}
-            <h1 className="mb-4 font-display text-2xl font-extrabold uppercase leading-[1.1] tracking-tight text-foreground md:text-[2rem] lg:text-[2.4rem]">
+            {/* Headline – GRÖSSER */}
+            <h1 className="mb-4 font-display text-3xl font-extrabold uppercase leading-[1.1] tracking-tight text-foreground md:text-[2.5rem] lg:text-[3rem]">
               Der 5-Schritte
               <br />
               "Zeit-Gegen-Geld" Exit-Plan
@@ -91,14 +111,14 @@ export default function ExitPlan() {
               zu müssen.
             </p>
 
-            {/* Inklusive – mehrzeilig */}
+            {/* Inklusive */}
             <p className="mb-4 text-sm italic text-foreground/80 md:text-base">
               Inklusive: Bewiesenem Weg von Kassenabhängigkeit zu online
               Umsatzquellen + die konkrete Roadmap für deinen "Patienten freien
               Freitag"
             </p>
 
-            {/* CTA Button – schmaler */}
+            {/* CTA Button */}
             <GoldButton
               glow
               className="mb-4 w-fit px-8"
@@ -116,16 +136,17 @@ export default function ExitPlan() {
               </p>
             </div>
 
-            {/* === MOBILE: Mockup nach TÜV === */}
-            {MOCKUP_URL && (
-              <div className="mb-5 flex items-center justify-center lg:hidden">
-                <img
-                  src={MOCKUP_URL}
-                  alt="Exit-Plan Vorschau"
-                  className="w-full max-w-[280px] object-contain drop-shadow-[0_15px_40px_rgba(0,0,0,0.5)]"
-                />
-              </div>
-            )}
+            {/* === MOBILE: Mockup nach TÜV – GRÖSSER + klickbar === */}
+            <div
+              className="mb-5 flex cursor-pointer items-center justify-center lg:hidden"
+              onClick={() => setPopupOpen(true)}
+            >
+              <img
+                src={MOCKUP_URL}
+                alt="Exit-Plan Vorschau"
+                className="w-full max-w-[340px] object-contain drop-shadow-[0_15px_40px_rgba(0,0,0,0.5)] transition-transform duration-200 hover:scale-[1.02]"
+              />
+            </div>
 
             {/* Benefit Points (auf Mobile NACH dem Mockup) */}
             <ul className="space-y-2">
@@ -149,22 +170,16 @@ export default function ExitPlan() {
             </div>
           </div>
 
-          {/* === Right Column: Mockup (Desktop only) === */}
-          <div className="hidden flex-1 items-center justify-center lg:flex">
-            {MOCKUP_URL ? (
-              <img
-                src={MOCKUP_URL}
-                alt="Exit-Plan Mockup"
-                className="w-full max-w-md object-contain drop-shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
-              />
-            ) : (
-              <div className="flex h-[22rem] w-full max-w-md items-center justify-center rounded-2xl border-2 border-dashed border-gold/30 bg-card/50 backdrop-blur">
-                <p className="text-center text-sm text-muted-foreground">
-                  Mockup-Bild<br />
-                  <span className="text-xs">(wird noch eingefügt)</span>
-                </p>
-              </div>
-            )}
+          {/* === Right Column: Mockup (Desktop only) – GRÖSSER + klickbar === */}
+          <div
+            className="hidden flex-1 cursor-pointer items-center justify-center lg:flex"
+            onClick={() => setPopupOpen(true)}
+          >
+            <img
+              src={MOCKUP_URL}
+              alt="Exit-Plan Mockup"
+              className="w-full max-w-lg object-contain drop-shadow-[0_20px_60px_rgba(0,0,0,0.5)] transition-transform duration-200 hover:scale-[1.02]"
+            />
           </div>
         </div>
       </main>
