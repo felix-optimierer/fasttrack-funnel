@@ -5,14 +5,23 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import {
+  CHANNELS,
+  fireChannelWebhook,
   fireWebhook,
+  getAllWebhooks,
+  getChannelSeries,
   getDailySeries,
+  getFunnelStatsByChannel,
   getSetting,
   getStats,
+  getWebhookByChannel,
+  insertAppointment,
   insertLead,
   insertPageView,
   listLeads,
+  setAdSpend,
   setSetting,
+  setWebhookByChannel,
   updateLeadWebhookStatus,
   type Period,
 } from "./funnel-db";
@@ -25,6 +34,7 @@ import {
 import { notifyOwner } from "./_core/notification";
 
 const periodSchema = z.enum(["day", "week", "month"]);
+const channelSchema = z.enum(["ki-report", "exit-plan", "traumwebseite"]);
 
 /** Middleware-Ersatz: prüft das Admin-Cookie und wirft sonst FORBIDDEN. */
 async function assertAdmin(req: any) {
@@ -45,7 +55,7 @@ export const appRouter = router({
     }),
   }),
 
-  /** Öffentliche Lead-Erfassung + Webhook-Versand. */
+  /** Öffentliche Lead-Erfassung + Webhook-Versand (per Channel). */
   leads: router({
     create: publicProcedure
       .input(
@@ -76,8 +86,8 @@ export const appRouter = router({
           createdAt: new Date().toISOString(),
         };
 
-        // Webhook auslösen (falls konfiguriert) und Status speichern.
-        const status = await fireWebhook(payload);
+        // Per-Channel Webhook auslösen (mit Fallback auf globale URL)
+        const status = await fireChannelWebhook(source, payload);
         if (id) await updateLeadWebhookStatus(id, status);
 
         // Owner-Benachrichtigung (best effort)
@@ -95,13 +105,52 @@ export const appRouter = router({
     pageView: publicProcedure
       .input(
         z.object({
-          page: z.enum(["home", "vsl", "termin", "webseite-termin", "ki-report-termin", "exit-plan-termin", "exit-plan", "ki-report", "traumwebseite"]),
+          page: z.enum([
+            "home",
+            "vsl",
+            "termin",
+            "webseite-termin",
+            "ki-report-termin",
+            "exit-plan-termin",
+            "exit-plan",
+            "ki-report",
+            "traumwebseite",
+          ]),
           visitorId: z.string().max(64).optional(),
         }),
       )
       .mutation(async ({ input }) => {
         await insertPageView({ page: input.page, visitorId: input.visitorId ?? null });
         return { success: true } as const;
+      }),
+  }),
+
+  /** Öffentlicher Endpoint für Calendly-Webhook (Termin-Erstellung). */
+  appointments: router({
+    create: publicProcedure
+      .input(
+        z.object({
+          source: channelSchema,
+          name: z.string().max(255).optional(),
+          email: z.string().email().max(320).optional(),
+          eventUri: z.string().max(512).optional(),
+        }),
+      )
+      .mutation(async ({ input }) => {
+        const id = await insertAppointment({
+          source: input.source,
+          name: input.name ?? null,
+          email: input.email ?? null,
+          eventUri: input.eventUri ?? null,
+        });
+
+        // Owner-Benachrichtigung
+        notifyOwner({
+          title: "Neuer Termin gebucht",
+          content: `${input.name ?? "Unbekannt"} · ${input.email ?? "-"} (Kanal: ${input.source})`,
+        }).catch(() => {});
+
+        return { success: true, id } as const;
       }),
   }),
 
@@ -140,6 +189,7 @@ export const appRouter = router({
       return { isAdmin: ok } as const;
     }),
 
+    // ─── Legacy Stats ────────────────────────────────────────────────────
     stats: publicProcedure
       .input(z.object({ period: periodSchema }))
       .query(async ({ input, ctx }) => {
@@ -159,29 +209,87 @@ export const appRouter = router({
       return listLeads();
     }),
 
-    getWebhook: publicProcedure.query(async ({ ctx }) => {
+    // ─── Per-Channel Funnel Stats ────────────────────────────────────────
+    funnelStats: publicProcedure
+      .input(z.object({ period: periodSchema }))
+      .query(async ({ input, ctx }) => {
+        await assertAdmin(ctx.req);
+        return getFunnelStatsByChannel(input.period as Period);
+      }),
+
+    // ─── Per-Channel Series (Charts) ────────────────────────────────────
+    channelSeries: publicProcedure
+      .input(z.object({ days: z.number().min(1).max(90) }))
+      .query(async ({ input, ctx }) => {
+        await assertAdmin(ctx.req);
+        return getChannelSeries(input.days);
+      }),
+
+    // ─── Webhooks (per channel) ──────────────────────────────────────────
+    getWebhooks: publicProcedure.query(async ({ ctx }) => {
       await assertAdmin(ctx.req);
-      const url = await getSetting("webhook_url");
-      return { url: url ?? "" } as const;
+      return getAllWebhooks();
     }),
 
+    getWebhook: publicProcedure
+      .input(z.object({ channel: channelSchema }).optional())
+      .query(async ({ input, ctx }) => {
+        await assertAdmin(ctx.req);
+        if (input?.channel) {
+          const wh = await getWebhookByChannel(input.channel);
+          return { url: wh?.url ?? "", active: wh?.active ?? true };
+        }
+        // Legacy: globale URL
+        const url = await getSetting("webhook_url");
+        return { url: url ?? "", active: true };
+      }),
+
     setWebhook: publicProcedure
-      .input(z.object({ url: z.string().max(2048) }))
+      .input(
+        z.object({
+          channel: channelSchema,
+          url: z.string().max(2048),
+          active: z.boolean().optional(),
+        }),
+      )
       .mutation(async ({ input, ctx }) => {
         await assertAdmin(ctx.req);
-        await setSetting("webhook_url", input.url.trim());
+        await setWebhookByChannel(input.channel, input.url.trim(), input.active ?? true);
         return { success: true } as const;
       }),
 
-    testWebhook: publicProcedure.mutation(async ({ ctx }) => {
-      await assertAdmin(ctx.req);
-      const status = await fireWebhook({
-        event: "test",
-        message: "Test-Webhook aus dem Fast-Track Admin-Dashboard",
-        createdAt: new Date().toISOString(),
-      });
-      return { status } as const;
-    }),
+    testWebhook: publicProcedure
+      .input(z.object({ channel: channelSchema }).optional())
+      .mutation(async ({ input, ctx }) => {
+        await assertAdmin(ctx.req);
+        const payload = {
+          event: "test",
+          channel: input?.channel ?? "global",
+          message: "Test-Webhook aus dem Fast-Track Admin-Dashboard",
+          createdAt: new Date().toISOString(),
+        };
+        if (input?.channel) {
+          const status = await fireChannelWebhook(input.channel, payload);
+          return { status } as const;
+        }
+        const status = await fireWebhook(payload);
+        return { status } as const;
+      }),
+
+    // ─── Ad Spend ────────────────────────────────────────────────────────
+    setAdSpend: publicProcedure
+      .input(
+        z.object({
+          channel: channelSchema,
+          date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+          amountCents: z.number().int().min(0),
+        }),
+      )
+      .mutation(async ({ input, ctx }) => {
+        await assertAdmin(ctx.req);
+        await setAdSpend(input.channel, input.date, input.amountCents);
+        return { success: true } as const;
+      }),
   }),
 });
 

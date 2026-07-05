@@ -82,3 +82,77 @@ export const settings = mysqlTable("settings", {
 
 export type Setting = typeof settings.$inferSelect;
 export type InsertSetting = typeof settings.$inferInsert;
+
+/**
+ * Termine (Appointments) — wenn jemand über Calendly bucht.
+ */
+export const appointments = mysqlTable(
+  "appointments",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    /** Welcher Funnel-Kanal: ki-report | exit-plan | traumwebseite */
+    source: varchar("source", { length: 64 }).notNull(),
+    /** Optional: Lead-ID falls zuordenbar */
+    leadId: int("leadId"),
+    /** Calendly Event URI oder ID */
+    eventUri: varchar("eventUri", { length: 512 }),
+    /** Name des Buchenden */
+    name: varchar("name", { length: 255 }),
+    /** E-Mail des Buchenden */
+    email: varchar("email", { length: 320 }),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  (t) => ({
+    sourceIdx: index("appt_source_idx").on(t.source),
+    createdIdx: index("appt_created_idx").on(t.createdAt),
+  }),
+);
+
+export type Appointment = typeof appointments.$inferSelect;
+export type InsertAppointment = typeof appointments.$inferInsert;
+
+/**
+ * Webhooks pro Kanal — jeder Funnel-Kanal kann seinen eigenen Webhook haben.
+ */
+export const webhooks = mysqlTable(
+  "webhooks",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    /** Kanal: ki-report | exit-plan | traumwebseite */
+    channel: varchar("channel", { length: 64 }).notNull().unique(),
+    /** Webhook-URL für diesen Kanal */
+    url: text("url"),
+    /** Ist der Webhook aktiv? */
+    active: int("active").default(1).notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  },
+  (t) => ({
+    channelIdx: index("wh_channel_idx").on(t.channel),
+  }),
+);
+
+export type Webhook = typeof webhooks.$inferSelect;
+export type InsertWebhook = typeof webhooks.$inferInsert;
+
+/**
+ * Ad-Spend pro Kanal und Tag — für CPL-Berechnung (später via Meta-API).
+ */
+export const adSpend = mysqlTable(
+  "ad_spend",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    /** Kanal: ki-report | exit-plan | traumwebseite */
+    channel: varchar("channel", { length: 64 }).notNull(),
+    /** Datum (YYYY-MM-DD als String für einfache Gruppierung) */
+    date: varchar("date", { length: 10 }).notNull(),
+    /** Ausgaben in Cent (Integer für Präzision) */
+    amountCents: int("amountCents").default(0).notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  (t) => ({
+    channelDateIdx: index("ads_channel_date_idx").on(t.channel, t.date),
+  }),
+);
+
+export type AdSpend = typeof adSpend.$inferSelect;
+export type InsertAdSpend = typeof adSpend.$inferInsert;

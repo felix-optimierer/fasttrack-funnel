@@ -106,3 +106,18 @@
 - [x] Popup mobil: Trust-Hinweise (Daten sicher + SSL) einzeilig machen
 - [x] Popup mobil: X-Button über der Headline mit eigenem Abstand (nicht auf der Headline)
 - [x] /ki-report + /exit-plan Mobile: Abstand unter Mockup reduziert (mb-5 → mb-2)
+
+## Änderungen (Runde 10) – Admin-Dashboard Komplett-Überarbeitung
+- [x] DB: Termine-Tabelle (appointments) mit source-Feld (ki-report, exit-plan, traumwebseite)
+- [x] DB: Webhooks-Tabelle pro Kanal (ki-report, exit-plan, traumwebseite) statt einzelner URL
+- [x] DB: CPL-Feld oder Ad-Spend-Tracking (für spätere Meta-API-Anbindung)
+- [x] Backend: Funnel-Stats pro Kanal (Besucher → Leads → Termine + CR + CPL)
+- [x] Backend: Zeitfilter (Tag/Woche/Monat) für alle Stats
+- [x] Backend: Webhook-CRUD pro Kanal (3 separate Webhooks)
+- [x] Frontend: Hauptseite-Besucher im Dashboard anzeigen
+- [x] Frontend: Funnel-Übersicht pro Kanal (Besucher → LP-CR → Leads → Termin-CR → Termine + CPL)
+- [x] Frontend: Zeitfilter (Tag/Woche/Monat) umschaltbar
+- [x] Frontend: Charts – CR-Entwicklung pro Kanal über Zeit
+- [x] Frontend: Charts – Terminquote pro Kanal über Zeit
+- [x] Frontend: Charts – CPL-Entwicklung pro Kanal über Zeit
+- [x] Frontend: Einstellungen mit separaten Webhooks pro Kanal
