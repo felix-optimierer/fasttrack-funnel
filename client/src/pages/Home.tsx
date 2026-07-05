@@ -9,6 +9,8 @@ import { usePageView } from "@/hooks/usePageView";
 const KI_REPORT_MOCKUP = "/manus-storage/ki-report-mockup-final_8c5ce4e0.webp";
 const EXIT_PLAN_MOCKUP = "/manus-storage/exit-plan-mockup_5abddb0b.webp";
 
+const TRAUMWEBSEITE_MOCKUP = "/manus-storage/traumwebseite-mockup_38677c3c.webp";
+
 const OFFERS = [
   {
     title: "Deine Traumwebseite in 60 Minuten",
@@ -16,7 +18,7 @@ const OFFERS = [
       "Als Praxisinhaber deine Traumwebseite per KI-Agent bauen lassen – ohne Technikkenntnisse, ohne Agentur, ohne Baukasten.",
     cta: "Jetzt Fallstudien ansehen",
     href: "/traumwebseite",
-    mockup: ASSETS.dashboard,
+    mockup: TRAUMWEBSEITE_MOCKUP,
   },
   {
     title: "Physiopraxis KI-Report 2026",
@@ -72,7 +74,7 @@ export default function Home() {
               className="group flex flex-col items-center rounded-2xl border border-border bg-card/80 p-5 text-center shadow-xl backdrop-blur transition hover:border-gold/50 hover:shadow-gold/10"
             >
               {/* Mockup */}
-              <div className="mb-4 flex h-44 items-center justify-center md:h-52">
+              <div className="mb-2 flex h-52 items-center justify-center md:h-60">
                 <img
                   src={offer.mockup}
                   alt={offer.title}
