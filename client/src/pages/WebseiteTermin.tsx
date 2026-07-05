@@ -1,5 +1,7 @@
 // WEBSEITE-TERMIN PAGE — Calendly-Buchungsseite für die kostenlose KI-Praxisanalyse.
 import { useEffect } from "react";
+import { SEO } from "@/components/SEO";
+import { SEO_CONFIG } from "@/lib/seo-config";
 import { ASSETS, HOOK } from "@/lib/site";
 import { Logo, DoubleSeals, Footer } from "@/components/funnel";
 import { ArrowLeft } from "lucide-react";
@@ -43,6 +45,8 @@ export default function WebseiteTermin() {
   }, [navigate]);
 
   return (
+    <>
+    <SEO {...SEO_CONFIG.webseiteTermin} />
     <div className="min-h-screen">
       <header className="container flex items-center justify-center py-3 md:py-4">
         <Logo />
@@ -97,5 +101,6 @@ export default function WebseiteTermin() {
 
       <Footer />
     </div>
+    </>
   );
 }

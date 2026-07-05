@@ -121,3 +121,11 @@
 - [x] Frontend: Charts – Terminquote pro Kanal über Zeit
 - [x] Frontend: Charts – CPL-Entwicklung pro Kanal über Zeit
 - [x] Frontend: Einstellungen mit separaten Webhooks pro Kanal
+
+## Änderungen (Runde 11) – Favicon & SEO-Optimierung
+- [x] Neues Favicon (PhysioFreiheit_Favicon_Hell_Transparent) in WebP konvertieren und hochladen
+- [x] Favicon in allen Größen (16, 32, 48, 96, 180, 192, 512) als WebP + ICO generieren
+- [x] Favicon sauber benannt mit Alt-Text in HTML einbinden
+- [x] SEO-Metatitel für alle Seiten setzen (/, /traumwebseite, /ki-report, /exit-plan, /webseite-termin, /ki-report-termin, /exit-plan-termin, /danke-termin, /admin)
+- [x] SEO-Meta-Beschreibungen für alle Seiten setzen
+- [x] site.webmanifest mit neuem Favicon aktualisieren

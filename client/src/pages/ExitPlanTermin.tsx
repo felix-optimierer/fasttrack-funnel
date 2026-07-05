@@ -1,5 +1,7 @@
 // EXIT-PLAN-TERMIN PAGE — Nach Opt-in auf /exit-plan: Exit-Plan kommt per WhatsApp + Calendly-Buchung.
 import { useEffect } from "react";
+import { SEO } from "@/components/SEO";
+import { SEO_CONFIG } from "@/lib/seo-config";
 import { ASSETS, HOOK } from "@/lib/site";
 import { Logo, DoubleSeals, Footer } from "@/components/funnel";
 import { useLocation } from "wouter";
@@ -42,6 +44,8 @@ export default function ExitPlanTermin() {
   }, [navigate]);
 
   return (
+    <>
+    <SEO {...SEO_CONFIG.exitPlanTermin} />
     <div className="min-h-screen">
       <header className="container flex items-center justify-center py-3 md:py-4">
         <Logo />
@@ -87,5 +91,6 @@ export default function ExitPlanTermin() {
 
       <Footer />
     </div>
+    </>
   );
 }

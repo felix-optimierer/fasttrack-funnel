@@ -1,5 +1,7 @@
 // DANKE-TERMIN PAGE — Bestätigungsseite nach gebuchter Praxisanalyse.
 import { useEffect } from "react";
+import { SEO } from "@/components/SEO";
+import { SEO_CONFIG } from "@/lib/seo-config";
 import { ASSETS } from "@/lib/site";
 import { Logo, DoubleSeals, Footer } from "@/components/funnel";
 import { CalendarCheck, Mail, Video, CheckCircle2 } from "lucide-react";
@@ -28,6 +30,8 @@ export default function DankeTermin() {
   }, []);
 
   return (
+    <>
+    <SEO {...SEO_CONFIG.dankeTermin} />
     <div className="min-h-screen">
       <header className="container flex items-center justify-center py-3 md:py-4">
         <Logo />
@@ -88,5 +92,6 @@ export default function DankeTermin() {
 
       <Footer />
     </div>
+    </>
   );
 }

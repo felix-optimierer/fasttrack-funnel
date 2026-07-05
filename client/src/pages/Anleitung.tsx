@@ -1,6 +1,8 @@
 // ANLEITUNG PAGE (vormals /vsl) — maximal on point.
 // EIN Hook: Webseite mit KI-Agenten in unter 60 Min. Trust-Siegel + Video + 1 CTA, dann echte Fallstudien + Buchung.
 import { useEffect, useState } from "react";
+import { SEO } from "@/components/SEO";
+import { SEO_CONFIG } from "@/lib/seo-config";
 import { useLocation } from "wouter";
 import { ASSETS, HOOK } from "@/lib/site";
 import {
@@ -30,6 +32,8 @@ export default function Anleitung() {
   }
 
   return (
+    <>
+    <SEO {...SEO_CONFIG.anleitung} />
     <div className="min-h-screen">
       <header className="container flex items-center justify-center py-3 md:py-4">
         <Logo />
@@ -158,5 +162,6 @@ export default function Anleitung() {
 
       <Footer />
     </div>
+    </>
   );
 }

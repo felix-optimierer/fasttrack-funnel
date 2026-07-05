@@ -1,5 +1,7 @@
 // HAUPTSEITE — Übersicht über alle kostenlosen Inhalte
 import { useEffect } from "react";
+import { SEO } from "@/components/SEO";
+import { SEO_CONFIG } from "@/lib/seo-config";
 import { useLocation } from "wouter";
 import { ASSETS } from "@/lib/site";
 import { Logo, GoldButton, DoubleSeals, Footer } from "@/components/funnel";
@@ -47,6 +49,8 @@ export default function Home() {
   }, []);
 
   return (
+    <>
+    <SEO {...SEO_CONFIG.home} />
     <div
       className="flex min-h-screen flex-col"
       style={{
@@ -132,5 +136,6 @@ export default function Home() {
       </main>
       <Footer />
     </div>
+    </>
   );
 }

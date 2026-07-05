@@ -1,5 +1,7 @@
 // KI-REPORT-TERMIN PAGE — Nach Opt-in auf /ki-report: Report kommt per WhatsApp + Calendly-Buchung.
 import { useEffect } from "react";
+import { SEO } from "@/components/SEO";
+import { SEO_CONFIG } from "@/lib/seo-config";
 import { ASSETS, HOOK } from "@/lib/site";
 import { Logo, DoubleSeals, Footer } from "@/components/funnel";
 import { useLocation } from "wouter";
@@ -42,6 +44,8 @@ export default function KiReportTermin() {
   }, [navigate]);
 
   return (
+    <>
+    <SEO {...SEO_CONFIG.kiReportTermin} />
     <div className="min-h-screen">
       <header className="container flex items-center justify-center py-3 md:py-4">
         <Logo />
@@ -87,5 +91,6 @@ export default function KiReportTermin() {
 
       <Footer />
     </div>
+    </>
   );
 }

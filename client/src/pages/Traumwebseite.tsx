@@ -1,6 +1,8 @@
 // OPT-IN PAGE — maximal on point (Vorbild: ecomscaling.org/sta).
 // Headline "Definitiver Weg ...", >100x bewiesen oben, CTA -> 7 Fallstudien, Doppel-TÜV-Siegel unter dem Formular.
 import { useEffect, useState } from "react";
+import { SEO } from "@/components/SEO";
+import { SEO_CONFIG } from "@/lib/seo-config";
 import { useLocation } from "wouter";
 import { ASSETS } from "@/lib/site";
 import { Logo, GoldButton, DoubleSeals, Footer } from "@/components/funnel";
@@ -43,6 +45,8 @@ export default function Traumwebseite() {
   }
 
   return (
+    <>
+    <SEO {...SEO_CONFIG.traumwebseite} />
     <div
       className="flex min-h-screen flex-col"
       style={{
@@ -155,5 +159,6 @@ export default function Traumwebseite() {
       </main>
       <Footer />
     </div>
+    </>
   );
 }

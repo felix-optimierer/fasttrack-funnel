@@ -1,5 +1,6 @@
 // ADMIN-DASHBOARD (/admin) — Per-Channel Funnel-Statistiken, Charts, Webhooks.
 import { useState, useMemo } from "react";
+import { SEO } from "@/components/SEO";
 import { trpc } from "@/lib/trpc";
 import { Logo, GoldButton } from "@/components/funnel";
 import { ASSETS } from "@/lib/site";
@@ -71,7 +72,12 @@ export default function Admin() {
     return <LoginScreen onLoggedIn={() => utils.admin.me.invalidate()} />;
   }
 
-  return <Dashboard onLogout={() => utils.admin.me.invalidate()} />;
+  return (
+    <>
+      <SEO title="Admin Dashboard | Physio Freiheit" description="Internes Admin-Dashboard: Funnel-Statistiken, Lead-Management und Webhook-Einstellungen für Physio Freiheit." canonical="https://go.physiofreiheit.de/admin" />
+      <Dashboard onLogout={() => utils.admin.me.invalidate()} />
+    </>
+  );
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════

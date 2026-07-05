@@ -1,6 +1,8 @@
 // EXIT-PLAN PAGE — Lead-Magnet-Landingpage im PhysioFreiheit Navy-Gold-Design
 // Layout wie SpeedScaling/KI-Report: Blurred-Bild als Fullscreen-Hintergrund, Mockup zentriert darüber
 import { useEffect, useState, useRef } from "react";
+import { SEO } from "@/components/SEO";
+import { SEO_CONFIG } from "@/lib/seo-config";
 import { ASSETS } from "@/lib/site";
 import { Logo, GoldButton, DoubleSeals, Footer } from "@/components/funnel";
 import { Download, Check } from "lucide-react";
@@ -45,6 +47,8 @@ export default function ExitPlan() {
   }, [popupOpen]);
 
   return (
+    <>
+    <SEO {...SEO_CONFIG.exitPlan} />
     <div className="relative flex flex-col overflow-hidden">
       {/* === FULLSCREEN BACKGROUND: Blurred image covering entire section === */}
       <div className="absolute inset-0 -z-10">
@@ -197,5 +201,6 @@ export default function ExitPlan() {
         redirectTo="/exit-plan-termin"
       />
     </div>
+    </>
   );
 }

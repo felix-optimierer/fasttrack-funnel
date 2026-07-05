@@ -1,4 +1,6 @@
 import { useLocation } from "wouter";
+import { SEO } from "@/components/SEO";
+import { SEO_CONFIG } from "@/lib/seo-config";
 import { ASSETS } from "@/lib/site";
 import { Logo, GoldButton, Footer } from "@/components/funnel";
 import { ArrowRight } from "lucide-react";
@@ -6,6 +8,8 @@ import { ArrowRight } from "lucide-react";
 export default function NotFound() {
   const [, navigate] = useLocation();
   return (
+    <>
+    <SEO {...SEO_CONFIG.notFound} />
     <div
       className="flex min-h-screen flex-col items-center justify-center px-5 text-center"
       style={{
@@ -31,5 +35,6 @@ export default function NotFound() {
       </GoldButton>
       <Footer />
     </div>
+    </>
   );
 }
