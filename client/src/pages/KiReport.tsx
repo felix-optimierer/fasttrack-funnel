@@ -63,12 +63,12 @@ export default function KiReport() {
               "linear-gradient(to right, rgba(6,15,28,0.97) 0%, rgba(6,15,28,0.95) 30%, rgba(6,15,28,0.75) 50%, rgba(6,15,28,0.3) 70%, rgba(6,15,28,0.1) 100%)",
           }}
         />
-        {/* Mobile gradient: Navy fades from top (protects text) to transparent bottom (shows image) */}
+        {/* Mobile gradient: Leichter Gradient damit BG-Muster auf ganzer Seite sichtbar ist */}
         <div
           className="absolute inset-0 lg:hidden"
           style={{
             background:
-              "linear-gradient(to bottom, rgba(6,15,28,0.97) 0%, rgba(6,15,28,0.92) 40%, rgba(6,15,28,0.7) 65%, rgba(6,15,28,0.4) 85%, rgba(6,15,28,0.2) 100%)",
+              "linear-gradient(to bottom, rgba(6,15,28,0.85) 0%, rgba(6,15,28,0.7) 30%, rgba(6,15,28,0.55) 50%, rgba(6,15,28,0.45) 70%, rgba(6,15,28,0.35) 100%)",
           }}
         />
       </div>
@@ -193,6 +193,7 @@ export default function KiReport() {
         headline="An wen dürfen wir den KI-Report senden?"
         subtext="Die Inhalte kommen per WhatsApp – deswegen gib bitte deine WhatsApp Nummer ein (ohne 0)"
         source="ki-report"
+        redirectTo="/ki-report-termin"
       />
     </div>
   );

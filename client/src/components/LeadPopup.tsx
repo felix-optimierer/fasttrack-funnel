@@ -5,6 +5,7 @@ import { X, Download } from "lucide-react";
 import { GoldButton } from "@/components/funnel";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { useLocation } from "wouter";
 
 interface LeadPopupProps {
   open: boolean;
@@ -15,6 +16,8 @@ interface LeadPopupProps {
   subtext?: string;
   /** Quelle für Lead-Tracking (z.B. "exit-plan" oder "ki-report") */
   source: string;
+  /** Redirect-URL nach erfolgreichem Submit (z.B. "/ki-report-termin") */
+  redirectTo?: string;
 }
 
 interface FormErrors {
@@ -34,7 +37,7 @@ function validatePhone(phone: string): boolean {
   return /^\d{8,15}$/.test(digits);
 }
 
-export function LeadPopup({ open, onClose, headline, subtext, source }: LeadPopupProps) {
+export function LeadPopup({ open, onClose, headline, subtext, source, redirectTo }: LeadPopupProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -42,6 +45,7 @@ export function LeadPopup({ open, onClose, headline, subtext, source }: LeadPopu
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitted, setSubmitted] = useState(false);
 
+  const [, navigate] = useLocation();
   const leadMutation = trpc.leads.create.useMutation();
 
   // ESC-Taste zum Schließen
@@ -92,8 +96,13 @@ export function LeadPopup({ open, onClose, headline, subtext, source }: LeadPopu
         phone: phone.trim(),
         source,
       });
-      setSubmitted(true);
-      toast.success("Perfekt! Dein Download wird vorbereitet.");
+      if (redirectTo) {
+        toast.success("Perfekt! Du wirst weitergeleitet...");
+        setTimeout(() => navigate(redirectTo), 600);
+      } else {
+        setSubmitted(true);
+        toast.success("Perfekt! Dein Download wird vorbereitet.");
+      }
     } catch {
       toast.error("Etwas ist schiefgelaufen. Bitte versuche es erneut.");
     }

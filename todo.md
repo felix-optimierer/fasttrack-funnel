@@ -88,3 +88,12 @@
 - [x] /ki-report: Badge-Kasten mobil fixen (kein Overflow nach rechts)
 - [x] /ki-report: Original-Bild (LeadmagnetKIReportMockupsBlurredweniger.png) direkt als WebP konvertieren OHNE Bearbeitung als Hintergrund nutzen
 - [x] /exit-plan: Gleiches SpeedScaling-Layout-System anwenden (Fullscreen-BG + Mobile-Reihenfolge)
+
+## Änderungen (Runde 8) – Mobile BG + Termin-Seiten
+- [x] /ki-report + /exit-plan: Mobile Gradient reduzieren – Hintergrundbild auf ganzer Seite sichtbar
+- [x] /termin → /webseite-termin umbenennen + Headline: "Sichere dir deine kostenlose KI-Praxisanalyse" + Sub-Headline löschen
+- [x] /ki-report-termin erstellen: Badge "Dein Report ist per WhatsApp auf dem Weg zu dir" + Headline "Sichere dir jetzt deine 1:1-Praxisanalyse"
+- [x] /exit-plan-termin erstellen: Badge "Der Exit-Plan ist per WhatsApp auf dem Weg zu dir" + Headline "Sichere dir jetzt deine 1:1-Praxisanalyse"
+- [x] Nach Opt-in auf /ki-report → Weiterleitung zu /ki-report-termin
+- [x] Nach Opt-in auf /exit-plan → Weiterleitung zu /exit-plan-termin
+- [x] Alle neuen Routen in App.tsx registrieren

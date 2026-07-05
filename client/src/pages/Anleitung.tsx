@@ -26,7 +26,7 @@ export default function Anleitung() {
   }, []);
 
   function goToTermin() {
-    navigate("/termin");
+    navigate("/webseite-termin");
   }
 
   return (
@@ -129,7 +129,7 @@ export default function Anleitung() {
         </div>
       </section>
 
-      {/* CTA -> /termin */}
+      {/* CTA -> /webseite-termin */}
       <section className="bg-navy-deep py-14">
         <div className="container max-w-2xl text-center">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-gold/40 bg-card px-4 py-1.5 text-sm font-semibold text-gold">
