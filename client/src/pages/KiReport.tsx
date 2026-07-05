@@ -8,7 +8,7 @@ import { usePageView } from "@/hooks/usePageView";
 import { LeadPopup } from "@/components/LeadPopup";
 
 const BG_BLURRED_URL = "/manus-storage/ki-report-bg-final_eaf43965.webp";
-const MOCKUP_SHARP_URL = "/manus-storage/ki-report-mockup-v2_84fd9a57.webp";
+const MOCKUP_SHARP_URL = "/manus-storage/ki-report-mockup-final_8c5ce4e0.webp";
 
 const BENEFITS = [
   "7 getestete KI-Agenten Prompts speziell für Physiopraxen",

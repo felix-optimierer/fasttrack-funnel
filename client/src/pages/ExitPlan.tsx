@@ -7,10 +7,8 @@ import { Download, Check } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import { LeadPopup } from "@/components/LeadPopup";
 
-// Gleicher Blurred-Hintergrund wie KI-Report (Original-WebP)
-const BG_BLURRED_URL = "/manus-storage/ki-report-bg-final_eaf43965.webp";
-// Mockup-Bild: Platzhalter bis echtes Bild übergeben wird
-const MOCKUP_URL = ""; // TODO: Echtes Exit-Plan-Mockup-Bild hier einfügen
+const BG_BLURRED_URL = "/manus-storage/exit-plan-bg_73338363.webp";
+const MOCKUP_URL = "/manus-storage/exit-plan-mockup_5abddb0b.webp";
 
 const BENEFITS = [
   "Der 5-Schritte-Plan: Von Kassensystem-Abhängigkeit zum Hybrid-Modell",
