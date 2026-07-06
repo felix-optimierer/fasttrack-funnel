@@ -92,7 +92,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     image: ASSETS.caseReichl,
     result: "Moderne Online-Präsenz mit Online-Terminbuchung statt nur Telefon.",
     quote:
-      "Traditionspraxis seit 1980 mit moderner Webseite: Terminanfragen laufen heute direkt online statt nur übers Telefon – ausgezeichnet mit 4,9 ★ aus über 40 Google-Bewertungen.",
+      "Traditionspraxis seit 1980 mit moderner Webseite: Terminanfragen laufen heute direkt online statt nur übers Telefon, ausgezeichnet mit 4,9 ★ aus über 40 Google-Bewertungen.",
     metrics: [
       { label: "Google-Bewertung", value: "4,9 ★" },
       { label: "Erfahrung", value: "44+ Jahre" },
@@ -108,7 +108,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     image: ASSETS.caseAnica,
     result: "Erste zwei Klienten für 5.000 € im ersten Monat abgeschlossen.",
     quote:
-      "Das Fast-Track-System zu buchen war die beste Entscheidung, um in die Online-Selbstständigkeit zu starten. Klare, praxisnahe Schritte und eine unglaublich intensive, persönliche Betreuung – das habe ich in keinem Coaching vorher erlebt.",
+      "Das Fast-Track-System zu buchen war die beste Entscheidung, um in die Online-Selbstständigkeit zu starten. Klare, praxisnahe Schritte und eine unglaublich intensive, persönliche Betreuung. Das habe ich in keinem Coaching vorher erlebt.",
     metrics: [
       { label: "Bewertung", value: "5,0 ★" },
       { label: "1. Monat", value: "2 × 5K" },
@@ -124,7 +124,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     image: ASSETS.caseMarion,
     result: "Nach 3 Wochen stolze Besitzerin der eigenen Webseite.",
     quote:
-      "Ich hatte keine Website und war quasi unsichtbar. Seit heute Vormittag bin ich stolze Besitzerin einer Webseite – unglaublich, wie schnell und einfach das funktioniert. Und ich bin nicht mal Physiotherapeutin, es lässt sich also auf jeden Bereich übertragen.",
+      "Ich hatte keine Website und war quasi unsichtbar. Seit heute Vormittag bin ich stolze Besitzerin einer Webseite. Unglaublich, wie schnell und einfach das funktioniert. Und ich bin nicht mal Physiotherapeutin, es lässt sich also auf jeden Bereich übertragen.",
     metrics: [
       { label: "Bewertung", value: "5,0 ★" },
       { label: "Webseite live", value: "3 Wochen" },
@@ -155,7 +155,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     image: ASSETS.caseDesiree,
     result: "Auch ohne Technik-Vorwissen sicher zur eigenen Seite.",
     quote:
-      "Kompetente und problemorientierte Beratung – auch für Personen, die technisch sehr wenig bewandert sind. Einfach TOP.",
+      "Kompetente und problemorientierte Beratung, auch für Personen, die technisch sehr wenig bewandert sind. Einfach TOP.",
     metrics: [
       { label: "Bewertung", value: "5,0 ★" },
       { label: "Technik-Vorwissen", value: "keins" },
@@ -170,7 +170,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     image: ASSETS.caseTabea,
     result: "Traumwebseite mit Online-Buchung in unter einer Stunde erstellt.",
     quote:
-      "Privatpraxis für Sportphysiotherapie und Personal Training mit eigener Webseite, Online-Terminbuchung via Doctolib und 5,0 ★ aus 31 Google-Bewertungen – spezialisiert auf Kletterer und CrossFit-Athleten.",
+      "Privatpraxis für Sportphysiotherapie und Personal Training mit eigener Webseite, Online-Terminbuchung via Doctolib und 5,0 ★ aus 31 Google-Bewertungen. Spezialisiert auf Kletterer und CrossFit-Athleten.",
     metrics: [
       { label: "Google-Bewertung", value: "5,0 ★" },
       { label: "Bewertungen", value: "31" },
@@ -186,7 +186,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     image: ASSETS.caseFlorian,
     result: "Traumwebseite in unter einer Stunde gebaut.",
     quote:
-      "Moderne Praxis-Webseite mit Video, Online-Terminbuchung und Newsletter-Funktion – alles in unter einer Stunde live. 62+ Bewertungen bei 5,0 ★ auf Google sprechen für sich.",
+      "Moderne Praxis-Webseite mit Video, Online-Terminbuchung und Newsletter-Funktion. Alles in unter einer Stunde live. 62+ Bewertungen bei 5,0 ★ auf Google sprechen für sich.",
     metrics: [
       { label: "Google-Bewertung", value: "5,0 ★" },
       { label: "Bewertungen", value: "62+" },
@@ -202,7 +202,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     image: ASSETS.caseAndrea,
     result: "Privatpraxis mit professioneller Online-Präsenz positioniert.",
     quote:
-      "Als sektorale Heilpraktikerin für Physiotherapie mit über 30 Jahren Erfahrung: Eigene Webseite mit Online-Terminanfrage, Leistungsübersicht und Patientenbewertungen – alles per KI-Agent erstellt.",
+      "Als sektorale Heilpraktikerin für Physiotherapie mit über 30 Jahren Erfahrung: Eigene Webseite mit Online-Terminanfrage, Leistungsübersicht und Patientenbewertungen. Alles per KI-Agent erstellt.",
     metrics: [
       { label: "Google-Bewertung", value: "4,8 ★" },
       { label: "Erfahrung", value: "30+ Jahre" },
