@@ -120,7 +120,7 @@ export default function Anleitung() {
         </section>
       </main>
 
-      {/* 7 Beweise */}
+      {/* 9 Beweise */}
       <section className="border-t border-border bg-navy py-14">
         <div className="container">
           <h2 className="mb-2 text-center text-2xl font-extrabold md:text-3xl">

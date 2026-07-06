@@ -129,3 +129,29 @@
 - [x] SEO-Metatitel für alle Seiten setzen (/, /traumwebseite, /ki-report, /exit-plan, /webseite-termin, /ki-report-termin, /exit-plan-termin, /danke-termin, /admin)
 - [x] SEO-Meta-Beschreibungen für alle Seiten setzen
 - [x] site.webmanifest mit neuem Favicon aktualisieren
+
+## Änderungen (Runde 12) – Fallstudien erweitern auf 9
+- [x] Marion → "Marion Stegemann, Psychotherapeutin" + Link physiotherapie-greussen.de + Bild (WebP)
+- [x] Desirée Nowak → Link physiotherapie-greussen.de + Bild (WebP)
+- [x] Florian Zurheiden neu hinzufügen (schwarzwald-physio.de) + Bild + Fakten
+- [x] Andrea Schaich neu hinzufügen (physioschaich.de) + Bild + Fakten
+- [x] Alle Bilder komprimiert in WebP, Gesicht vollständig sichtbar
+- [x] "7 Fallstudien" → "9 Fallstudien" überall anpassen (Traumwebseite, Anleitung, Home)
+
+## Änderungen (Runde 13) – Admin-Dashboard Komplett-Überarbeitung (nach Dashboard-Paket)
+- [x] DB: leads erweitern um utm_source, utm_medium, utm_campaign, utm_term, utm_content, referrer, ip_address, user_agent, time_on_page, crm_status, notes
+- [x] DB: page_views erweitern um utm_source, utm_medium, utm_campaign, utm_term, utm_content, referrer, ip_address, user_agent
+- [x] Backend: Lead-Erfassung (leads.create) um UTM, IP, User-Agent, Referrer erweitern
+- [x] Backend: Page-View-Tracking um UTM, IP, User-Agent, Referrer erweitern
+- [x] Backend: Verweildauer-Tracking (time_on_page) bei Lead-Erstellung oder separatem Endpoint
+- [x] Backend: Lead-Detail-Endpoint (admin.leadDetail) mit allen erweiterten Feldern
+- [x] Backend: UTM-Aggregation für Pivot-Tabelle
+- [x] Backend: CRM-Status-Update (admin.updateLeadStatus) + Notizen (admin.updateLeadNotes)
+- [x] Backend: CSV-Export-Endpoint für Leads
+- [x] Backend: Ad-Costs CSV-Import-Endpoint
+- [x] Frontend: Lead-Detail-Modal (Klick auf Lead → IP, UTM, User-Agent, Verweildauer, Referrer)
+- [x] Frontend: Enhanced Submissions List (Suche, Filter, Sort, Pagination, CSV-Export)
+- [x] Frontend: UTM-Pivot-Tabelle (Kreuztabelle UTM x Metriken)
+- [x] Frontend: CRM-Kanban-Board (Drag&Drop Pipeline)
+- [x] Frontend: Ad-Costs CSV-Upload + Kostenzuordnung
+- [x] Frontend: Drill-Down Dialog (Klick auf Chart/KPI → Detail-Liste)

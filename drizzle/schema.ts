@@ -1,17 +1,10 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, index } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, index, boolean as mysqlBoolean } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
- * Extend this file with additional tables as your product grows.
- * Columns use camelCase to match both database fields and generated types.
  */
 export const users = mysqlTable("users", {
-  /**
-   * Surrogate primary key. Auto-incremented numeric value managed by the database.
-   * Use this for relations between tables.
-   */
   id: int("id").autoincrement().primaryKey(),
-  /** Manus OAuth identifier (openId) returned from the OAuth callback. Unique per user. */
   openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
   email: varchar("email", { length: 320 }),
@@ -35,14 +28,37 @@ export const leads = mysqlTable(
     name: varchar("name", { length: 255 }).notNull(),
     email: varchar("email", { length: 320 }).notNull(),
     phone: varchar("phone", { length: 64 }).notNull(),
-    /** Quelle des Leads, z.B. "home" */
+    /** Quelle des Leads, z.B. "home", "ki-report", "exit-plan", "traumwebseite" */
     source: varchar("source", { length: 64 }).default("home").notNull(),
     /** Status der Webhook-Weiterleitung: pending | sent | failed | none */
     webhookStatus: varchar("webhookStatus", { length: 32 }).default("pending").notNull(),
+
+    // --- UTM-Parameter ---
+    utmSource: varchar("utmSource", { length: 255 }),
+    utmMedium: varchar("utmMedium", { length: 255 }),
+    utmCampaign: varchar("utmCampaign", { length: 255 }),
+    utmTerm: varchar("utmTerm", { length: 255 }),
+    utmContent: varchar("utmContent", { length: 255 }),
+
+    // --- Tracking-Metadaten ---
+    referrer: varchar("referrer", { length: 2048 }),
+    ipAddress: varchar("ipAddress", { length: 45 }),
+    userAgent: text("userAgent"),
+    /** Verweildauer auf der Seite in Sekunden (vor Opt-In) */
+    timeOnPageSeconds: int("timeOnPageSeconds"),
+
+    // --- CRM-Felder ---
+    /** CRM-Status: new | contacted | qualified | appointment | closed | lost */
+    crmStatus: varchar("crmStatus", { length: 32 }).default("new").notNull(),
+    /** Notizen (JSON-Array als String) */
+    notes: text("notes"),
+
     createdAt: timestamp("createdAt").defaultNow().notNull(),
   },
   (t) => ({
     createdIdx: index("leads_created_idx").on(t.createdAt),
+    sourceIdx: index("leads_source_idx").on(t.source),
+    crmStatusIdx: index("leads_crm_status_idx").on(t.crmStatus),
   }),
 );
 
@@ -50,7 +66,7 @@ export type Lead = typeof leads.$inferSelect;
 export type InsertLead = typeof leads.$inferInsert;
 
 /**
- * Page-Views — Besucher-Tracking pro Seite (home | vsl | termin).
+ * Page-Views — Besucher-Tracking pro Seite.
  */
 export const pageViews = mysqlTable(
   "page_views",
@@ -59,6 +75,19 @@ export const pageViews = mysqlTable(
     page: varchar("page", { length: 32 }).notNull(),
     /** Anonyme Besucher-ID (localStorage), um Unique Visitors grob zu schätzen */
     visitorId: varchar("visitorId", { length: 64 }),
+
+    // --- UTM-Parameter ---
+    utmSource: varchar("utmSource", { length: 255 }),
+    utmMedium: varchar("utmMedium", { length: 255 }),
+    utmCampaign: varchar("utmCampaign", { length: 255 }),
+    utmTerm: varchar("utmTerm", { length: 255 }),
+    utmContent: varchar("utmContent", { length: 255 }),
+
+    // --- Tracking-Metadaten ---
+    referrer: varchar("referrer", { length: 2048 }),
+    ipAddress: varchar("ipAddress", { length: 45 }),
+    userAgent: text("userAgent"),
+
     createdAt: timestamp("createdAt").defaultNow().notNull(),
   },
   (t) => ({
@@ -90,15 +119,10 @@ export const appointments = mysqlTable(
   "appointments",
   {
     id: int("id").autoincrement().primaryKey(),
-    /** Welcher Funnel-Kanal: ki-report | exit-plan | traumwebseite */
     source: varchar("source", { length: 64 }).notNull(),
-    /** Optional: Lead-ID falls zuordenbar */
     leadId: int("leadId"),
-    /** Calendly Event URI oder ID */
     eventUri: varchar("eventUri", { length: 512 }),
-    /** Name des Buchenden */
     name: varchar("name", { length: 255 }),
-    /** E-Mail des Buchenden */
     email: varchar("email", { length: 320 }),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
   },
@@ -112,17 +136,14 @@ export type Appointment = typeof appointments.$inferSelect;
 export type InsertAppointment = typeof appointments.$inferInsert;
 
 /**
- * Webhooks pro Kanal — jeder Funnel-Kanal kann seinen eigenen Webhook haben.
+ * Webhooks pro Kanal.
  */
 export const webhooks = mysqlTable(
   "webhooks",
   {
     id: int("id").autoincrement().primaryKey(),
-    /** Kanal: ki-report | exit-plan | traumwebseite */
     channel: varchar("channel", { length: 64 }).notNull().unique(),
-    /** Webhook-URL für diesen Kanal */
     url: text("url"),
-    /** Ist der Webhook aktiv? */
     active: int("active").default(1).notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   },
@@ -135,18 +156,19 @@ export type Webhook = typeof webhooks.$inferSelect;
 export type InsertWebhook = typeof webhooks.$inferInsert;
 
 /**
- * Ad-Spend pro Kanal und Tag — für CPL-Berechnung (später via Meta-API).
+ * Ad-Spend pro Kanal und Tag — für CPL-Berechnung.
  */
 export const adSpend = mysqlTable(
   "ad_spend",
   {
     id: int("id").autoincrement().primaryKey(),
-    /** Kanal: ki-report | exit-plan | traumwebseite */
     channel: varchar("channel", { length: 64 }).notNull(),
-    /** Datum (YYYY-MM-DD als String für einfache Gruppierung) */
     date: varchar("date", { length: 10 }).notNull(),
-    /** Ausgaben in Cent (Integer für Präzision) */
     amountCents: int("amountCents").default(0).notNull(),
+    /** Optional: Campaign-Name für Zuordnung */
+    campaignName: varchar("campaignName", { length: 255 }),
+    /** Optional: Notizen */
+    notes: text("notes"),
     createdAt: timestamp("createdAt").defaultNow().notNull(),
   },
   (t) => ({

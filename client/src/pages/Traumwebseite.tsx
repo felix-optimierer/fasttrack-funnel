@@ -1,5 +1,5 @@
 // OPT-IN PAGE — maximal on point (Vorbild: ecomscaling.org/sta).
-// Headline "Definitiver Weg ...", >100x bewiesen oben, CTA -> 7 Fallstudien, Doppel-TÜV-Siegel unter dem Formular.
+// Headline "Definitiver Weg ...", >100x bewiesen oben, CTA -> 9 Fallstudien, Doppel-TÜV-Siegel unter dem Formular.
 import { useEffect, useState } from "react";
 import { SEO } from "@/components/SEO";
 import { SEO_CONFIG } from "@/lib/seo-config";
@@ -32,12 +32,12 @@ export default function Traumwebseite() {
       { name: form.name, email: form.email, phone: form.phone, source: "home" },
       {
         onSuccess: () => {
-          toast.success("Perfekt! Hier kommen deine 7 Fallstudien.");
+          toast.success("Perfekt! Hier kommen deine 9 Fallstudien.");
           setTimeout(() => navigate("/anleitung"), 600);
         },
         onError: () => {
           // Auch bei Backend-Fehler den Nutzer nicht blockieren
-          toast.success("Perfekt! Hier kommen deine 7 Fallstudien.");
+          toast.success("Perfekt! Hier kommen deine 9 Fallstudien.");
           setTimeout(() => navigate("/anleitung"), 600);
         },
       },
@@ -103,7 +103,7 @@ export default function Traumwebseite() {
           </span>
           <ArrowRight className="h-4 w-4 text-gold" />
           <span className="text-[13px] font-semibold text-foreground/90 sm:text-sm">
-            7 Fallstudien zugeschickt bekommen
+            9 Fallstudien zugeschickt bekommen
           </span>
         </div>
 

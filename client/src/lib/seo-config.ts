@@ -26,9 +26,9 @@ export const SEO_CONFIG: Record<string, PageSEO> = {
     canonical: `${BASE_URL}/traumwebseite`,
   },
   anleitung: {
-    title: `7 Fallstudien: Praxis-Webseite per KI-Agent | ${BRAND}`,
+    title: `9 Fallstudien: Praxis-Webseite per KI-Agent | ${BRAND}`,
     description:
-      "Sieh dir 7 echte Fallstudien an, wie Physiotherapie-Praxen ihre Webseite in unter 60 Minuten per KI-Agent erstellt haben. Schritt-für-Schritt-Anleitung inklusive.",
+      "Sieh dir 9 echte Fallstudien an, wie Physiotherapie-Praxen ihre Webseite in unter 60 Minuten per KI-Agent erstellt haben. Schritt-für-Schritt-Anleitung inklusive.",
     canonical: `${BASE_URL}/anleitung`,
   },
   kiReport: {

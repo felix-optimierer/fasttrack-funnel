@@ -6,22 +6,30 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import {
   CHANNELS,
+  bulkImportAdSpend,
   fireChannelWebhook,
   fireWebhook,
   getAllWebhooks,
   getChannelSeries,
   getDailySeries,
+  getDistinctUtmValues,
   getFunnelStatsByChannel,
+  getLeadById,
   getSetting,
   getStats,
+  getUtmPivot,
   getWebhookByChannel,
   insertAppointment,
   insertLead,
   insertPageView,
+  listAdSpend,
   listLeads,
+  listLeadsEnhanced,
   setAdSpend,
   setSetting,
   setWebhookByChannel,
+  updateLeadCrmStatus,
+  updateLeadNotes,
   updateLeadWebhookStatus,
   type Period,
 } from "./funnel-db";
@@ -36,12 +44,21 @@ import { notifyOwner } from "./_core/notification";
 const periodSchema = z.enum(["day", "week", "month"]);
 const channelSchema = z.enum(["ki-report", "exit-plan", "traumwebseite"]);
 
-/** Middleware-Ersatz: prüft das Admin-Cookie und wirft sonst FORBIDDEN. */
 async function assertAdmin(req: any) {
   const ok = await isAdminRequest(req);
   if (!ok) {
     throw new TRPCError({ code: "UNAUTHORIZED", message: "Admin-Login erforderlich." });
   }
+}
+
+/** IP-Adresse aus Request extrahieren. */
+function getClientIp(req: any): string | null {
+  const forwarded = req.headers?.["x-forwarded-for"];
+  if (forwarded) {
+    const first = (typeof forwarded === "string" ? forwarded : forwarded[0]).split(",")[0].trim();
+    return first || null;
+  }
+  return req.socket?.remoteAddress ?? req.ip ?? null;
 }
 
 export const appRouter = router({
@@ -64,16 +81,37 @@ export const appRouter = router({
           email: z.string().email().max(320),
           phone: z.string().min(3).max(64),
           source: z.string().max(64).optional(),
+          // UTM-Parameter (vom Frontend übergeben)
+          utmSource: z.string().max(255).optional(),
+          utmMedium: z.string().max(255).optional(),
+          utmCampaign: z.string().max(255).optional(),
+          utmTerm: z.string().max(255).optional(),
+          utmContent: z.string().max(255).optional(),
+          referrer: z.string().max(2048).optional(),
+          timeOnPageSeconds: z.number().int().min(0).optional(),
         }),
       )
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
         const source = input.source ?? "home";
+        const ipAddress = getClientIp(ctx.req);
+        const userAgent = ctx.req.headers?.["user-agent"] ?? null;
+
         const id = await insertLead({
           name: input.name,
           email: input.email,
           phone: input.phone,
           source,
           webhookStatus: "pending",
+          utmSource: input.utmSource ?? null,
+          utmMedium: input.utmMedium ?? null,
+          utmCampaign: input.utmCampaign ?? null,
+          utmTerm: input.utmTerm ?? null,
+          utmContent: input.utmContent ?? null,
+          referrer: input.referrer ?? null,
+          ipAddress,
+          userAgent,
+          timeOnPageSeconds: input.timeOnPageSeconds ?? null,
+          crmStatus: "new",
         });
 
         const payload = {
@@ -83,14 +121,15 @@ export const appRouter = router({
           email: input.email,
           phone: input.phone,
           source,
+          utmSource: input.utmSource,
+          utmMedium: input.utmMedium,
+          utmCampaign: input.utmCampaign,
           createdAt: new Date().toISOString(),
         };
 
-        // Per-Channel Webhook auslösen (mit Fallback auf globale URL)
         const status = await fireChannelWebhook(source, payload);
         if (id) await updateLeadWebhookStatus(id, status);
 
-        // Owner-Benachrichtigung (best effort)
         notifyOwner({
           title: "Neuer Lead im Fast-Track Funnel",
           content: `${input.name} · ${input.email} · ${input.phone} (Quelle: ${source})`,
@@ -106,26 +145,40 @@ export const appRouter = router({
       .input(
         z.object({
           page: z.enum([
-            "home",
-            "vsl",
-            "termin",
-            "webseite-termin",
-            "ki-report-termin",
-            "exit-plan-termin",
-            "exit-plan",
-            "ki-report",
-            "traumwebseite",
+            "home", "vsl", "termin", "webseite-termin",
+            "ki-report-termin", "exit-plan-termin",
+            "exit-plan", "ki-report", "traumwebseite",
           ]),
           visitorId: z.string().max(64).optional(),
+          utmSource: z.string().max(255).optional(),
+          utmMedium: z.string().max(255).optional(),
+          utmCampaign: z.string().max(255).optional(),
+          utmTerm: z.string().max(255).optional(),
+          utmContent: z.string().max(255).optional(),
+          referrer: z.string().max(2048).optional(),
         }),
       )
-      .mutation(async ({ input }) => {
-        await insertPageView({ page: input.page, visitorId: input.visitorId ?? null });
+      .mutation(async ({ input, ctx }) => {
+        const ipAddress = getClientIp(ctx.req);
+        const userAgent = ctx.req.headers?.["user-agent"] ?? null;
+
+        await insertPageView({
+          page: input.page,
+          visitorId: input.visitorId ?? null,
+          utmSource: input.utmSource ?? null,
+          utmMedium: input.utmMedium ?? null,
+          utmCampaign: input.utmCampaign ?? null,
+          utmTerm: input.utmTerm ?? null,
+          utmContent: input.utmContent ?? null,
+          referrer: input.referrer ?? null,
+          ipAddress,
+          userAgent,
+        });
         return { success: true } as const;
       }),
   }),
 
-  /** Öffentlicher Endpoint für Calendly-Webhook (Termin-Erstellung). */
+  /** Öffentlicher Endpoint für Calendly-Webhook. */
   appointments: router({
     create: publicProcedure
       .input(
@@ -144,7 +197,6 @@ export const appRouter = router({
           eventUri: input.eventUri ?? null,
         });
 
-        // Owner-Benachrichtigung
         notifyOwner({
           title: "Neuer Termin gebucht",
           content: `${input.name ?? "Unbekannt"} · ${input.email ?? "-"} (Kanal: ${input.source})`,
@@ -154,7 +206,7 @@ export const appRouter = router({
       }),
   }),
 
-  /** Admin-Bereich: Login + geschützte Daten. */
+  /** Admin-Bereich. */
   admin: router({
     login: publicProcedure
       .input(z.object({ email: z.string(), password: z.string() }))
@@ -164,23 +216,13 @@ export const appRouter = router({
         }
         const token = await createAdminToken(input.email);
         ctx.res.cookie(ADMIN_COOKIE, token, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "none",
-          path: "/",
-          maxAge: 30 * 24 * 60 * 60 * 1000,
+          httpOnly: true, secure: true, sameSite: "none", path: "/", maxAge: 30 * 24 * 60 * 60 * 1000,
         });
         return { success: true } as const;
       }),
 
     logout: publicProcedure.mutation(({ ctx }) => {
-      ctx.res.clearCookie(ADMIN_COOKIE, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        path: "/",
-        maxAge: -1,
-      });
+      ctx.res.clearCookie(ADMIN_COOKIE, { httpOnly: true, secure: true, sameSite: "none", path: "/", maxAge: -1 });
       return { success: true } as const;
     }),
 
@@ -189,7 +231,7 @@ export const appRouter = router({
       return { isAdmin: ok } as const;
     }),
 
-    // ─── Legacy Stats ────────────────────────────────────────────────────
+    // ─── Stats ────────────────────────────────────────────────────────────
     stats: publicProcedure
       .input(z.object({ period: periodSchema }))
       .query(async ({ input, ctx }) => {
@@ -204,12 +246,76 @@ export const appRouter = router({
         return getDailySeries(input.days);
       }),
 
+    // ─── Leads (legacy simple list) ─────────────────────────────────────
     leads: publicProcedure.query(async ({ ctx }) => {
       await assertAdmin(ctx.req);
       return listLeads();
     }),
 
-    // ─── Per-Channel Funnel Stats ────────────────────────────────────────
+    // ─── Enhanced Leads (search, filter, pagination) ────────────────────
+    leadsEnhanced: publicProcedure
+      .input(z.object({
+        search: z.string().optional(),
+        source: z.string().optional(),
+        crmStatus: z.string().optional(),
+        utmSource: z.string().optional(),
+        utmMedium: z.string().optional(),
+        utmCampaign: z.string().optional(),
+        limit: z.number().min(1).max(200).optional(),
+        offset: z.number().min(0).optional(),
+      }))
+      .query(async ({ input, ctx }) => {
+        await assertAdmin(ctx.req);
+        return listLeadsEnhanced(input);
+      }),
+
+    // ─── Lead Detail ────────────────────────────────────────────────────
+    leadDetail: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input, ctx }) => {
+        await assertAdmin(ctx.req);
+        return getLeadById(input.id);
+      }),
+
+    // ─── CRM Status Update ──────────────────────────────────────────────
+    updateCrmStatus: publicProcedure
+      .input(z.object({
+        id: z.number(),
+        crmStatus: z.string().max(32),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        await assertAdmin(ctx.req);
+        await updateLeadCrmStatus(input.id, input.crmStatus);
+        return { success: true } as const;
+      }),
+
+    // ─── Lead Notes ─────────────────────────────────────────────────────
+    updateNotes: publicProcedure
+      .input(z.object({
+        id: z.number(),
+        notes: z.string().max(10000),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        await assertAdmin(ctx.req);
+        await updateLeadNotes(input.id, input.notes);
+        return { success: true } as const;
+      }),
+
+    // ─── UTM Pivot ──────────────────────────────────────────────────────
+    utmPivot: publicProcedure
+      .input(z.object({ period: periodSchema }))
+      .query(async ({ input, ctx }) => {
+        await assertAdmin(ctx.req);
+        return getUtmPivot(input.period as Period);
+      }),
+
+    // ─── Distinct UTM Values (for filter dropdowns) ─────────────────────
+    utmValues: publicProcedure.query(async ({ ctx }) => {
+      await assertAdmin(ctx.req);
+      return getDistinctUtmValues();
+    }),
+
+    // ─── Per-Channel Funnel Stats ───────────────────────────────────────
     funnelStats: publicProcedure
       .input(z.object({ period: periodSchema }))
       .query(async ({ input, ctx }) => {
@@ -217,7 +323,6 @@ export const appRouter = router({
         return getFunnelStatsByChannel(input.period as Period);
       }),
 
-    // ─── Per-Channel Series (Charts) ────────────────────────────────────
     channelSeries: publicProcedure
       .input(z.object({ days: z.number().min(1).max(90) }))
       .query(async ({ input, ctx }) => {
@@ -225,7 +330,7 @@ export const appRouter = router({
         return getChannelSeries(input.days);
       }),
 
-    // ─── Webhooks (per channel) ──────────────────────────────────────────
+    // ─── Webhooks ───────────────────────────────────────────────────────
     getWebhooks: publicProcedure.query(async ({ ctx }) => {
       await assertAdmin(ctx.req);
       return getAllWebhooks();
@@ -239,19 +344,12 @@ export const appRouter = router({
           const wh = await getWebhookByChannel(input.channel);
           return { url: wh?.url ?? "", active: wh?.active ?? true };
         }
-        // Legacy: globale URL
         const url = await getSetting("webhook_url");
         return { url: url ?? "", active: true };
       }),
 
     setWebhook: publicProcedure
-      .input(
-        z.object({
-          channel: channelSchema,
-          url: z.string().max(2048),
-          active: z.boolean().optional(),
-        }),
-      )
+      .input(z.object({ channel: channelSchema, url: z.string().max(2048), active: z.boolean().optional() }))
       .mutation(async ({ input, ctx }) => {
         await assertAdmin(ctx.req);
         await setWebhookByChannel(input.channel, input.url.trim(), input.active ?? true);
@@ -262,12 +360,7 @@ export const appRouter = router({
       .input(z.object({ channel: channelSchema }).optional())
       .mutation(async ({ input, ctx }) => {
         await assertAdmin(ctx.req);
-        const payload = {
-          event: "test",
-          channel: input?.channel ?? "global",
-          message: "Test-Webhook aus dem Fast-Track Admin-Dashboard",
-          createdAt: new Date().toISOString(),
-        };
+        const payload = { event: "test", channel: input?.channel ?? "global", message: "Test-Webhook aus dem Fast-Track Admin-Dashboard", createdAt: new Date().toISOString() };
         if (input?.channel) {
           const status = await fireChannelWebhook(input.channel, payload);
           return { status } as const;
@@ -276,20 +369,40 @@ export const appRouter = router({
         return { status } as const;
       }),
 
-    // ─── Ad Spend ────────────────────────────────────────────────────────
+    // ─── Ad Spend ───────────────────────────────────────────────────────
     setAdSpend: publicProcedure
-      .input(
-        z.object({
-          channel: channelSchema,
-          date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-          amountCents: z.number().int().min(0),
-        }),
-      )
+      .input(z.object({
+        channel: channelSchema,
+        date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+        amountCents: z.number().int().min(0),
+        campaignName: z.string().max(255).optional(),
+        notes: z.string().max(1000).optional(),
+      }))
       .mutation(async ({ input, ctx }) => {
         await assertAdmin(ctx.req);
-        await setAdSpend(input.channel, input.date, input.amountCents);
+        await setAdSpend(input.channel, input.date, input.amountCents, input.campaignName, input.notes);
         return { success: true } as const;
       }),
+
+    bulkAdSpend: publicProcedure
+      .input(z.object({
+        rows: z.array(z.object({
+          channel: z.string().max(64),
+          date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+          amountCents: z.number().int().min(0),
+          campaignName: z.string().max(255).optional(),
+          notes: z.string().max(1000).optional(),
+        })),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        await assertAdmin(ctx.req);
+        return bulkImportAdSpend(input.rows);
+      }),
+
+    listAdSpend: publicProcedure.query(async ({ ctx }) => {
+      await assertAdmin(ctx.req);
+      return listAdSpend();
+    }),
   }),
 });
 

@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, sql } from "drizzle-orm";
+import { and, desc, eq, gte, like, sql } from "drizzle-orm";
 import { getDb } from "./db";
 import {
   InsertLead,
@@ -16,14 +16,12 @@ import {
 export const CHANNELS = ["ki-report", "exit-plan", "traumwebseite"] as const;
 export type Channel = (typeof CHANNELS)[number];
 
-/** Mapping: welche Seiten gehören zu welchem Kanal (für PageView-Zuordnung) */
 const CHANNEL_PAGES: Record<Channel, string[]> = {
   "ki-report": ["ki-report", "ki-report-termin"],
   "exit-plan": ["exit-plan", "exit-plan-termin"],
   "traumwebseite": ["traumwebseite", "webseite-termin"],
 };
 
-/** Mapping: welche Lead-Source gehört zu welchem Kanal */
 const CHANNEL_SOURCES: Record<Channel, string[]> = {
   "ki-report": ["ki-report"],
   "exit-plan": ["exit-plan"],
@@ -32,7 +30,6 @@ const CHANNEL_SOURCES: Record<Channel, string[]> = {
 
 // ─── LEADS ─────────────────────────────────────────────────────────────────────
 
-/** Lead anlegen und die neue ID zurückgeben. */
 export async function insertLead(data: InsertLead): Promise<number | null> {
   const db = await getDb();
   if (!db) return null;
@@ -53,9 +50,120 @@ export async function listLeads() {
   return db.select().from(leads).orderBy(desc(leads.createdAt));
 }
 
+/** Einzelnen Lead mit allen Feldern laden. */
+export async function getLeadById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const rows = await db.select().from(leads).where(eq(leads.id, id)).limit(1);
+  return rows[0] ?? null;
+}
+
+/** CRM-Status eines Leads aktualisieren. */
+export async function updateLeadCrmStatus(id: number, crmStatus: string) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(leads).set({ crmStatus }).where(eq(leads.id, id));
+}
+
+/** Notizen eines Leads aktualisieren. */
+export async function updateLeadNotes(id: number, notes: string) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(leads).set({ notes }).where(eq(leads.id, id));
+}
+
+/** Leads mit optionaler Suche, Filter und Pagination. */
+export async function listLeadsEnhanced(opts: {
+  search?: string;
+  source?: string;
+  crmStatus?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  limit?: number;
+  offset?: number;
+}) {
+  const db = await getDb();
+  if (!db) return { leads: [], total: 0 };
+
+  const conditions = [];
+  if (opts.source) conditions.push(eq(leads.source, opts.source));
+  if (opts.crmStatus) conditions.push(eq(leads.crmStatus, opts.crmStatus));
+  if (opts.utmSource) conditions.push(eq(leads.utmSource, opts.utmSource));
+  if (opts.utmMedium) conditions.push(eq(leads.utmMedium, opts.utmMedium));
+  if (opts.utmCampaign) conditions.push(eq(leads.utmCampaign, opts.utmCampaign));
+  if (opts.search) {
+    const s = `%${opts.search}%`;
+    conditions.push(
+      sql`(${leads.name} LIKE ${s} OR ${leads.email} LIKE ${s} OR ${leads.phone} LIKE ${s})`
+    );
+  }
+
+  const where = conditions.length > 0 ? and(...conditions) : undefined;
+  const limit = opts.limit ?? 50;
+  const offset = opts.offset ?? 0;
+
+  const [rows, countRows] = await Promise.all([
+    where
+      ? db.select().from(leads).where(where).orderBy(desc(leads.createdAt)).limit(limit).offset(offset)
+      : db.select().from(leads).orderBy(desc(leads.createdAt)).limit(limit).offset(offset),
+    where
+      ? db.select({ count: sql<number>`count(*)` }).from(leads).where(where)
+      : db.select({ count: sql<number>`count(*)` }).from(leads),
+  ]);
+
+  return {
+    leads: rows,
+    total: Number(countRows[0]?.count ?? 0),
+  };
+}
+
+/** UTM-Aggregation für Pivot-Tabelle. */
+export async function getUtmPivot(period: Period) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const start = periodStart(period);
+
+  const rows = await db
+    .select({
+      utmSource: leads.utmSource,
+      utmMedium: leads.utmMedium,
+      utmCampaign: leads.utmCampaign,
+      count: sql<number>`count(*)`,
+    })
+    .from(leads)
+    .where(gte(leads.createdAt, start))
+    .groupBy(leads.utmSource, leads.utmMedium, leads.utmCampaign);
+
+  return rows.map((r) => ({
+    utmSource: r.utmSource ?? "(direkt)",
+    utmMedium: r.utmMedium ?? "(none)",
+    utmCampaign: r.utmCampaign ?? "(none)",
+    count: Number(r.count),
+  }));
+}
+
+/** Distinct UTM-Werte für Filter-Dropdowns. */
+export async function getDistinctUtmValues() {
+  const db = await getDb();
+  if (!db) return { sources: [], mediums: [], campaigns: [] };
+
+  const [srcRows, medRows, campRows] = await Promise.all([
+    db.selectDistinct({ val: leads.utmSource }).from(leads).where(sql`${leads.utmSource} IS NOT NULL`),
+    db.selectDistinct({ val: leads.utmMedium }).from(leads).where(sql`${leads.utmMedium} IS NOT NULL`),
+    db.selectDistinct({ val: leads.utmCampaign }).from(leads).where(sql`${leads.utmCampaign} IS NOT NULL`),
+  ]);
+
+  return {
+    sources: srcRows.map((r) => r.val).filter(Boolean) as string[],
+    mediums: medRows.map((r) => r.val).filter(Boolean) as string[],
+    campaigns: campRows.map((r) => r.val).filter(Boolean) as string[],
+  };
+}
+
 // ─── PAGE VIEWS ────────────────────────────────────────────────────────────────
 
-/** Page-View erfassen. */
 export async function insertPageView(data: InsertPageView) {
   const db = await getDb();
   if (!db) return;
@@ -64,19 +172,13 @@ export async function insertPageView(data: InsertPageView) {
 
 // ─── SETTINGS ──────────────────────────────────────────────────────────────────
 
-/** Setting lesen. */
 export async function getSetting(key: string): Promise<string | null> {
   const db = await getDb();
   if (!db) return null;
-  const rows = await db
-    .select()
-    .from(settings)
-    .where(eq(settings.settingKey, key))
-    .limit(1);
+  const rows = await db.select().from(settings).where(eq(settings.settingKey, key)).limit(1);
   return rows.length > 0 ? (rows[0].settingValue ?? null) : null;
 }
 
-/** Setting schreiben (upsert). */
 export async function setSetting(key: string, value: string) {
   const db = await getDb();
   if (!db) return;
@@ -106,58 +208,32 @@ function periodStart(period: Period): Date {
   return d;
 }
 
-// ─── LEGACY STATS (kept for backwards compat) ──────────────────────────────────
+// ─── LEGACY STATS ──────────────────────────────────────────────────────────────
 
-/** Aggregierte Statistiken für das Dashboard (legacy). */
 export async function getStats(period: Period) {
   const db = await getDb();
-  if (!db) {
-    return {
-      views: { home: 0, vsl: 0, termin: 0 },
-      leads: 0,
-      totalLeads: 0,
-    };
-  }
+  if (!db) return { views: { home: 0, vsl: 0, termin: 0 }, leads: 0, totalLeads: 0 };
 
   const start = periodStart(period);
 
   const viewRows = await db
-    .select({
-      page: pageViews.page,
-      count: sql<number>`count(*)`,
-    })
+    .select({ page: pageViews.page, count: sql<number>`count(*)` })
     .from(pageViews)
     .where(gte(pageViews.createdAt, start))
     .groupBy(pageViews.page);
 
   const views: Record<string, number> = { home: 0, vsl: 0, termin: 0 };
-  for (const r of viewRows) {
-    views[r.page] = Number(r.count);
-  }
+  for (const r of viewRows) views[r.page] = Number(r.count);
 
-  const leadRows = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(leads)
-    .where(gte(leads.createdAt, start));
+  const leadRows = await db.select({ count: sql<number>`count(*)` }).from(leads).where(gte(leads.createdAt, start));
   const leadsInPeriod = Number(leadRows[0]?.count ?? 0);
 
-  const totalLeadRows = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(leads);
+  const totalLeadRows = await db.select({ count: sql<number>`count(*)` }).from(leads);
   const totalLeads = Number(totalLeadRows[0]?.count ?? 0);
 
-  return {
-    views: {
-      home: views.home ?? 0,
-      vsl: views.vsl ?? 0,
-      termin: views.termin ?? 0,
-    },
-    leads: leadsInPeriod,
-    totalLeads,
-  };
+  return { views: { home: views.home ?? 0, vsl: views.vsl ?? 0, termin: views.termin ?? 0 }, leads: leadsInPeriod, totalLeads };
 }
 
-/** Zeitreihe (legacy) – letzte N Tage. */
 export async function getDailySeries(days: number) {
   const db = await getDb();
   if (!db) return [];
@@ -166,20 +242,12 @@ export async function getDailySeries(days: number) {
   start.setHours(0, 0, 0, 0);
 
   const rows = await db
-    .select({
-      day: sql<string>`DATE(${pageViews.createdAt})`,
-      page: pageViews.page,
-      count: sql<number>`count(*)`,
-    })
+    .select({ day: sql<string>`DATE(${pageViews.createdAt})`, page: pageViews.page, count: sql<number>`count(*)` })
     .from(pageViews)
     .where(gte(pageViews.createdAt, start))
     .groupBy(sql`DATE(${pageViews.createdAt})`, pageViews.page);
 
-  return rows.map((r) => ({
-    day: r.day,
-    page: r.page,
-    count: Number(r.count),
-  }));
+  return rows.map((r) => ({ day: r.day, page: r.page, count: Number(r.count) }));
 }
 
 // ─── PER-CHANNEL FUNNEL STATS ──────────────────────────────────────────────────
@@ -189,20 +257,18 @@ export interface ChannelFunnelStats {
   visitors: number;
   leads: number;
   appointments: number;
-  lpCr: number; // leads / visitors (0-1)
-  terminCr: number; // appointments / leads (0-1)
+  lpCr: number;
+  terminCr: number;
   adSpendCents: number;
-  cpl: number; // adSpend / leads (in cents, 0 if no leads)
+  cpl: number;
 }
 
-/** Per-Channel Funnel-Statistiken für einen Zeitraum. */
 export async function getFunnelStatsByChannel(period: Period): Promise<ChannelFunnelStats[]> {
   const db = await getDb();
   if (!db) return CHANNELS.map((ch) => ({ channel: ch, visitors: 0, leads: 0, appointments: 0, lpCr: 0, terminCr: 0, adSpendCents: 0, cpl: 0 }));
 
   const start = periodStart(period);
 
-  // PageViews pro Seite
   const viewRows = await db
     .select({ page: pageViews.page, count: sql<number>`count(*)` })
     .from(pageViews)
@@ -211,7 +277,6 @@ export async function getFunnelStatsByChannel(period: Period): Promise<ChannelFu
   const viewMap: Record<string, number> = {};
   for (const r of viewRows) viewMap[r.page] = Number(r.count);
 
-  // Leads pro Source
   const leadRows = await db
     .select({ source: leads.source, count: sql<number>`count(*)` })
     .from(leads)
@@ -220,7 +285,6 @@ export async function getFunnelStatsByChannel(period: Period): Promise<ChannelFu
   const leadMap: Record<string, number> = {};
   for (const r of leadRows) leadMap[r.source] = Number(r.count);
 
-  // Appointments pro Source
   const apptRows = await db
     .select({ source: appointments.source, count: sql<number>`count(*)` })
     .from(appointments)
@@ -229,7 +293,6 @@ export async function getFunnelStatsByChannel(period: Period): Promise<ChannelFu
   const apptMap: Record<string, number> = {};
   for (const r of apptRows) apptMap[r.source] = Number(r.count);
 
-  // AdSpend pro Channel (summiert)
   const spendRows = await db
     .select({ channel: adSpend.channel, total: sql<number>`SUM(${adSpend.amountCents})` })
     .from(adSpend)
@@ -247,20 +310,11 @@ export async function getFunnelStatsByChannel(period: Period): Promise<ChannelFu
     const terminCr = channelLeads > 0 ? channelAppts / channelLeads : 0;
     const cpl = channelLeads > 0 ? Math.round(channelSpend / channelLeads) : 0;
 
-    return {
-      channel: ch,
-      visitors,
-      leads: channelLeads,
-      appointments: channelAppts,
-      lpCr,
-      terminCr,
-      adSpendCents: channelSpend,
-      cpl,
-    };
+    return { channel: ch, visitors, leads: channelLeads, appointments: channelAppts, lpCr, terminCr, adSpendCents: channelSpend, cpl };
   });
 }
 
-// ─── PER-CHANNEL DAILY SERIES (für Charts) ─────────────────────────────────────
+// ─── PER-CHANNEL DAILY SERIES ─────────────────────────────────────────────────
 
 export interface ChannelDayPoint {
   day: string;
@@ -271,7 +325,6 @@ export interface ChannelDayPoint {
   adSpendCents: number;
 }
 
-/** Tägliche Zeitreihe pro Kanal für die letzten N Tage. */
 export async function getChannelSeries(days: number): Promise<ChannelDayPoint[]> {
   const db = await getDb();
   if (!db) return [];
@@ -281,31 +334,26 @@ export async function getChannelSeries(days: number): Promise<ChannelDayPoint[]>
   start.setHours(0, 0, 0, 0);
   const startStr = start.toISOString().slice(0, 19).replace("T", " ");
 
-  // PageViews pro Tag + Seite (use db.execute to avoid Drizzle groupBy+DATE bug)
   const pvResult = await db.execute(
     sql`SELECT DATE(createdAt) as day, page, count(*) as count FROM page_views WHERE createdAt >= ${startStr} GROUP BY DATE(createdAt), page`
   );
   const pvRows = (pvResult as unknown as any[][])[0] ?? [];
 
-  // Leads pro Tag + Source
   const leadResult = await db.execute(
     sql`SELECT DATE(createdAt) as day, source, count(*) as count FROM leads WHERE createdAt >= ${startStr} GROUP BY DATE(createdAt), source`
   );
   const leadRows = (leadResult as unknown as any[][])[0] ?? [];
 
-  // Appointments pro Tag + Source
   const apptResult = await db.execute(
     sql`SELECT DATE(createdAt) as day, source, count(*) as count FROM appointments WHERE createdAt >= ${startStr} GROUP BY DATE(createdAt), source`
   );
   const apptRows = (apptResult as unknown as any[][])[0] ?? [];
 
-  // AdSpend pro Tag + Channel
   const spendResult = await db.execute(
     sql`SELECT date as day, channel, SUM(amountCents) as total FROM ad_spend WHERE createdAt >= ${startStr} GROUP BY date, channel`
   );
   const spendRows = (spendResult as unknown as any[][])[0] ?? [];
 
-  // Alle Tage im Bereich generieren
   const allDays: string[] = [];
   const d = new Date(start);
   const now = new Date();
@@ -318,7 +366,6 @@ export async function getChannelSeries(days: number): Promise<ChannelDayPoint[]>
 
   for (const day of allDays) {
     for (const ch of CHANNELS) {
-      // DATE() from mysql2 returns a Date object or string depending on driver mode
       const toDateStr = (v: any) => {
         if (!v) return "";
         if (v instanceof Date) return v.toISOString().slice(0, 10);
@@ -341,14 +388,7 @@ export async function getChannelSeries(days: number): Promise<ChannelDayPoint[]>
       const spendFound = spendRows.find((r) => toDateStr(r.day) === day && r.channel === ch);
       const channelSpend = spendFound ? Number(spendFound.total ?? 0) : 0;
 
-      result.push({
-        day,
-        channel: ch,
-        visitors,
-        leads: channelLeads,
-        appointments: channelAppts,
-        adSpendCents: channelSpend,
-      });
+      result.push({ day, channel: ch, visitors, leads: channelLeads, appointments: channelAppts, adSpendCents: channelSpend });
     }
   }
 
@@ -357,7 +397,6 @@ export async function getChannelSeries(days: number): Promise<ChannelDayPoint[]>
 
 // ─── APPOINTMENTS ──────────────────────────────────────────────────────────────
 
-/** Termin anlegen (z.B. via Calendly-Webhook). */
 export async function insertAppointment(data: InsertAppointment): Promise<number | null> {
   const db = await getDb();
   if (!db) return null;
@@ -368,7 +407,6 @@ export async function insertAppointment(data: InsertAppointment): Promise<number
 
 // ─── PER-CHANNEL WEBHOOKS ──────────────────────────────────────────────────────
 
-/** Webhook-URL für einen Kanal lesen. */
 export async function getWebhookByChannel(channel: string): Promise<{ url: string; active: boolean } | null> {
   const db = await getDb();
   if (!db) return null;
@@ -377,14 +415,12 @@ export async function getWebhookByChannel(channel: string): Promise<{ url: strin
   return { url: rows[0].url ?? "", active: rows[0].active === 1 };
 }
 
-/** Alle Webhooks lesen. */
 export async function getAllWebhooks() {
   const db = await getDb();
   if (!db) return [];
   return db.select().from(webhooks).orderBy(webhooks.channel);
 }
 
-/** Webhook-URL für einen Kanal setzen (upsert). */
 export async function setWebhookByChannel(channel: string, url: string, active: boolean = true) {
   const db = await getDb();
   if (!db) return;
@@ -396,11 +432,9 @@ export async function setWebhookByChannel(channel: string, url: string, active: 
 
 // ─── AD SPEND ──────────────────────────────────────────────────────────────────
 
-/** Ad-Spend für einen Kanal und Tag setzen (upsert via unique channel+date). */
-export async function setAdSpend(channel: string, date: string, amountCents: number) {
+export async function setAdSpend(channel: string, date: string, amountCents: number, campaignName?: string, notes?: string) {
   const db = await getDb();
   if (!db) return;
-  // Da kein unique constraint auf channel+date, erst prüfen ob existiert
   const existing = await db
     .select()
     .from(adSpend)
@@ -410,14 +444,21 @@ export async function setAdSpend(channel: string, date: string, amountCents: num
   if (existing.length > 0) {
     await db
       .update(adSpend)
-      .set({ amountCents })
+      .set({ amountCents, campaignName: campaignName ?? null, notes: notes ?? null })
       .where(and(eq(adSpend.channel, channel), eq(adSpend.date, date)));
   } else {
-    await db.insert(adSpend).values({ channel, date, amountCents });
+    await db.insert(adSpend).values({ channel, date, amountCents, campaignName: campaignName ?? null, notes: notes ?? null });
   }
 }
 
-/** Ad-Spend für einen Kanal im Zeitraum lesen. */
+/** Bulk-Import von Ad-Costs (z.B. aus CSV). */
+export async function bulkImportAdSpend(rows: Array<{ channel: string; date: string; amountCents: number; campaignName?: string; notes?: string }>) {
+  for (const row of rows) {
+    await setAdSpend(row.channel, row.date, row.amountCents, row.campaignName, row.notes);
+  }
+  return { imported: rows.length };
+}
+
 export async function getAdSpendByChannel(channel: string, period: Period) {
   const db = await getDb();
   if (!db) return [];
@@ -429,21 +470,22 @@ export async function getAdSpendByChannel(channel: string, period: Period) {
     .orderBy(adSpend.date);
 }
 
-// ─── WEBHOOK FIRE (per channel) ────────────────────────────────────────────────
+/** Alle Ad-Spend-Einträge laden. */
+export async function listAdSpend() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(adSpend).orderBy(desc(adSpend.date));
+}
 
-/** Webhook für einen bestimmten Kanal auslösen. */
+// ─── WEBHOOK FIRE ──────────────────────────────────────────────────────────────
+
 export async function fireChannelWebhook(channel: string, payload: Record<string, unknown>): Promise<"sent" | "failed" | "none"> {
   const wh = await getWebhookByChannel(channel);
   if (!wh || !wh.url || !wh.active) {
-    // Fallback: globale webhook_url aus Settings
     const globalUrl = await getSetting("webhook_url");
     if (!globalUrl) return "none";
     try {
-      const res = await fetch(globalUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const res = await fetch(globalUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       return res.ok ? "sent" : "failed";
     } catch (e) {
       console.error("[Webhook] Versand fehlgeschlagen:", e);
@@ -451,11 +493,7 @@ export async function fireChannelWebhook(channel: string, payload: Record<string
     }
   }
   try {
-    const res = await fetch(wh.url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    const res = await fetch(wh.url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
     return res.ok ? "sent" : "failed";
   } catch (e) {
     console.error("[Webhook] Versand fehlgeschlagen:", e);
@@ -463,16 +501,11 @@ export async function fireChannelWebhook(channel: string, payload: Record<string
   }
 }
 
-/** Legacy: Webhook auslösen über globale Settings-URL. */
 export async function fireWebhook(payload: Record<string, unknown>): Promise<"sent" | "failed" | "none"> {
   const url = await getSetting("webhook_url");
   if (!url) return "none";
   try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
     return res.ok ? "sent" : "failed";
   } catch (e) {
     console.error("[Webhook] Versand fehlgeschlagen:", e);

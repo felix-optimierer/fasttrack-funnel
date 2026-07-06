@@ -23,6 +23,10 @@ export const ASSETS = {
   // Echte Fallstudien-Bilder (von den Original-Webseiten)
   caseTorben: "/manus-storage/torben_moeller_ef873c93.jpeg",
   caseReichl: "/manus-storage/alexander_reichl_c936ba49.webp",
+  caseMarion: "/manus-storage/marion-stegemann_85d97a90.webp",
+  caseDesiree: "/manus-storage/desiree-nowak_45b053f0.webp",
+  caseFlorian: "/manus-storage/florian-zurheiden_78911900.webp",
+  caseAndrea: "/manus-storage/andrea-schaich_27fdda2a.webp",
 };
 
 export const BRAND = {
@@ -58,7 +62,7 @@ export type CaseStudy = {
   isQuote?: boolean;
 };
 
-// 7 Platzhalter-Fallstudien. ECHTE Kundennamen/Fotos/Zahlen vor Live-Schaltung einsetzen.
+// 9 echte Fallstudien.
 export const CASE_STUDIES: CaseStudy[] = [
   {
     name: "Torben Möller",
@@ -105,8 +109,9 @@ export const CASE_STUDIES: CaseStudy[] = [
     sourceLabel: "Verifizierte Bewertung",
   },
   {
-    name: "Marion",
-    role: "Therapie & Coaching · Fast-Track-Teilnehmerin",
+    name: "Marion Stegemann",
+    role: "Psychotherapeutin · Fast-Track-Teilnehmerin",
+    image: ASSETS.caseMarion,
     result: "Nach 3 Wochen stolze Besitzerin der eigenen Webseite.",
     quote:
       "Ich hatte keine Website und war quasi unsichtbar. Seit heute Vormittag bin ich stolze Besitzerin einer Webseite – unglaublich, wie schnell und einfach das funktioniert. Und ich bin nicht mal Physiotherapeutin, es lässt sich also auf jeden Bereich übertragen.",
@@ -114,9 +119,8 @@ export const CASE_STUDIES: CaseStudy[] = [
       { label: "Bewertung", value: "5,0 ★" },
       { label: "Webseite live", value: "3 Wochen" },
     ],
-    sourceUrl:
-      "https://www.expertenmarkt.de/experte/bewegungsoptimierer-gmbh-bechhofen/erfahrung",
-    sourceLabel: "Verifizierte Bewertung",
+    sourceUrl: "https://physiotherapie-greussen.de/",
+    sourceLabel: "physiotherapie-greussen.de",
   },
   {
     name: "Nadine Peter",
@@ -133,8 +137,9 @@ export const CASE_STUDIES: CaseStudy[] = [
     sourceLabel: "Verifizierte Bewertung",
   },
   {
-    name: "Desiré Nowak",
-    role: "Fast-Track-Teilnehmerin",
+    name: "Desirée Nowak",
+    role: "Physiotherapeutin · Greußen",
+    image: ASSETS.caseDesiree,
     result: "Auch ohne Technik-Vorwissen sicher zur eigenen Seite.",
     quote:
       "Kompetente und problemorientierte Beratung – auch für Personen, die technisch sehr wenig bewandert sind. Einfach TOP.",
@@ -142,9 +147,8 @@ export const CASE_STUDIES: CaseStudy[] = [
       { label: "Bewertung", value: "5,0 ★" },
       { label: "Technik-Vorwissen", value: "keins" },
     ],
-    sourceUrl:
-      "https://www.expertenmarkt.de/experte/bewegungsoptimierer-gmbh-bechhofen/erfahrung",
-    sourceLabel: "Verifizierte Bewertung",
+    sourceUrl: "https://physiotherapie-greussen.de/",
+    sourceLabel: "physiotherapie-greussen.de",
   },
   {
     name: "Frederik Gerber",
@@ -159,5 +163,35 @@ export const CASE_STUDIES: CaseStudy[] = [
     sourceUrl:
       "https://www.expertenmarkt.de/experte/bewegungsoptimierer-gmbh-bechhofen/erfahrung",
     sourceLabel: "Verifizierte Bewertung",
+  },
+  {
+    name: "Florian Zurheiden",
+    role: "Schwarzwald-Physio · Waldkirch",
+    image: ASSETS.caseFlorian,
+    result: "Traumwebseite in unter einer Stunde gebaut.",
+    quote:
+      "Moderne Praxis-Webseite mit Video, Online-Terminbuchung und Newsletter-Funktion – alles in unter einer Stunde live. 62+ Bewertungen bei 5,0 ★ auf Google sprechen für sich.",
+    metrics: [
+      { label: "Google-Bewertung", value: "5,0 ★" },
+      { label: "Bewertungen", value: "62+" },
+    ],
+    sourceUrl: "https://schwarzwald-physio.de/",
+    sourceLabel: "schwarzwald-physio.de",
+    isQuote: false,
+  },
+  {
+    name: "Andrea Schaich",
+    role: "Schmerz & Physiotherapie · Enkenbach-Alsenborn",
+    image: ASSETS.caseAndrea,
+    result: "Privatpraxis mit professioneller Online-Präsenz positioniert.",
+    quote:
+      "Als sektorale Heilpraktikerin für Physiotherapie mit über 30 Jahren Erfahrung: Eigene Webseite mit Online-Terminanfrage, Leistungsübersicht und Patientenbewertungen – alles per KI-Agent erstellt.",
+    metrics: [
+      { label: "Google-Bewertung", value: "4,8 ★" },
+      { label: "Erfahrung", value: "30+ Jahre" },
+    ],
+    sourceUrl: "https://www.physioschaich.de/",
+    sourceLabel: "physioschaich.de",
+    isQuote: false,
   },
 ];
