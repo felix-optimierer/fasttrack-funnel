@@ -98,7 +98,7 @@ export default function Anleitung() {
             </div>
 
             <GoldButton glow className="mt-4 w-full" onClick={goToTermin}>
-              Kostenlose Demo sichern
+              Kostenlose 1:1 Praxisanalyse sichern
               <ArrowRight className="h-5 w-5" />
             </GoldButton>
 
@@ -141,7 +141,7 @@ export default function Anleitung() {
             Begrenzte Plätze
           </div>
           <h2 className="text-2xl font-extrabold md:text-3xl">
-            Sichere dir deine kostenlose Demo.
+            Sichere dir deine kostenlose 1:1 Praxisanalyse.
           </h2>
           <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">
             Wähle im nächsten Schritt deinen Wunschtermin – wir zeigen dir live,

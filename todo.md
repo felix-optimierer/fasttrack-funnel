@@ -169,3 +169,9 @@
 - [x] Anica Bommert: Neues Bild (vom User bereitgestellt) austauschen
 - [x] Marion Stegemann: Verifizierte Bewertung verlinken
 - [x] Alexander Reichl: Verifizierte Bewertung verlinken
+
+## Änderungen (Runde 16) – Bilder schärfer, Bewertungs-Links, CTA-Text
+- [x] Anica Bommert: Bild mit vollem Gesicht (nicht abgeschnitten)
+- [x] Florian Zurheiden: Bild schärfer/besser
+- [x] Verifizierte Bewertungs-Links für alle Fallstudien ergänzen (Anica, Desirée, Tabea, Florian, Andrea)
+- [x] CTA-Button auf /anleitung: "Kostenlose Demo sichern" → "Kostenlose 1:1 Praxisanalyse sichern"

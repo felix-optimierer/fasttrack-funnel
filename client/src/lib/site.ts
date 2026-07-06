@@ -25,8 +25,8 @@ export const ASSETS = {
   caseReichl: "/manus-storage/alexander_reichl_c936ba49.webp",
   caseMarion: "/manus-storage/marion-stegemann_85d97a90.webp",
   caseDesiree: "/manus-storage/desiree-nowak-v2_107a0327.webp",
-  caseFlorian: "/manus-storage/florian-zurheiden-v3_ec5be024.webp",
-  caseAnica: "/manus-storage/anica-bommert-v2_e6e0bc8a.webp",
+  caseFlorian: "/manus-storage/florian-zurheiden-v4_4bdef1c6.webp",
+  caseAnica: "/manus-storage/anica-bommert-v3_d8696714.webp",
   caseKlaus: "/manus-storage/klaus-leipholz_5e66daec.webp",
   caseAndrea: "/manus-storage/andrea-schaich-logo-v2_4c8c22b7.webp",
   caseTabea: "/manus-storage/tabea-gruender_2a935f6d.webp",
@@ -116,6 +116,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     sourceUrl:
       "https://www.expertenmarkt.de/experte/bewegungsoptimierer-gmbh-bechhofen/erfahrung",
     sourceLabel: "Verifizierte Bewertung",
+    reviewUrl: "https://www.expertenmarkt.de/experte/bewegungsoptimierer-gmbh-bechhofen/erfahrung",
   },
   {
     name: "Marion Stegemann",
@@ -161,6 +162,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     ],
     sourceUrl: "https://physiotherapie-greussen.de/",
     sourceLabel: "physiotherapie-greussen.de",
+    reviewUrl: "https://www.expertenmarkt.de/experte/bewegungsoptimierer-gmbh-bechhofen/erfahrung",
   },
   {
     name: "Tabea Gründer",
@@ -176,6 +178,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     sourceUrl: "https://www.tabea-physiotherapie.de/",
     sourceLabel: "tabea-physiotherapie.de",
     isQuote: false,
+    reviewUrl: "https://www.expertenmarkt.de/experte/bewegungsoptimierer-gmbh-bechhofen/erfahrung",
   },
   {
     name: "Florian Zurheiden",
@@ -191,6 +194,7 @@ export const CASE_STUDIES: CaseStudy[] = [
     sourceUrl: "https://schwarzwald-physio.de/",
     sourceLabel: "schwarzwald-physio.de",
     isQuote: false,
+    reviewUrl: "https://www.expertenmarkt.de/experte/bewegungsoptimierer-gmbh-bechhofen/erfahrung",
   },
   {
     name: "Andrea Schaich",
@@ -207,5 +211,6 @@ export const CASE_STUDIES: CaseStudy[] = [
     sourceLabel: "physioschaich.de",
     isQuote: false,
     isLogo: true,
+    reviewUrl: "https://www.expertenmarkt.de/experte/bewegungsoptimierer-gmbh-bechhofen/erfahrung",
   },
 ];
