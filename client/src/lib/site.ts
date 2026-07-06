@@ -25,7 +25,9 @@ export const ASSETS = {
   caseReichl: "/manus-storage/alexander_reichl_c936ba49.webp",
   caseMarion: "/manus-storage/marion-stegemann_85d97a90.webp",
   caseDesiree: "/manus-storage/desiree-nowak-v2_107a0327.webp",
-  caseFlorian: "/manus-storage/florian-zurheiden-v2_b75e23c1.webp",
+  caseFlorian: "/manus-storage/florian-zurheiden-v3_ec5be024.webp",
+  caseAnica: "/manus-storage/anica-bommert-v2_e6e0bc8a.webp",
+  caseKlaus: "/manus-storage/klaus-leipholz_5e66daec.webp",
   caseAndrea: "/manus-storage/andrea-schaich-logo-v2_4c8c22b7.webp",
   caseTabea: "/manus-storage/tabea-gruender_2a935f6d.webp",
 };
@@ -63,6 +65,8 @@ export type CaseStudy = {
   isQuote?: boolean;
   // true = Bild ist ein Logo (object-contain statt object-cover)
   isLogo?: boolean;
+  // Link zur verifizierten Bewertung (Expertenmarkt etc.)
+  reviewUrl?: string;
 };
 
 // 9 echte Fallstudien.
@@ -96,10 +100,12 @@ export const CASE_STUDIES: CaseStudy[] = [
     sourceUrl: "https://physiotherapie-neumarkt.com/",
     sourceLabel: "physiotherapie-neumarkt.com",
     isQuote: false,
+    reviewUrl: "https://www.expertenmarkt.de/experte/bewegungsoptimierer-gmbh-bechhofen/erfahrung",
   },
   {
     name: "Anica Bommert",
     role: "Physio & Gesundheitscoach · Gelsenkirchen",
+    image: ASSETS.caseAnica,
     result: "Erste zwei Klienten für 5.000 € im ersten Monat abgeschlossen.",
     quote:
       "Das Fast-Track-System zu buchen war die beste Entscheidung, um in die Online-Selbstständigkeit zu starten. Klare, praxisnahe Schritte und eine unglaublich intensive, persönliche Betreuung – das habe ich in keinem Coaching vorher erlebt.",
@@ -124,20 +130,23 @@ export const CASE_STUDIES: CaseStudy[] = [
     ],
     sourceUrl: "https://physiotherapie-greussen.de/",
     sourceLabel: "physiotherapie-greussen.de",
+    reviewUrl: "https://www.expertenmarkt.de/experte/bewegungsoptimierer-gmbh-bechhofen/erfahrung",
   },
   {
-    name: "Nadine Peter",
-    role: "Fast-Track-Teilnehmerin",
-    result: "Schritt-für-Schritt-Umsetzung mit persönlichem Support.",
+    name: "Klaus Leipholz",
+    role: "Kraftwerk Physiotraining · Berlin-Mitte",
+    image: ASSETS.caseKlaus,
+    result: "700 % mehr Umsatz in 4 Monaten mit neuer Webseite.",
     quote:
-      "Man bekommt einen spitzen Support bei den besprochenen Projekten. Perfekte Umsetzung – vielen Dank dafür!",
+      "Mit der neuen Webseite von den Bewegungsoptimierern habe ich in 4 Monaten 700% mehr Umsatz gemacht. Danke für Eure Unterstützung!",
     metrics: [
       { label: "Bewertung", value: "5,0 ★" },
-      { label: "Support", value: "persönlich" },
+      { label: "Umsatzsteigerung", value: "700 %" },
     ],
-    sourceUrl:
-      "https://www.expertenmarkt.de/experte/bewegungsoptimierer-gmbh-bechhofen/erfahrung",
-    sourceLabel: "Verifizierte Bewertung",
+    sourceUrl: "https://www.kraftwerk-berlin.com/",
+    sourceLabel: "kraftwerk-berlin.com",
+    reviewUrl: "https://www.expertenmarkt.de/experte/bewegungsoptimierer-gmbh-bechhofen/erfahrung?page=2",
+    isQuote: true,
   },
   {
     name: "Desirée Nowak",

@@ -151,6 +151,16 @@ export function CaseGrid() {
                   {c.sourceLabel ?? "Quelle ansehen"} ↗
                 </a>
               )}
+              {c.reviewUrl && (
+                <a
+                  href={c.reviewUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-emerald-400/80 hover:text-emerald-300"
+                >
+                  ✅ Verifizierte Bewertung ↗
+                </a>
+              )}
             </div>
           </div>
         </article>

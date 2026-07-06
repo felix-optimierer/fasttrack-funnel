@@ -161,3 +161,11 @@
 - [x] Desirée Nowak: Bild-Zuschnitt optimieren (Gesicht sauber sichtbar)
 - [x] Florian Zurheiden: Bild-Zuschnitt optimieren (Gesicht sauber sichtbar)
 - [x] Andrea Schaich: Logo statt Platzhalterbild verwenden
+
+## Änderungen (Runde 15) – Fallstudien weiter optimieren
+- [x] Nadine Peter → Klaus Leipholz ersetzen (kraftwerk-berlin.com + Bewertung Expertenmarkt)
+- [x] Klaus Leipholz: Bild von kraftwerk-berlin.com + Webseite + Bewertungs-Link verlinken
+- [x] Florian Zurheiden: Neues Bild (vom User bereitgestellt) austauschen
+- [x] Anica Bommert: Neues Bild (vom User bereitgestellt) austauschen
+- [x] Marion Stegemann: Verifizierte Bewertung verlinken
+- [x] Alexander Reichl: Verifizierte Bewertung verlinken
