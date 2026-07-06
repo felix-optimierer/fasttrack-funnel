@@ -155,3 +155,9 @@
 - [x] Frontend: CRM-Kanban-Board (Drag&Drop Pipeline)
 - [x] Frontend: Ad-Costs CSV-Upload + Kostenzuordnung
 - [x] Frontend: Drill-Down Dialog (Klick auf Chart/KPI → Detail-Liste)
+
+## Änderungen (Runde 14) – Fallstudien-Optimierung
+- [x] Frederik Gerber → Tabea Gründer ersetzen (Webseite + Bewertung + Bild)
+- [x] Desirée Nowak: Bild-Zuschnitt optimieren (Gesicht sauber sichtbar)
+- [x] Florian Zurheiden: Bild-Zuschnitt optimieren (Gesicht sauber sichtbar)
+- [x] Andrea Schaich: Logo statt Platzhalterbild verwenden

@@ -24,9 +24,10 @@ export const ASSETS = {
   caseTorben: "/manus-storage/torben_moeller_ef873c93.jpeg",
   caseReichl: "/manus-storage/alexander_reichl_c936ba49.webp",
   caseMarion: "/manus-storage/marion-stegemann_85d97a90.webp",
-  caseDesiree: "/manus-storage/desiree-nowak_45b053f0.webp",
-  caseFlorian: "/manus-storage/florian-zurheiden_78911900.webp",
-  caseAndrea: "/manus-storage/andrea-schaich_27fdda2a.webp",
+  caseDesiree: "/manus-storage/desiree-nowak-v2_107a0327.webp",
+  caseFlorian: "/manus-storage/florian-zurheiden-v2_b75e23c1.webp",
+  caseAndrea: "/manus-storage/andrea-schaich-logo-v2_4c8c22b7.webp",
+  caseTabea: "/manus-storage/tabea-gruender_2a935f6d.webp",
 };
 
 export const BRAND = {
@@ -60,6 +61,8 @@ export type CaseStudy = {
   sourceLabel?: string;
   // true = wörtliches Kundenzitat; false/undefined = redaktioneller Faktentext
   isQuote?: boolean;
+  // true = Bild ist ein Logo (object-contain statt object-cover)
+  isLogo?: boolean;
 };
 
 // 9 echte Fallstudien.
@@ -151,18 +154,19 @@ export const CASE_STUDIES: CaseStudy[] = [
     sourceLabel: "physiotherapie-greussen.de",
   },
   {
-    name: "Frederik Gerber",
-    role: "Physio Mastermind · Teilnehmer",
-    result: "Austausch mit anderen selbstständigen Physiotherapeuten.",
+    name: "Tabea Gründer",
+    role: "Privatpraxis Physiotherapie & Personal Training · Düsseldorf",
+    image: ASSETS.caseTabea,
+    result: "Traumwebseite mit Online-Buchung in unter einer Stunde erstellt.",
     quote:
-      "Das Physio Mastermind ist eine richtig schöne Plattform, um sich mit anderen selbstständigen Physiotherapeuten auszutauschen. Danke dafür!",
+      "Privatpraxis für Sportphysiotherapie und Personal Training mit eigener Webseite, Online-Terminbuchung via Doctolib und 5,0 ★ aus 31 Google-Bewertungen – spezialisiert auf Kletterer und CrossFit-Athleten.",
     metrics: [
-      { label: "Bewertung", value: "5,0 ★" },
-      { label: "Community", value: "aktiv" },
+      { label: "Google-Bewertung", value: "5,0 ★" },
+      { label: "Bewertungen", value: "31" },
     ],
-    sourceUrl:
-      "https://www.expertenmarkt.de/experte/bewegungsoptimierer-gmbh-bechhofen/erfahrung",
-    sourceLabel: "Verifizierte Bewertung",
+    sourceUrl: "https://www.tabea-physiotherapie.de/",
+    sourceLabel: "tabea-physiotherapie.de",
+    isQuote: false,
   },
   {
     name: "Florian Zurheiden",
@@ -193,5 +197,6 @@ export const CASE_STUDIES: CaseStudy[] = [
     sourceUrl: "https://www.physioschaich.de/",
     sourceLabel: "physioschaich.de",
     isQuote: false,
+    isLogo: true,
   },
 ];

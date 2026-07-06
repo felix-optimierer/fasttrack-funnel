@@ -92,14 +92,14 @@ export function CaseGrid() {
           style={{ animationDelay: `${i * 70}ms` }}
         >
           {c.image ? (
-            <div className="relative h-52 w-full overflow-hidden">
+            <div className={`relative h-52 w-full overflow-hidden ${c.isLogo ? 'flex items-center justify-center bg-white/95 p-6' : ''}`}>
               <img
                 src={c.image}
                 alt={c.name}
-                className="h-full w-full object-cover"
+                className={`${c.isLogo ? 'max-h-full max-w-full object-contain' : 'h-full w-full object-cover'}`}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
-              <div className="absolute bottom-3 left-4 right-4">
+              {!c.isLogo && <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />}
+              <div className={`absolute bottom-3 left-4 right-4 ${c.isLogo ? 'bg-card/80 rounded px-2 py-1' : ''}`}>
                 <p className="font-display text-sm font-bold text-gold">
                   {c.result}
                 </p>
