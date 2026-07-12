@@ -9,12 +9,28 @@ import { publicProcedure, router } from "../_core/trpc";
 import { isAdminRequest } from "../admin-auth";
 import * as abDb from "./db";
 import { calculateSignificance, calculateOverallPerformance } from "./statistics";
+import * as cheerio from "cheerio";
+import { invokeLLM } from "../_core/llm";
 
 async function assertAdmin(req: any) {
   const ok = await isAdminRequest(req);
   if (!ok) {
     throw new TRPCError({ code: "UNAUTHORIZED", message: "Admin-Login erforderlich." });
   }
+}
+
+// Helper: generate a reasonable CSS selector for a cheerio element
+function generateSelector($: cheerio.CheerioAPI, el: cheerio.Cheerio<any>): string {
+  const tagName = el.prop("tagName")?.toLowerCase() ?? "";
+  const id = el.attr("id");
+  if (id) return `#${id}`;
+  const classes = el.attr("class")?.split(/\s+/).filter(c => c && !c.startsWith("__")).slice(0, 2);
+  if (classes && classes.length > 0) return `${tagName}.${classes.join(".")}`;
+  // Fallback: tag + parent context
+  const parent = el.parent();
+  const parentTag = parent.prop("tagName")?.toLowerCase();
+  if (parentTag) return `${parentTag} > ${tagName}`;
+  return tagName;
 }
 
 export const testoptimiererRouter = router({
@@ -242,6 +258,208 @@ export const testoptimiererRouter = router({
     .query(async ({ input, ctx }) => {
       await assertAdmin(ctx.req);
       return abDb.listNotifications(input?.testId);
+    }),
+
+  // ─── SCAN PAGE ─────────────────────────────────────────────────────────────
+
+  scanPage: publicProcedure
+    .input(z.object({ url: z.string().url() }))
+    .mutation(async ({ input, ctx }) => {
+      await assertAdmin(ctx.req);
+
+      // Fetch the page HTML
+      let html: string;
+      try {
+        const resp = await fetch(input.url, {
+          headers: {
+            "User-Agent": "Mozilla/5.0 (compatible; Testoptimierer/1.0)",
+            "Accept": "text/html,application/xhtml+xml",
+          },
+          redirect: "follow",
+        });
+        if (!resp.ok) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: `Seite konnte nicht geladen werden (HTTP ${resp.status}).` });
+        }
+        html = await resp.text();
+      } catch (err: any) {
+        if (err instanceof TRPCError) throw err;
+        throw new TRPCError({ code: "BAD_REQUEST", message: `Seite konnte nicht geladen werden: ${err.message}` });
+      }
+
+      const $ = cheerio.load(html);
+      const detected: Array<{
+        elementType: "main_headline" | "pre_headline" | "sub_headline" | "cta";
+        cssSelector: string;
+        currentText: string;
+        label: string;
+      }> = [];
+
+      // Detect main headline (h1)
+      const h1 = $("h1").first();
+      if (h1.length && h1.text().trim()) {
+        detected.push({
+          elementType: "main_headline",
+          cssSelector: "h1",
+          currentText: h1.text().trim(),
+          label: "Haupt-Headline (H1)",
+        });
+      }
+
+      // Detect sub-headline (first p after h1, or p.italic, or h2)
+      const subHeadline = $("main p.italic").first();
+      if (subHeadline.length && subHeadline.text().trim()) {
+        detected.push({
+          elementType: "sub_headline",
+          cssSelector: "main p.italic",
+          currentText: subHeadline.text().trim(),
+          label: "Sub-Headline (italic)",
+        });
+      } else {
+        // Try h2
+        const h2 = $("h2").first();
+        if (h2.length && h2.text().trim()) {
+          detected.push({
+            elementType: "sub_headline",
+            cssSelector: "h2",
+            currentText: h2.text().trim(),
+            label: "Sub-Headline (H2)",
+          });
+        }
+      }
+
+      // Detect pre-headline (badge/span before h1, or small text above)
+      const preHeadline = $("h1").prev("div, span, p").first();
+      if (preHeadline.length && preHeadline.text().trim().length < 100) {
+        detected.push({
+          elementType: "pre_headline",
+          cssSelector: generateSelector($, preHeadline),
+          currentText: preHeadline.text().trim(),
+          label: "Pre-Headline (Badge)",
+        });
+      }
+
+      // Detect CTA button
+      const ctaButton = $("button[type='submit'], a.cta, button.cta, form button").first();
+      if (ctaButton.length && ctaButton.text().trim()) {
+        detected.push({
+          elementType: "cta",
+          cssSelector: generateSelector($, ctaButton),
+          currentText: ctaButton.text().trim(),
+          label: "CTA-Button",
+        });
+      } else {
+        // Fallback: first prominent button
+        const anyButton = $("button").filter((_, el) => {
+          const text = $(el).text().trim();
+          return text.length > 2 && text.length < 60;
+        }).first();
+        if (anyButton.length) {
+          detected.push({
+            elementType: "cta",
+            cssSelector: generateSelector($, anyButton),
+            currentText: anyButton.text().trim(),
+            label: "CTA-Button",
+          });
+        }
+      }
+
+      return { elements: detected, pageTitle: $("title").text() || "" };
+    }),
+
+  // ─── SUGGEST VARIANT ──────────────────────────────────────────────────────
+
+  suggestVariant: publicProcedure
+    .input(z.object({
+      originalText: z.string().min(1),
+      elementType: z.enum(["main_headline", "pre_headline", "sub_headline", "cta"]),
+      context: z.string().optional(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      await assertAdmin(ctx.req);
+
+      const typeLabels: Record<string, string> = {
+        main_headline: "Haupt-Headline",
+        pre_headline: "Pre-Headline / Badge",
+        sub_headline: "Sub-Headline / Untertitel",
+        cta: "Call-to-Action Button",
+      };
+
+      const systemPrompt = `Du bist ein Conversion-Optimierungs-Experte für Physiotherapie-Praxen und Gesundheitsdienstleister.
+Deine Aufgabe: Generiere 3 alternative Varianten für ein ${typeLabels[input.elementType]} auf einer Landing Page.
+
+Regeln:
+- Jede Variante muss sich deutlich vom Original unterscheiden (anderer Angle, andere Emotion)
+- Halte die Länge ähnlich zum Original (max. 20% länger/kürzer)
+- Nutze bewährte Copywriting-Prinzipien (Spezifität, Dringlichkeit, Nutzenversprechen)
+- Schreibe auf Deutsch, duze den Leser
+- Für CTAs: kurz und handlungsorientiert (max. 5-6 Wörter)
+- Für Headlines: emotional, spezifisch, neugierig machend
+
+Antworte NUR als JSON-Array mit genau 3 Objekten:
+[{"text": "...", "reasoning": "..."}]`;
+
+      const userPrompt = `Original-Text: "${input.originalText}"
+Element-Typ: ${typeLabels[input.elementType]}
+${input.context ? `Kontext: ${input.context}` : ""}
+
+Generiere 3 alternative Varianten.`;
+
+      try {
+        const result = await invokeLLM({
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt },
+          ],
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "variants",
+              strict: true,
+              schema: {
+                type: "object",
+                properties: {
+                  variants: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        text: { type: "string", description: "Der alternative Text" },
+                        reasoning: { type: "string", description: "Kurze Begründung warum diese Variante besser konvertieren könnte" },
+                      },
+                      required: ["text", "reasoning"],
+                      additionalProperties: false,
+                    },
+                  },
+                },
+                required: ["variants"],
+                additionalProperties: false,
+              },
+            },
+          },
+        });
+
+        const content = result.choices[0]?.message?.content;
+        if (!content || typeof content !== "string") {
+          throw new Error("Keine Antwort vom LLM erhalten.");
+        }
+
+        const parsed = JSON.parse(content);
+        return { variants: parsed.variants as Array<{ text: string; reasoning: string }> };
+      } catch (err: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Varianten-Generierung fehlgeschlagen: ${err.message}`,
+        });
+      }
+    }),
+
+  // ─── WEEKLY PERFORMANCE ────────────────────────────────────────────────────
+
+  getWeeklyPerformance: publicProcedure
+    .input(z.object({ projectId: z.number() }))
+    .query(async ({ input, ctx }) => {
+      await assertAdmin(ctx.req);
+      return abDb.getWeeklyPerformance(input.projectId);
     }),
 
   // ─── SCORECARD ─────────────────────────────────────────────────────────────

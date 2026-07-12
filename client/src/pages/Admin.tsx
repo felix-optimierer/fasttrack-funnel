@@ -1,5 +1,6 @@
 // ADMIN-DASHBOARD (/admin) — 6-Tab Dashboard: Übersicht, Funnel, Submissions, CRM, Ad-Kosten, Einstellungen
 import { useState, useMemo, useCallback, DragEvent } from "react";
+import { useLocation } from "wouter";
 import { SEO } from "@/components/SEO";
 import { trpc } from "@/lib/trpc";
 import { Logo, GoldButton } from "@/components/funnel";
@@ -9,7 +10,7 @@ import {
   ArrowRight, TrendingUp, Calendar, DollarSign, Settings, BarChart3,
   Search, Download, X, ChevronLeft, ChevronRight, StickyNote,
   Table, Kanban, Globe, Monitor, ExternalLink, Phone, Mail, Clock,
-  Filter, FileText,
+  Filter, FileText, FlaskConical,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -121,6 +122,7 @@ function LoginScreen({ onLoggedIn }: { onLoggedIn: () => void }) {
    DASHBOARD SHELL
    ═══════════════════════════════════════════════════════════════════════════════ */
 function Dashboard({ onLogout }: { onLogout: () => void }) {
+  const [, navigate] = useLocation();
   const [period, setPeriod] = useState<Period>("week");
   const [tab, setTab] = useState<Tab>("overview");
   const utils = trpc.useUtils();
@@ -142,9 +144,14 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             <Logo className="h-8" />
             <span className="hidden text-sm font-semibold uppercase tracking-[0.18em] text-gold sm:inline">Admin-Dashboard</span>
           </div>
-          <button onClick={handleLogout} className="inline-flex items-center gap-2 rounded-md border border-border bg-secondary px-3 py-2 text-xs font-semibold text-foreground transition hover:border-gold/50">
-            <LogOut className="h-4 w-4" /> Abmelden
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => navigate("/testoptimierer")} className="inline-flex items-center gap-2 rounded-md border border-gold/40 bg-gold/10 px-3 py-2 text-xs font-semibold text-gold transition hover:bg-gold/20">
+              <FlaskConical className="h-4 w-4" /> Testoptimierer
+            </button>
+            <button onClick={handleLogout} className="inline-flex items-center gap-2 rounded-md border border-border bg-secondary px-3 py-2 text-xs font-semibold text-foreground transition hover:border-gold/50">
+              <LogOut className="h-4 w-4" /> Abmelden
+            </button>
+          </div>
         </div>
       </header>
 

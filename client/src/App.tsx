@@ -16,6 +16,8 @@ import KiReport from "./pages/KiReport";
 import Traumwebseite from "./pages/Traumwebseite";
 import NotFound from "./pages/NotFound";
 import Testoptimierer from "./pages/Testoptimierer";
+import TestoptimiererScorecard from "./pages/TestoptimiererScorecard";
+import TestoptimiererEinstellungen from "./pages/TestoptimiererEinstellungen";
 import TestoptimiererProjekt from "./pages/TestoptimiererProjekt";
 import TestoptimiererNeuerTest from "./pages/TestoptimiererNeuerTest";
 import TestoptimiererNeuesProjekt from "./pages/TestoptimiererNeuesProjekt";
@@ -44,6 +46,8 @@ function Router() {
         <Route path="/ki-report" component={KiReport} />
         <Route path="/traumwebseite" component={Traumwebseite} />
         <Route path="/testoptimierer" component={Testoptimierer} />
+        <Route path="/testoptimierer/scorecard" component={TestoptimiererScorecard} />
+        <Route path="/testoptimierer/einstellungen" component={TestoptimiererEinstellungen} />
         <Route path="/testoptimierer/neu" component={TestoptimiererNeuesProjekt} />
         <Route path="/testoptimierer/projekt/:id" component={TestoptimiererProjekt} />
         <Route path="/testoptimierer/projekt/:id/neuer-test" component={TestoptimiererNeuerTest} />

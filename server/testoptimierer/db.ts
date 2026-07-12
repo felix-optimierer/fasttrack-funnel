@@ -187,3 +187,71 @@ export async function getProjectPerformanceData(projectId: number) {
     .where(eq(abTests.projectId, projectId))
     .orderBy(abTests.startedAt);
 }
+
+// ─── WEEKLY PERFORMANCE ───────────────────────────────────────────────────────
+
+export async function getWeeklyPerformance(projectId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  // Get all visitors for tests in this project, grouped by week
+  const result = await db.execute(sql`
+    SELECT
+      DATE_FORMAT(v.firstSeenAt, '%x-W%v') AS week,
+      v.variant,
+      COUNT(*) AS visitors,
+      SUM(CASE WHEN v.converted = 1 THEN 1 ELSE 0 END) AS conversions
+    FROM ab_visitors v
+    INNER JOIN ab_tests t ON t.id = v.testId
+    WHERE t.projectId = ${projectId}
+    GROUP BY week, v.variant
+    ORDER BY week ASC
+  `);
+
+  // Transform into weekly rows
+  const weekMap = new Map<string, {
+    week: string;
+    visitorsA: number;
+    visitorsB: number;
+    conversionsA: number;
+    conversionsB: number;
+    crA: number;
+    crB: number;
+    improvement: number;
+  }>();
+
+  const rows = (result as any)[0] ?? result;
+  for (const row of rows) {
+    const week = row.week as string;
+    if (!weekMap.has(week)) {
+      weekMap.set(week, {
+        week,
+        visitorsA: 0,
+        visitorsB: 0,
+        conversionsA: 0,
+        conversionsB: 0,
+        crA: 0,
+        crB: 0,
+        improvement: 0,
+      });
+    }
+    const entry = weekMap.get(week)!;
+    if (row.variant === "a") {
+      entry.visitorsA = Number(row.visitors);
+      entry.conversionsA = Number(row.conversions);
+    } else {
+      entry.visitorsB = Number(row.visitors);
+      entry.conversionsB = Number(row.conversions);
+    }
+  }
+
+  // Calculate CR and improvement for each week
+  const weeks = Array.from(weekMap.values()).map(w => {
+    w.crA = w.visitorsA > 0 ? (w.conversionsA / w.visitorsA) * 100 : 0;
+    w.crB = w.visitorsB > 0 ? (w.conversionsB / w.visitorsB) * 100 : 0;
+    w.improvement = w.crA > 0 ? ((w.crB - w.crA) / w.crA) * 100 : 0;
+    return w;
+  });
+
+  return weeks;
+}

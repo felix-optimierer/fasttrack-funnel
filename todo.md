@@ -236,3 +236,29 @@
 - [x] TypeScript compiles cleanly
 - [x] All 23 tests passing
 - [x] Save final checkpoint and deliver to user
+
+## Testoptimierer – UX Overhaul (Runde 2)
+
+### Navigation & Routing
+- [x] Admin ↔ Testoptimierer Wechsel-Buttons (in beiden Dashboards)
+- [x] Eigene URL-Unterseiten statt Tabs (/testoptimierer, /testoptimierer/scorecard, /testoptimierer/einstellungen, /testoptimierer/projekt/:id, /testoptimierer/neu, /testoptimierer/projekt/:id/neuer-test)
+
+### Auto-Scan & Smart Setup
+- [x] Backend: Auto-Scan-Endpoint der eine URL fetcht und testbare Elemente (h1, h2, p, button) mit aktuellem Text findet
+- [x] Frontend: Beim Projekt-Erstellen automatisch Elemente scannen und vorschlagen
+- [x] Aktueller Text wird automatisch aus dem Scan übernommen (kein manuelles Eintippen)
+- [x] CSS-Selektor wird automatisch generiert (User muss keinen eingeben)
+- [x] Alternative Headline per LLM vorschlagen beim Test-Start (suggestVariant mit 3 Varianten + Begründung)
+
+### Embed & Integration
+- [x] Erklärung warum nur 1 Tag nötig ist (Conversion per URL-Match, kein zweiter Tag)
+- [x] Kopierbarer Manus-Prompt zum Einbetten des Tags (Domain + Script-URL)
+- [ ] Optional: Tag automatisch in eigene Seiten einbauen (da es die eigene App ist)
+
+### Performance & Analytics
+- [x] Wochenbasierte Performance-Ansicht (welche Woche wie viel gewonnen/verloren)
+- [ ] Timeline: Wann welche Tests gestartet/beendet wurden
+
+### Signifikanz-Empfehlung
+- [ ] Prüfen und dokumentieren ob 0.20 p-Value bei 1.000 Besuchern sinnvoll ist
+- [ ] Bessere Erklärungen in den Einstellungen mit konkreten Empfehlungen

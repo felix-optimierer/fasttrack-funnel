@@ -10,6 +10,7 @@ import {
   Loader2, ArrowLeft, Plus, Play, Pause, Square, SkipForward,
   TrendingUp, TrendingDown, Minus, Users, Target, Clock,
   ExternalLink, Copy, FlaskConical, CheckCircle2, XCircle, AlertCircle,
+  BarChart3, Calendar,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -143,6 +144,38 @@ export default function TestoptimiererProjekt() {
           <p className="text-xs text-muted-foreground mt-2">
             Füge diesen Code vor dem schließenden &lt;/body&gt;-Tag auf deiner Zielseite ein.
           </p>
+          <div className="mt-3 rounded-md bg-navy-deep/60 border border-border/20 p-3">
+            <p className="text-xs font-medium text-gold mb-1">Warum nur 1 Tag?</p>
+            <p className="text-[10px] text-muted-foreground leading-relaxed">
+              Du brauchst nur diesen einen Tag auf der Hauptseite. Die Conversion wird automatisch erkannt,
+              wenn der Besucher auf die Danke-Seite ({project.conversionUrlPattern || "/danke"}) gelangt –
+              egal ob durch Formular, Calendly oder Redirect. Kein zweiter Tag auf der Danke-Seite nötig!
+            </p>
+          </div>
+          {/* Manus Prompt */}
+          <div className="mt-3 rounded-md bg-navy-deep/60 border border-border/20 p-3">
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-xs font-medium text-gold">Manus-Prompt zum Einbetten</p>
+              <button
+                onClick={() => {
+                  const prompt = `Bitte füge folgenden Script-Tag vor dem schließenden </body>-Tag auf der Seite ${project.targetUrl} ein:\n\n<script src="${tagUrl}"></script>\n\nDanach bitte veröffentlichen.`;
+                  navigator.clipboard.writeText(prompt);
+                  toast.success("Prompt kopiert!");
+                }}
+                className="flex items-center gap-1.5 text-[10px] text-gold hover:text-gold-soft transition"
+              >
+                <Copy className="h-3 w-3" />
+                Kopieren
+              </button>
+            </div>
+            <code className="block text-[10px] text-muted-foreground font-mono whitespace-pre-wrap">
+{`Bitte füge folgenden Script-Tag vor dem schließenden </body>-Tag auf der Seite ${project.targetUrl} ein:
+
+<script src="${tagUrl}"></script>
+
+Danach bitte veröffentlichen.`}
+            </code>
+          </div>
         </div>
 
         {/* Overall Performance */}
@@ -176,6 +209,9 @@ export default function TestoptimiererProjekt() {
             </div>
           </div>
         )}
+
+        {/* Weekly Performance */}
+        <WeeklyPerformanceSection projectId={projectId} />
 
         {/* Running Test */}
         {runningTest && <RunningTestCard test={runningTest} onStatusChange={(id, status) => updateStatusMutation.mutate({ id, status: status as "running" | "paused" | "stopped" | "skipped" })} />}
@@ -394,4 +430,75 @@ function TestHistoryRow({ test, onStatusChange }: { test: any; onStatusChange: (
 // Missing import
 function Activity(props: any) {
   return <FlaskConical {...props} />;
+}
+
+// ─── WEEKLY PERFORMANCE SECTION ──────────────────────────────────────────────
+
+function WeeklyPerformanceSection({ projectId }: { projectId: number }) {
+  const weeklyQuery = trpc.testoptimierer.getWeeklyPerformance.useQuery(
+    { projectId },
+    { retry: false, refetchOnWindowFocus: false, enabled: projectId > 0 }
+  );
+
+  const weeks = weeklyQuery.data ?? [];
+
+  if (weeklyQuery.isLoading) return null;
+  if (weeks.length === 0) return null;
+
+  // Calculate cumulative improvement
+  let cumulativeLeads = 0;
+  const enrichedWeeks = weeks.map(w => {
+    const weekLeads = w.conversionsB - (w.visitorsB > 0 && w.crA > 0 ? Math.round(w.visitorsB * w.crA / 100) : 0);
+    cumulativeLeads += weekLeads;
+    return { ...w, additionalLeads: weekLeads, cumulativeLeads };
+  });
+
+  return (
+    <div className="rounded-xl border border-border/30 bg-card/60 p-4">
+      <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+        <BarChart3 className="h-4 w-4 text-gold" />
+        Wochen-Performance
+      </h3>
+
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs">
+          <thead>
+            <tr className="border-b border-border/20 text-muted-foreground">
+              <th className="text-left py-2 pr-3 font-medium">Woche</th>
+              <th className="text-right py-2 px-2 font-medium">Besucher</th>
+              <th className="text-right py-2 px-2 font-medium">CR (A)</th>
+              <th className="text-right py-2 px-2 font-medium">CR (B)</th>
+              <th className="text-right py-2 px-2 font-medium">Steigerung</th>
+              <th className="text-right py-2 pl-2 font-medium">+Leads (kum.)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {enrichedWeeks.map((w, i) => (
+              <tr key={w.week} className="border-b border-border/10 last:border-0">
+                <td className="py-2 pr-3 font-medium flex items-center gap-1.5">
+                  <Calendar className="h-3 w-3 text-muted-foreground" />
+                  {w.week}
+                </td>
+                <td className="text-right py-2 px-2">
+                  {(w.visitorsA + w.visitorsB).toLocaleString("de-DE")}
+                </td>
+                <td className="text-right py-2 px-2">{w.crA.toFixed(2)}%</td>
+                <td className="text-right py-2 px-2">{w.crB.toFixed(2)}%</td>
+                <td className={`text-right py-2 px-2 font-medium ${
+                  w.improvement >= 0 ? "text-emerald-400" : "text-red-400"
+                }`}>
+                  {w.improvement >= 0 ? "+" : ""}{w.improvement.toFixed(1)}%
+                </td>
+                <td className={`text-right py-2 pl-2 font-medium ${
+                  w.cumulativeLeads >= 0 ? "text-emerald-400" : "text-red-400"
+                }`}>
+                  {w.cumulativeLeads >= 0 ? "+" : ""}{w.cumulativeLeads}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 }
