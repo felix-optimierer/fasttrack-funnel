@@ -147,20 +147,42 @@ export function generateTag(config: TagConfig | null): string {
     }
   }
 
-  // Execute
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", function() {
+  // Execute with retry for SPA (React may not have rendered yet)
+  var MAX_RETRIES = 20;
+  var RETRY_INTERVAL = 100; // ms
+  var retries = 0;
+  var applied = false;
+
+  function tryApply() {
+    var el = document.querySelector(CONFIG.cssSelector);
+    if (el) {
+      applied = true;
       applyVariant();
       trackImpression();
       checkConversion();
-    });
+    } else if (retries < MAX_RETRIES) {
+      retries++;
+      setTimeout(tryApply, RETRY_INTERVAL);
+    } else {
+      // Fallback: remove anti-flicker even if element not found
+      var flickerStyle = document.getElementById("to-antiflicker-" + CONFIG.testId);
+      if (flickerStyle) flickerStyle.remove();
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", tryApply);
   } else {
-    applyVariant();
-    trackImpression();
-    checkConversion();
+    tryApply();
   }
 
   // Also check conversion on SPA navigation (popstate)
   window.addEventListener("popstate", checkConversion);
+  // Handle SPA pushState navigation
+  var origPushState = history.pushState;
+  history.pushState = function() {
+    origPushState.apply(this, arguments);
+    setTimeout(checkConversion, 100);
+  };
 })();`;
 }
