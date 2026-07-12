@@ -423,6 +423,19 @@ function TestHistoryRow({ test, onStatusChange }: { test: any; onStatusChange: (
         <div className="text-muted-foreground truncate">A: {test.controlText}</div>
         <div className="text-muted-foreground truncate">B: {test.variantText}</div>
       </div>
+      {/* Timeline dates */}
+      {(test.startedAt || test.endedAt) && (
+        <div className="mt-1.5 flex items-center gap-2 text-[10px] text-muted-foreground">
+          <Clock className="h-3 w-3" />
+          {test.startedAt && <span>Start: {new Date(test.startedAt).toLocaleDateString("de-DE")}</span>}
+          {test.endedAt && <span>→ Ende: {new Date(test.endedAt).toLocaleDateString("de-DE")}</span>}
+          {test.startedAt && test.endedAt && (
+            <span className="text-gold/70">
+              ({Math.ceil((new Date(test.endedAt).getTime() - new Date(test.startedAt).getTime()) / (1000 * 60 * 60 * 24))} Tage)
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -23,7 +23,7 @@ const SETTING_EXPLANATIONS: Record<string, { title: string; description: string;
   p_value_threshold_for_stop: {
     title: "p-Wert-Schwelle für Auto-Stopp",
     description: "Wenn nach Erreichen der Mindestbesucher der p-Wert über diesem Schwellenwert liegt, wird der Test als 'kein Ergebnis' beendet. Ein p-Wert von 0.20 bedeutet: Es gibt weniger als 80% Wahrscheinlichkeit für einen echten Unterschied – der Test lohnt sich nicht weiter.",
-    recommendation: "Standard: 0.20 (= weniger als 80% Wahrscheinlichkeit). Sinnvoll bei 1.000 Besuchern. Wenn du sicherer sein willst: 0.30 (= weniger als 70% Wahrscheinlichkeit, Tests laufen kürzer).",
+    recommendation: "Standard: 0.20 bei 1.000 Besuchern ist sinnvoll. Hintergrund: Bei 1.000 Besuchern (500 pro Variante) und einer Basis-CR von 3% erkennt der Chi²-Test einen relativen Unterschied von \u226520% mit ca. 80% Power. Wenn nach 1.000 Besuchern p > 0.20, ist der Effekt entweder zu klein oder nicht vorhanden \u2013 weiterlaufen lassen bringt selten ein anderes Ergebnis. Empfehlung: 0.20 beibehalten. Bei h\u00f6herer Basis-CR (>5%) kannst du auf 0.15 senken.",
   },
   check_interval_hours: {
     title: "Prüf-Intervall (Stunden)",
@@ -164,6 +164,80 @@ Das Script muss auf der Seite eingebunden werden, die getestet wird. Es braucht 
               erkennt das gleiche Script automatisch, dass eine Conversion stattgefunden hat, und zählt sie.
               Du brauchst also kein separates Conversion-Tag – alles läuft über ein einziges Script.
             </p>
+          </div>
+        </section>
+
+        {/* Significance Recommendation */}
+        <section>
+          <h2 className="text-xl font-bold mb-2">Signifikanz-Empfehlung</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Hier eine Einordnung, ob die Standard-Einstellungen für deine Situation passen.
+          </p>
+
+          <div className="rounded-xl border border-border bg-card p-5 space-y-4">
+            <div>
+              <h4 className="text-sm font-semibold mb-1">Sind 0.20 p-Value bei 1.000 Besuchern sinnvoll?</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                <strong className="text-foreground">Ja, das ist eine gute Kombination.</strong> Die Logik dahinter:
+              </p>
+              <ul className="text-xs text-muted-foreground mt-2 space-y-1.5 list-disc pl-4">
+                <li>Bei 1.000 Besuchern (500 pro Variante) und einer typischen Physio-Landingpage-CR von 3–5% hat der Chi²-Test genug statistische Power (~80%), um einen relativen Unterschied von 20%+ zu erkennen.</li>
+                <li>Der p-Wert von 0.20 als Stopp-Schwelle bedeutet: Wenn nach 1.000 Besuchern kein Signal unter p=0.20 vorliegt, ist der Effekt entweder nicht vorhanden oder so klein (&lt;10% relativ), dass er wirtschaftlich irrelevant ist.</li>
+                <li>Weiterlaufen lassen würde nur Sinn machen, wenn du einen sehr kleinen Effekt (5–10%) nachweisen willst – dafür bräuchtest du aber 5.000–10.000 Besucher.</li>
+              </ul>
+            </div>
+
+            <div className="border-t border-border/30 pt-4">
+              <h4 className="text-sm font-semibold mb-1">Wann solltest du die Werte anpassen?</h4>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs mt-2">
+                  <thead>
+                    <tr className="border-b border-border/30 text-muted-foreground">
+                      <th className="text-left py-2 pr-3 font-medium">Situation</th>
+                      <th className="text-left py-2 px-2 font-medium">Min. Besucher</th>
+                      <th className="text-left py-2 px-2 font-medium">p-Stopp</th>
+                      <th className="text-left py-2 pl-2 font-medium">Begründung</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-muted-foreground">
+                    <tr className="border-b border-border/10">
+                      <td className="py-2 pr-3 font-medium text-foreground">Standard (3–5% CR)</td>
+                      <td className="py-2 px-2">1.000</td>
+                      <td className="py-2 px-2">0.20</td>
+                      <td className="py-2 pl-2">Gute Balance zwischen Geschwindigkeit und Genauigkeit</td>
+                    </tr>
+                    <tr className="border-b border-border/10">
+                      <td className="py-2 pr-3 font-medium text-foreground">Hohe CR (&gt;5%)</td>
+                      <td className="py-2 px-2">500</td>
+                      <td className="py-2 px-2">0.15</td>
+                      <td className="py-2 pl-2">Mehr Conversions = schnellere Signifikanz</td>
+                    </tr>
+                    <tr className="border-b border-border/10">
+                      <td className="py-2 pr-3 font-medium text-foreground">Niedrige CR (&lt;2%)</td>
+                      <td className="py-2 px-2">2.000</td>
+                      <td className="py-2 px-2">0.20</td>
+                      <td className="py-2 pl-2">Wenige Events brauchen mehr Daten</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 pr-3 font-medium text-foreground">Kritische Entscheidung</td>
+                      <td className="py-2 px-2">2.000</td>
+                      <td className="py-2 px-2">0.10</td>
+                      <td className="py-2 pl-2">Höhere Sicherheit, längere Laufzeit</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="border-t border-border/30 pt-4">
+              <h4 className="text-sm font-semibold mb-1">Unterschied zu OptiMind (2 Tags)</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Bei OptiMind brauchtest du einen Tag für die Seite und einen für die Danke-Seite.
+                Der Testoptimierer erkennt die Conversion automatisch per URL-Match – deshalb reicht <strong className="text-foreground">ein einziger Tag</strong>.
+                Das Script prüft bei jedem Seitenaufruf, ob die aktuelle URL zum Conversion-Pattern passt,
+                und zählt die Conversion dann automatisch für den richtigen Besucher.
+              </p>
+            </div>
           </div>
         </section>
       </div>

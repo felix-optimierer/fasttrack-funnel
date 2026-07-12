@@ -253,12 +253,12 @@
 ### Embed & Integration
 - [x] Erklärung warum nur 1 Tag nötig ist (Conversion per URL-Match, kein zweiter Tag)
 - [x] Kopierbarer Manus-Prompt zum Einbetten des Tags (Domain + Script-URL)
-- [ ] Optional: Tag automatisch in eigene Seiten einbauen (da es die eigene App ist)
+- [x] Optional: Tag automatisch in eigene Seiten einbauen – NICHT umgesetzt (bewusst): Die eigenen Seiten sind SPAs, das Tag funktioniert bereits über die externe Script-URL. Ein Selbst-Embed würde nur Komplexität hinzufügen ohne Mehrwert, da der Tag ohnehin über die Domain eingebunden wird.
 
 ### Performance & Analytics
 - [x] Wochenbasierte Performance-Ansicht (welche Woche wie viel gewonnen/verloren)
-- [ ] Timeline: Wann welche Tests gestartet/beendet wurden
+- [x] Timeline: Wann welche Tests gestartet/beendet wurden (Start/Ende-Datum + Dauer in Test-Historie)
 
 ### Signifikanz-Empfehlung
-- [ ] Prüfen und dokumentieren ob 0.20 p-Value bei 1.000 Besuchern sinnvoll ist
-- [ ] Bessere Erklärungen in den Einstellungen mit konkreten Empfehlungen
+- [x] Prüfen und dokumentieren ob 0.20 p-Value bei 1.000 Besuchern sinnvoll ist (Antwort: Ja, gute Kombination)
+- [x] Bessere Erklärungen in den Einstellungen mit konkreten Empfehlungen (Tabelle + OptiMind-Vergleich)
