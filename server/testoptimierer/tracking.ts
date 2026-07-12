@@ -197,7 +197,8 @@ export function registerTestoptimiererRoutes(app: Express) {
   });
 
   // ─── GET /api/testoptimierer/verify/:projectId ─────────────────────────────
-  // Verification endpoint: checks if the tag is working for a project.
+  // Verification endpoint: checks if the tag script is present on the target page.
+  // Does NOT require a running test – just checks if the script tag is installed.
   app.get("/api/testoptimierer/verify/:projectId", corsMiddleware, async (req: Request, res: Response) => {
     const projectId = parseInt(req.params.projectId, 10);
     if (isNaN(projectId)) {
@@ -209,27 +210,51 @@ export function registerTestoptimiererRoutes(app: Express) {
       res.json({ ok: false, error: "DB unavailable" });
       return;
     }
-    const tests = await db.select().from(abTests)
-      .where(eq(abTests.projectId, projectId))
-      .limit(10);
-    if (tests.length === 0) {
-      res.json({ ok: true, embedded: false, reason: "no_tests", message: "Kein Test konfiguriert. Erstelle zuerst einen Test." });
+    // Get the project to find its target URL
+    const projects = await db.select().from(abProjects)
+      .where(eq(abProjects.id, projectId))
+      .limit(1);
+    if (projects.length === 0) {
+      res.json({ ok: false, error: "Projekt nicht gefunden." });
       return;
     }
-    const runningTests = tests.filter(t => t.status === "running");
-    const hasRunningTest = runningTests.length > 0;
-    const totalVisitors = tests.reduce((sum, t) => (t.visitorsA || 0) + (t.visitorsB || 0) + sum, 0);
-    res.json({
-      ok: true,
-      embedded: totalVisitors > 0,
-      hasRunningTest,
-      totalVisitors,
-      message: totalVisitors > 0
-        ? `Tag funktioniert! ${totalVisitors} Besucher erfasst.`
-        : hasRunningTest
-          ? "Tag eingebettet, aber noch keine Besucher erfasst. Besuche die Seite zum Testen."
-          : "Kein laufender Test. Starte einen Test, dann besuche die Seite zum Verifizieren."
-    });
+    const project = projects[0];
+    const targetUrl = project.targetUrl;
+    const expectedScript = `/api/testoptimierer/tag/${projectId}`;
+
+    // Try to fetch the target page and check if our script tag is present
+    try {
+      const pageResp = await fetch(targetUrl, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (compatible; Testoptimierer-Verify/1.0)",
+          "Accept": "text/html,application/xhtml+xml",
+        },
+        redirect: "follow",
+      });
+      if (!pageResp.ok) {
+        res.json({
+          ok: true,
+          embedded: false,
+          message: `Seite konnte nicht geladen werden (HTTP ${pageResp.status}). Bitte prüfe die URL.`,
+        });
+        return;
+      }
+      const html = await pageResp.text();
+      const isEmbedded = html.includes(expectedScript) || html.includes(`testoptimierer/tag/${projectId}`);
+      res.json({
+        ok: true,
+        embedded: isEmbedded,
+        message: isEmbedded
+          ? "Tag ist korrekt eingebettet! Das Script wurde auf der Seite gefunden."
+          : `Tag NICHT gefunden. Erwartet: <script src="...${expectedScript}"></script> auf ${targetUrl}`,
+      });
+    } catch (err: any) {
+      res.json({
+        ok: true,
+        embedded: false,
+        message: `Seite konnte nicht geprüft werden: ${err.message}. Bitte prüfe die URL.`,
+      });
+    }
   });
 
   // ─── POST /api/scheduled/testoptimierer-check ───────────────────────────────

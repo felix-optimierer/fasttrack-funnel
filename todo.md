@@ -283,3 +283,21 @@
 
 ### Tag-Einbettung
 - [x] Testoptimierer-Tag auf /ki-report eingebettet (useEffect mit script.src = /api/testoptimierer/tag/120001)
+
+## Testoptimierer – Fixes (Runde 4)
+
+### Tag-Verifizierung Fix
+- [x] Tag-Verifizierung prüft nur ob Script geladen ist (kein Test nötig)
+- [x] Verification-Endpoint angepasst: Prüft ob Script auf der Seite erreichbar ist
+
+### Auto-Scan & Projekt-Management
+- [x] Re-Scan Button auf Projekt-Detail-Seite (Elemente neu scannen, z.B. nach Seitenänderungen)
+- [x] Projekt löschen mit Sicherheitsabfrage (Confirm-Dialog)
+- [x] Auto-Scan erkennt Popup-Elemente (Headline + CTA im Popup/Modal)
+
+### Scorecard Erweiterungen
+- [x] LP Conversion Rate anzeigen (Start-CR vs. Aktuelle CR)
+- [x] Klick auf Projekt in Scorecard → zeigt alle Tests mit Einzelergebnissen (expandierbar)
+
+### Tag-Einbettung
+- [x] Testoptimierer-Tag auf /exit-plan eingebettet (useEffect mit /api/testoptimierer/tag/150001)

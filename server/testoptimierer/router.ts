@@ -403,6 +403,47 @@ export const testoptimiererRouter = router({
           }
         }
 
+        // Detect Popup elements (headline + CTA inside popup/modal)
+        // Check if the page imports LeadPopup or has a popup component
+        const popupImport = source.match(/import.*LeadPopup.*from/);
+        if (popupImport) {
+          // Find the LeadPopup usage and extract headline prop
+          const popupUsage = source.match(/<LeadPopup[^>]*headline=["'`{]([^"'`}]+)["'`}]/);
+          if (popupUsage) {
+            const popupHeadline = popupUsage[1].replace(/\s+/g, " ").trim();
+            if (popupHeadline.length > 3) {
+              detected.push({
+                elementType: "sub_headline",
+                cssSelector: ".popup-overlay h2, [role=dialog] h2",
+                currentText: popupHeadline,
+                label: "Popup-Headline",
+              });
+            }
+          }
+          // The popup CTA is typically "Jetzt kostenlos herunterladen" from LeadPopup
+          // Read LeadPopup source to get the actual button text
+          try {
+            const popupPath = path.join(projectRoot, "client", "src", "components", "LeadPopup.tsx");
+            const popupSource = await fs.readFile(popupPath, "utf-8");
+            const popupCTA = popupSource.match(/<GoldButton[^>]*>([\s\S]*?)<\/GoldButton>/);
+            if (popupCTA) {
+              const ctaInPopup = popupCTA[1].replace(/<[^>]+>/g, "").replace(/\{[^}]*\}/g, "").replace(/\s+/g, " ").trim();
+              // Only add if it's different from the main CTA
+              const mainCTAText = detected.find(d => d.elementType === "cta")?.currentText;
+              if (ctaInPopup.length > 2 && ctaInPopup !== mainCTAText) {
+                detected.push({
+                  elementType: "cta",
+                  cssSelector: ".popup-overlay button[type=submit], [role=dialog] button[type=submit]",
+                  currentText: ctaInPopup,
+                  label: "Popup-CTA",
+                });
+              }
+            }
+          } catch {
+            // LeadPopup source not found, skip popup CTA detection
+          }
+        }
+
         // Extract page title from SEO component or file name
         const titleMatch = source.match(/title[=:]\s*["'`]([^"'`]+)["'`]/);
         const pageTitle = titleMatch ? titleMatch[1] : componentFile.replace(".tsx", "");
@@ -615,9 +656,43 @@ Generiere 3 alternative Varianten.`;
         improvementPercent: t.improvementPercent ? parseFloat(t.improvementPercent) : null,
       }));
       const performance = calculateOverallPerformance(testData);
+
+      // Calculate LP CR: baseline (first test) vs current (latest completed test)
+      const completedTests = tests.filter(t => ["winner_a", "winner_b", "no_result"].includes(t.status));
+      let baselineCR = 0;
+      let currentCR = 0;
+      if (completedTests.length > 0) {
+        // First test = baseline CR (original conversion rate)
+        const first = completedTests[completedTests.length - 1]; // oldest
+        baselineCR = first.visitorsA > 0 ? (first.conversionsA / first.visitorsA) * 100 : 0;
+        // Latest test = current best CR
+        const latest = completedTests[0]; // newest
+        const latestCR_A = latest.visitorsA > 0 ? (latest.conversionsA / latest.visitorsA) * 100 : 0;
+        const latestCR_B = latest.visitorsB > 0 ? (latest.conversionsB / latest.visitorsB) * 100 : 0;
+        currentCR = Math.max(latestCR_A, latestCR_B);
+      }
+
+      // Include test details for drill-down
+      const testDetails = tests.map(t => ({
+        id: t.id,
+        controlText: t.controlText ?? "",
+        variantText: t.variantText ?? "",
+        status: t.status,
+        visitorsA: t.visitorsA,
+        visitorsB: t.visitorsB,
+        conversionsA: t.conversionsA,
+        conversionsB: t.conversionsB,
+        improvementPercent: t.improvementPercent ? parseFloat(t.improvementPercent) : null,
+        startedAt: t.startedAt,
+        endedAt: t.endedAt,
+      }));
+
       return {
         project,
         performance,
+        baselineCR,
+        currentCR,
+        testDetails,
       };
     }));
 

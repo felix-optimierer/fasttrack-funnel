@@ -27,6 +27,15 @@ export default function ExitPlan() {
     window.scrollTo(0, 0);
   }, []);
 
+  // Testoptimierer A/B-Testing Tag
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "/api/testoptimierer/tag/150001";
+    script.async = true;
+    document.body.appendChild(script);
+    return () => { document.body.removeChild(script); };
+  }, []);
+
   // Exit-Intent: Popup öffnen wenn Maus den Viewport nach oben verlässt (einmal pro Session)
   useEffect(() => {
     const SESSION_KEY = "exit-plan-exit-intent-fired";

@@ -11,6 +11,7 @@ import {
   TrendingUp, TrendingDown, Minus, Users, Target, Clock,
   ExternalLink, Copy, FlaskConical, CheckCircle2, XCircle, AlertCircle,
   BarChart3, Calendar, Trash2, Pencil, Shield, ShieldCheck, ShieldAlert,
+  RefreshCw, Search,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -56,6 +57,64 @@ export default function TestoptimiererProjekt() {
     },
   });
 
+  const deleteProjectMutation = trpc.testoptimierer.deleteProject.useMutation({
+    onSuccess: () => {
+      toast.success("Projekt gelöscht.");
+      navigate("/testoptimierer");
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  const scanMutation = trpc.testoptimierer.scanPage.useMutation({
+    onSuccess: (data) => {
+      if (data.elements.length === 0) {
+        toast.info("Keine neuen Elemente gefunden.");
+        return;
+      }
+      // Auto-create elements from scan results
+      let created = 0;
+      data.elements.forEach(async (el) => {
+        // Check if element with same selector already exists
+        const existing = projectQuery.data?.elements.find(e => e.cssSelector === el.cssSelector);
+        if (!existing) {
+          try {
+            await createElementFromScan.mutateAsync({
+              projectId,
+              elementType: el.elementType as any,
+              cssSelector: el.cssSelector,
+              originalText: el.currentText,
+              label: el.label,
+            });
+            created++;
+          } catch {}
+        }
+      });
+      setTimeout(() => {
+        projectQuery.refetch();
+        toast.success(`Scan abgeschlossen! ${data.elements.length} Elemente erkannt.`);
+      }, 500);
+    },
+    onError: (err) => toast.error(`Scan fehlgeschlagen: ${err.message}`),
+  });
+
+  const createElementFromScan = trpc.testoptimierer.createElement.useMutation({
+    onError: () => {},
+  });
+
+  function handleDeleteProject() {
+    const confirmed = window.confirm(
+      `Bist du sicher, dass du das Projekt "${project.name}" unwiderruflich löschen möchtest?\n\nAlle Tests, Elemente und Besucherdaten werden gelöscht.`
+    );
+    if (confirmed) {
+      const doubleConfirm = window.confirm(
+        "Letzte Warnung: Alle Daten dieses Projekts gehen verloren. Wirklich löschen?"
+      );
+      if (doubleConfirm) {
+        deleteProjectMutation.mutate({ id: projectId });
+      }
+    }
+  }
+
   if (projectQuery.isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-navy-deep text-foreground">
@@ -97,6 +156,16 @@ export default function TestoptimiererProjekt() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {/* Re-Scan Button */}
+            <button
+              onClick={() => scanMutation.mutate({ url: project.targetUrl })}
+              disabled={scanMutation.isPending}
+              className="flex items-center gap-1.5 rounded-md border border-border/30 bg-card/60 px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-gold hover:border-gold/40 transition disabled:opacity-50"
+              title="Seite neu scannen"
+            >
+              {scanMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Search className="h-3.5 w-3.5" />}
+              Scannen
+            </button>
             {/* Project Status Toggle */}
             <select
               value={project.status}
@@ -107,6 +176,15 @@ export default function TestoptimiererProjekt() {
               <option value="paused">Pausiert</option>
               <option value="stopped">Gestoppt</option>
             </select>
+            {/* Delete Project */}
+            <button
+              onClick={handleDeleteProject}
+              disabled={deleteProjectMutation.isPending}
+              className="rounded-md border border-red-500/30 bg-red-500/10 p-1.5 text-red-400 hover:bg-red-500/20 transition disabled:opacity-50"
+              title="Projekt löschen"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
             <button
               onClick={() => navigate(`/testoptimierer/projekt/${project.id}/neuer-test`)}
               disabled={!!runningTest}
