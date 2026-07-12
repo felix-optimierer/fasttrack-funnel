@@ -40,6 +40,7 @@ import {
   validateAdminCredentials,
 } from "./admin-auth";
 import { notifyOwner } from "./_core/notification";
+import { testoptimiererRouter } from "./testoptimierer/router";
 
 const periodSchema = z.enum(["day", "week", "month"]);
 const channelSchema = z.enum(["ki-report", "exit-plan", "traumwebseite"]);
@@ -63,6 +64,7 @@ function getClientIp(req: any): string | null {
 
 export const appRouter = router({
   system: systemRouter,
+  testoptimierer: testoptimiererRouter,
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {

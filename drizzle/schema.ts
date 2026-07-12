@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, index, boolean as mysqlBoolean } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, index, boolean as mysqlBoolean, decimal } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -178,3 +178,141 @@ export const adSpend = mysqlTable(
 
 export type AdSpend = typeof adSpend.$inferSelect;
 export type InsertAdSpend = typeof adSpend.$inferInsert;
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TESTOPTIMIERER – A/B Testing System
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * AB-Projekte — jede Landing Page / Funnel-Seite, die optimiert wird.
+ */
+export const abProjects = mysqlTable(
+  "ab_projects",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    name: varchar("name", { length: 255 }).notNull(),
+    targetUrl: varchar("targetUrl", { length: 500 }).notNull(),
+    conversionUrlPattern: varchar("conversionUrlPattern", { length: 500 }).notNull(),
+    conversionMatchType: mysqlEnum("conversionMatchType", ["exact", "contains"]).default("contains").notNull(),
+    status: mysqlEnum("status", ["active", "paused", "stopped"]).default("active").notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  },
+  (t) => ({
+    statusIdx: index("ab_proj_status_idx").on(t.status),
+  }),
+);
+
+export type AbProject = typeof abProjects.$inferSelect;
+export type InsertAbProject = typeof abProjects.$inferInsert;
+
+/**
+ * AB-Elemente — testbare Elemente auf einer Seite (Headline, Sub-Headline, CTA).
+ */
+export const abElements = mysqlTable(
+  "ab_elements",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    projectId: int("projectId").notNull(),
+    elementType: mysqlEnum("elementType", ["main_headline", "pre_headline", "sub_headline", "cta"]).notNull(),
+    cssSelector: varchar("cssSelector", { length: 1000 }).notNull(),
+    originalText: text("originalText").notNull(),
+    label: varchar("label", { length: 255 }),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  (t) => ({
+    projectIdx: index("ab_elem_project_idx").on(t.projectId),
+  }),
+);
+
+export type AbElement = typeof abElements.$inferSelect;
+export type InsertAbElement = typeof abElements.$inferInsert;
+
+/**
+ * AB-Tests — jeder einzelne A/B-Test (ein Element, zwei Varianten).
+ */
+export const abTests = mysqlTable(
+  "ab_tests",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    projectId: int("projectId").notNull(),
+    elementId: int("elementId").notNull(),
+    variantText: text("variantText").notNull(),
+    controlText: text("controlText").notNull(),
+    trafficSplit: int("trafficSplit").default(50).notNull(),
+    status: mysqlEnum("status", ["running", "paused", "winner_a", "winner_b", "no_result", "stopped", "skipped"]).default("running").notNull(),
+    startedAt: timestamp("startedAt").defaultNow().notNull(),
+    endedAt: timestamp("endedAt"),
+    visitorsA: int("visitorsA").default(0).notNull(),
+    visitorsB: int("visitorsB").default(0).notNull(),
+    conversionsA: int("conversionsA").default(0).notNull(),
+    conversionsB: int("conversionsB").default(0).notNull(),
+    significanceLevel: decimal("significanceLevel", { precision: 8, scale: 6 }),
+    improvementPercent: decimal("improvementPercent", { precision: 8, scale: 2 }),
+  },
+  (t) => ({
+    projectIdx: index("ab_test_project_idx").on(t.projectId),
+    elementIdx: index("ab_test_element_idx").on(t.elementId),
+    statusIdx: index("ab_test_status_idx").on(t.status),
+  }),
+);
+
+export type AbTest = typeof abTests.$inferSelect;
+export type InsertAbTest = typeof abTests.$inferInsert;
+
+/**
+ * AB-Besucher — Tracking welcher Besucher welche Variante sieht.
+ */
+export const abVisitors = mysqlTable(
+  "ab_visitors",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    testId: int("testId").notNull(),
+    visitorUid: varchar("visitorUid", { length: 64 }).notNull(),
+    variant: mysqlEnum("variant", ["a", "b"]).notNull(),
+    converted: mysqlBoolean("converted").default(false).notNull(),
+    firstSeenAt: timestamp("firstSeenAt").defaultNow().notNull(),
+    convertedAt: timestamp("convertedAt"),
+  },
+  (t) => ({
+    testIdx: index("ab_vis_test_idx").on(t.testId),
+    visitorIdx: index("ab_vis_visitor_idx").on(t.visitorUid, t.testId),
+  }),
+);
+
+export type AbVisitor = typeof abVisitors.$inferSelect;
+export type InsertAbVisitor = typeof abVisitors.$inferInsert;
+
+/**
+ * AB-Benachrichtigungslog — Protokoll aller gesendeten Benachrichtigungen.
+ */
+export const abNotificationsLog = mysqlTable(
+  "ab_notifications_log",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    testId: int("testId").notNull(),
+    type: mysqlEnum("type", ["winner_found", "no_significance", "test_started"]).notNull(),
+    sentAt: timestamp("sentAt").defaultNow().notNull(),
+    message: text("message"),
+  },
+  (t) => ({
+    testIdx: index("ab_notif_test_idx").on(t.testId),
+  }),
+);
+
+export type AbNotificationLog = typeof abNotificationsLog.$inferSelect;
+export type InsertAbNotificationLog = typeof abNotificationsLog.$inferInsert;
+
+/**
+ * AB-Einstellungen — konfigurierbare Schwellenwerte für Signifikanz.
+ */
+export const abSettings = mysqlTable("ab_settings", {
+  id: int("id").autoincrement().primaryKey(),
+  settingKey: varchar("settingKey", { length: 128 }).notNull().unique(),
+  settingValue: text("settingValue"),
+  description: text("description"),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AbSetting = typeof abSettings.$inferSelect;
+export type InsertAbSetting = typeof abSettings.$inferInsert;
