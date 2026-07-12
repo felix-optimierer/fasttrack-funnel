@@ -1,6 +1,6 @@
 // ANLEITUNG PAGE (vormals /vsl) — maximal on point.
 // EIN Hook: Webseite mit KI-Agenten in unter 60 Min. Trust-Siegel + Video + 1 CTA, dann echte Fallstudien + Buchung.
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import { SEO } from "@/components/SEO";
 import { SEO_CONFIG } from "@/lib/seo-config";
 import { useLocation } from "wouter";
@@ -19,6 +19,8 @@ import { usePageView } from "@/hooks/usePageView";
 
 export default function Anleitung() {
   const [, navigate] = useLocation();
+  const [ctaVisible, setCtaVisible] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   usePageView("vsl");
 
@@ -30,6 +32,46 @@ export default function Anleitung() {
     script.async = true;
     document.body.appendChild(script);
     return () => { document.body.removeChild(script); };
+  }, []);
+
+  // Listen for Wistia iframe API to detect when video reaches 5:43 (343 seconds)
+  useEffect(() => {
+    const CTA_TIME = 343; // 5:43 in seconds
+    let pollInterval: ReturnType<typeof setInterval> | null = null;
+
+    function tryBindPlayer() {
+      const iframe = iframeRef.current;
+      if (!iframe) return;
+      const player = (iframe as any).wistiaApi;
+      if (!player) return;
+
+      // Player found, stop polling
+      if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+      }
+
+      // Check if user seeks past the CTA time
+      player.bind("timechange", (t: number) => {
+        if (t >= CTA_TIME) {
+          setCtaVisible(true);
+        }
+      });
+
+      // Also check secondchange for reliability
+      player.bind("secondchange", (s: number) => {
+        if (s >= CTA_TIME) {
+          setCtaVisible(true);
+        }
+      });
+    }
+
+    // Poll until the Wistia API is available on the iframe
+    pollInterval = setInterval(tryBindPlayer, 500);
+
+    return () => {
+      if (pollInterval) clearInterval(pollInterval);
+    };
   }, []);
 
   function goToTermin() {
@@ -78,6 +120,7 @@ export default function Anleitung() {
               <div className="wistia_responsive_padding" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
                 <div className="wistia_responsive_wrapper" style={{ height: "100%", left: 0, position: "absolute", top: 0, width: "100%" }}>
                   <iframe
+                    ref={iframeRef}
                     src="https://fast.wistia.net/embed/iframe/dp3vfy7i47?web_component=true&seo=true"
                     title="VSL Neu Video"
                     allow="autoplay; fullscreen"
@@ -93,10 +136,18 @@ export default function Anleitung() {
               </div>
             </div>
 
-            <GoldButton glow className="mt-4 w-full" onClick={goToTermin}>
-              Kostenlose 1:1 Praxisanalyse sichern
-              <ArrowRight className="h-5 w-5" />
-            </GoldButton>
+            <div
+              className={`mt-4 transition-all duration-500 ease-out ${
+                ctaVisible
+                  ? "translate-y-0 opacity-100"
+                  : "pointer-events-none translate-y-4 opacity-0"
+              }`}
+            >
+              <GoldButton glow className="w-full" onClick={goToTermin}>
+                Kostenlose 1:1 Praxisanalyse sichern
+                <ArrowRight className="h-5 w-5" />
+              </GoldButton>
+            </div>
 
             {/* Echte TÜV-Rheinland-Siegel unter dem Video */}
             <div className="mt-6 flex flex-col items-center gap-2.5">
