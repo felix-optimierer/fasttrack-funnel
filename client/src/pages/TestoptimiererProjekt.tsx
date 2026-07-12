@@ -2,7 +2,7 @@
  * Testoptimierer – Projekt-Detail-Seite
  * Zeigt alle Tests, Elemente und Performance eines Projekts.
  */
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useLocation, useParams } from "wouter";
 import { SEO } from "@/components/SEO";
 import { trpc } from "@/lib/trpc";
@@ -371,6 +371,7 @@ const ELEMENT_TYPE_OPTIONS = [
 ] as const;
 
 function ElementsSection({ elements, projectId, onRefetch }: { elements: any[]; projectId: number; onRefetch: () => void }) {
+  const formRef = useRef<HTMLFormElement>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState({
@@ -452,7 +453,14 @@ function ElementsSection({ elements, projectId, onRefetch }: { elements: any[]; 
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold">Konfigurierte Elemente ({elements.length})</h3>
         <button
-          onClick={() => { resetForm(); setShowForm(true); }}
+          onClick={() => {
+            resetForm();
+            setShowForm(true);
+            // Auto-scroll to form after render
+            setTimeout(() => {
+              formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+            }, 100);
+          }}
           className="flex items-center gap-1.5 rounded-md bg-gold/10 border border-gold/30 px-3 py-1.5 text-xs font-medium text-gold hover:bg-gold/20 transition active:scale-[0.97]"
         >
           <Plus className="h-3.5 w-3.5" />
@@ -503,7 +511,7 @@ function ElementsSection({ elements, projectId, onRefetch }: { elements: any[]; 
 
       {/* Add/Edit Form */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="rounded-lg border border-gold/20 bg-navy-deep/40 p-4 space-y-3">
+        <form ref={formRef} onSubmit={handleSubmit} className="rounded-lg border border-gold/20 bg-navy-deep/40 p-4 space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="text-xs font-semibold text-gold">
               {editingId ? "Element bearbeiten" : "Neues Element"}

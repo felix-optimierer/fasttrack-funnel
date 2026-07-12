@@ -222,7 +222,48 @@ export function registerTestoptimiererRoutes(app: Express) {
     const targetUrl = project.targetUrl;
     const expectedScript = `/api/testoptimierer/tag/${projectId}`;
 
-    // Try to fetch the target page and check if our script tag is present
+    // For own SPA pages, check the JSX source files directly (since HTML is empty shell)
+    const ownDomains = ["go.physiofreiheit.de", "physiofreiheit.de", "localhost"];
+    const isOwnPage = ownDomains.some(d => targetUrl.includes(d));
+
+    if (isOwnPage) {
+      // Check source files for the tag reference
+      const fs = await import("fs");
+      const path = await import("path");
+      const pagesDir = path.default.resolve(process.cwd(), "client/src/pages");
+      const tagPattern = `testoptimierer/tag/${projectId}`;
+      let found = false;
+
+      try {
+        const files = fs.default.readdirSync(pagesDir);
+        for (const file of files) {
+          if (!file.endsWith(".tsx") && !file.endsWith(".ts")) continue;
+          const content = fs.default.readFileSync(path.default.join(pagesDir, file), "utf-8");
+          if (content.includes(tagPattern)) {
+            found = true;
+            break;
+          }
+        }
+      } catch { /* ignore fs errors */ }
+
+      // Also check index.html
+      try {
+        const indexPath = path.default.resolve(process.cwd(), "client/index.html");
+        const indexContent = fs.default.readFileSync(indexPath, "utf-8");
+        if (indexContent.includes(tagPattern)) found = true;
+      } catch { /* ignore */ }
+
+      res.json({
+        ok: true,
+        embedded: found,
+        message: found
+          ? "Tag ist korrekt eingebettet! Das Script wurde im Quellcode der Seite gefunden."
+          : `Tag NICHT im Quellcode gefunden. Bitte stelle sicher, dass ein useEffect mit "${expectedScript}" in der entsprechenden Page-Komponente existiert.`,
+      });
+      return;
+    }
+
+    // For external pages, fetch HTML and check
     try {
       const pageResp = await fetch(targetUrl, {
         headers: {
