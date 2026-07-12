@@ -267,7 +267,150 @@ export const testoptimiererRouter = router({
     .mutation(async ({ input, ctx }) => {
       await assertAdmin(ctx.req);
 
-      // Fetch the page HTML
+      type DetectedElement = {
+        elementType: "main_headline" | "pre_headline" | "sub_headline" | "cta";
+        cssSelector: string;
+        currentText: string;
+        label: string;
+      };
+
+      // Check if this is our own SPA domain
+      const ownDomains = ["go.physiofreiheit.de", "physiofunnel-n4hsdncp.manus.space", "localhost"];
+      let parsedUrl: URL;
+      try {
+        parsedUrl = new URL(input.url);
+      } catch {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Ungültige URL." });
+      }
+      const isOwnSPA = ownDomains.some(d => parsedUrl.hostname === d || parsedUrl.hostname.endsWith("." + d));
+
+      if (isOwnSPA) {
+        // For our own SPA: read the JSX source file directly based on route
+        const path = await import("path");
+        const fs = await import("fs/promises");
+        const route = parsedUrl.pathname;
+
+        // Route → component file mapping
+        const routeMap: Record<string, string> = {
+          "/": "Home.tsx",
+          "/ki-report": "KiReport.tsx",
+          "/exit-plan": "ExitPlan.tsx",
+          "/traumwebseite": "Traumwebseite.tsx",
+          "/anleitung": "Anleitung.tsx",
+          "/webseite-termin": "WebseiteTermin.tsx",
+          "/ki-report-termin": "KiReportTermin.tsx",
+          "/exit-plan-termin": "ExitPlanTermin.tsx",
+          "/danke-termin": "DankeTermin.tsx",
+        };
+
+        const componentFile = routeMap[route];
+        if (!componentFile) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: `Route "${route}" ist keine bekannte Seite. Bekannte Routen: ${Object.keys(routeMap).join(", ")}` });
+        }
+
+        // Read the source file
+        const projectRoot = path.resolve(process.cwd());
+        const filePath = path.join(projectRoot, "client", "src", "pages", componentFile);
+        let source: string;
+        try {
+          source = await fs.readFile(filePath, "utf-8");
+        } catch {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: `Quelldatei nicht gefunden: ${componentFile}` });
+        }
+
+        // Parse JSX source to extract testable elements
+        const detected: DetectedElement[] = [];
+
+        // Extract h1 content (handles multi-line h1 with <br/> tags)
+        const h1Match = source.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
+        if (h1Match) {
+          const h1Text = h1Match[1]
+            .replace(/<br\s*\/?>/gi, " ")
+            .replace(/<[^>]+>/g, "")
+            .replace(/\{[^}]*\}/g, "")
+            .replace(/\s+/g, " ")
+            .trim();
+          if (h1Text.length > 2) {
+            detected.push({
+              elementType: "main_headline",
+              cssSelector: "h1",
+              currentText: h1Text,
+              label: "Haupt-Headline (H1)",
+            });
+          }
+        }
+
+        // Extract italic sub-headline (p with italic class before or after h1)
+        const italicPMatch = source.match(/<p[^>]*italic[^>]*>([\s\S]*?)<\/p>/);
+        if (italicPMatch) {
+          const pText = italicPMatch[1].replace(/<[^>]+>/g, "").replace(/\{[^}]*\}/g, "").replace(/\s+/g, " ").trim();
+          if (pText.length > 5 && pText.length < 200) {
+            detected.push({
+              elementType: "sub_headline",
+              cssSelector: "p.italic",
+              currentText: pText,
+              label: "Sub-Headline (italic)",
+            });
+          }
+        }
+
+        // Extract pre-headline badge (div with uppercase/tracking or border-gold)
+        const badgeMatch = source.match(/<div[^>]*(?:uppercase|border-gold|tracking-\[)[^>]*>([\s\S]*?)<\/div>/);
+        if (badgeMatch) {
+          const badgeText = badgeMatch[1].replace(/<[^>]+>/g, "").replace(/\{[^}]*\}/g, "").replace(/&amp;/g, "&").replace(/\s+/g, " ").trim();
+          if (badgeText.length > 3 && badgeText.length < 120) {
+            // Generate a selector from the class
+            const classMatch = badgeMatch[0].match(/className="([^"]+)"/);
+            let selector = "div";
+            if (classMatch) {
+              const firstClass = classMatch[1].split(/\s+/).find(c => c.startsWith("inline") || c.startsWith("rounded") || c.startsWith("border"));
+              if (firstClass) selector = `div.${firstClass.replace(/\//g, "\\/")}`;
+            }
+            detected.push({
+              elementType: "pre_headline",
+              cssSelector: selector,
+              currentText: badgeText,
+              label: "Pre-Headline (Badge)",
+            });
+          }
+        }
+
+        // Extract CTA button (GoldButton or button with prominent text)
+        const ctaMatch = source.match(/<GoldButton[^>]*>([\s\S]*?)<\/GoldButton>/);
+        if (ctaMatch) {
+          const ctaText = ctaMatch[1].replace(/<[^>]+>/g, "").replace(/\{[^}]*\}/g, "").replace(/\s+/g, " ").trim();
+          if (ctaText.length > 2) {
+            detected.push({
+              elementType: "cta",
+              cssSelector: "button.gold-btn, main button",
+              currentText: ctaText,
+              label: "CTA-Button",
+            });
+          }
+        } else {
+          // Fallback: regular button
+          const btnMatch = source.match(/<button[^>]*>([\s\S]*?)<\/button>/);
+          if (btnMatch) {
+            const btnText = btnMatch[1].replace(/<[^>]+>/g, "").replace(/\{[^}]*\}/g, "").replace(/\s+/g, " ").trim();
+            if (btnText.length > 2 && btnText.length < 60) {
+              detected.push({
+                elementType: "cta",
+                cssSelector: "button",
+                currentText: btnText,
+                label: "CTA-Button",
+              });
+            }
+          }
+        }
+
+        // Extract page title from SEO component or file name
+        const titleMatch = source.match(/title[=:]\s*["'`]([^"'`]+)["'`]/);
+        const pageTitle = titleMatch ? titleMatch[1] : componentFile.replace(".tsx", "");
+
+        return { elements: detected, pageTitle };
+      }
+
+      // External page: use cheerio (original approach)
       let html: string;
       try {
         const resp = await fetch(input.url, {
@@ -287,12 +430,7 @@ export const testoptimiererRouter = router({
       }
 
       const $ = cheerio.load(html);
-      const detected: Array<{
-        elementType: "main_headline" | "pre_headline" | "sub_headline" | "cta";
-        cssSelector: string;
-        currentText: string;
-        label: string;
-      }> = [];
+      const detected: DetectedElement[] = [];
 
       // Detect main headline (h1)
       const h1 = $("h1").first();
@@ -306,16 +444,15 @@ export const testoptimiererRouter = router({
       }
 
       // Detect sub-headline (first p after h1, or p.italic, or h2)
-      const subHeadline = $("main p.italic").first();
+      const subHeadline = $("main p.italic, p.italic").first();
       if (subHeadline.length && subHeadline.text().trim()) {
         detected.push({
           elementType: "sub_headline",
-          cssSelector: "main p.italic",
+          cssSelector: "p.italic",
           currentText: subHeadline.text().trim(),
           label: "Sub-Headline (italic)",
         });
       } else {
-        // Try h2
         const h2 = $("h2").first();
         if (h2.length && h2.text().trim()) {
           detected.push({
@@ -327,7 +464,7 @@ export const testoptimiererRouter = router({
         }
       }
 
-      // Detect pre-headline (badge/span before h1, or small text above)
+      // Detect pre-headline (badge/span before h1)
       const preHeadline = $("h1").prev("div, span, p").first();
       if (preHeadline.length && preHeadline.text().trim().length < 100) {
         detected.push({
@@ -348,7 +485,6 @@ export const testoptimiererRouter = router({
           label: "CTA-Button",
         });
       } else {
-        // Fallback: first prominent button
         const anyButton = $("button").filter((_, el) => {
           const text = $(el).text().trim();
           return text.length > 2 && text.length < 60;

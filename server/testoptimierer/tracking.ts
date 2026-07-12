@@ -196,6 +196,42 @@ export function registerTestoptimiererRoutes(app: Express) {
     }
   });
 
+  // ─── GET /api/testoptimierer/verify/:projectId ─────────────────────────────
+  // Verification endpoint: checks if the tag is working for a project.
+  app.get("/api/testoptimierer/verify/:projectId", corsMiddleware, async (req: Request, res: Response) => {
+    const projectId = parseInt(req.params.projectId, 10);
+    if (isNaN(projectId)) {
+      res.status(400).json({ ok: false, error: "Invalid project ID" });
+      return;
+    }
+    const db = await getDb();
+    if (!db) {
+      res.json({ ok: false, error: "DB unavailable" });
+      return;
+    }
+    const tests = await db.select().from(abTests)
+      .where(eq(abTests.projectId, projectId))
+      .limit(10);
+    if (tests.length === 0) {
+      res.json({ ok: true, embedded: false, reason: "no_tests", message: "Kein Test konfiguriert. Erstelle zuerst einen Test." });
+      return;
+    }
+    const runningTests = tests.filter(t => t.status === "running");
+    const hasRunningTest = runningTests.length > 0;
+    const totalVisitors = tests.reduce((sum, t) => (t.visitorsA || 0) + (t.visitorsB || 0) + sum, 0);
+    res.json({
+      ok: true,
+      embedded: totalVisitors > 0,
+      hasRunningTest,
+      totalVisitors,
+      message: totalVisitors > 0
+        ? `Tag funktioniert! ${totalVisitors} Besucher erfasst.`
+        : hasRunningTest
+          ? "Tag eingebettet, aber noch keine Besucher erfasst. Besuche die Seite zum Testen."
+          : "Kein laufender Test. Starte einen Test, dann besuche die Seite zum Verifizieren."
+    });
+  });
+
   // ─── POST /api/scheduled/testoptimierer-check ───────────────────────────────
   // Heartbeat callback: checks significance for all running tests.
   app.post("/api/scheduled/testoptimierer-check", async (req: Request, res: Response) => {

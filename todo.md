@@ -262,3 +262,24 @@
 ### Signifikanz-Empfehlung
 - [x] Prüfen und dokumentieren ob 0.20 p-Value bei 1.000 Besuchern sinnvoll ist (Antwort: Ja, gute Kombination)
 - [x] Bessere Erklärungen in den Einstellungen mit konkreten Empfehlungen (Tabelle + OptiMind-Vergleich)
+
+## Testoptimierer – Fixes (Runde 3)
+
+### Auto-Scan Fix
+- [x] scanPage liest für eigene SPA-Seiten die JSX-Quelldateien direkt (Route→Datei-Mapping)
+- [x] Elemente auf /ki-report korrekt erkennen (h1, pre-headline, CTA-Button, sub-headline)
+
+### Manuelles Element-Management
+- [x] Button "Element hinzufügen" auf Projekt-Detail-Seite
+- [x] Formular: Element-Typ, CSS-Selektor, aktueller Text
+- [x] Element bearbeiten/löschen auf Projekt-Detail-Seite
+- [x] "Neuer Test"-Seite zeigt Elemente korrekt an (auch manuell angelegte)
+
+### Tag-Verifizierung
+- [x] Testfunktion auf Projekt-Detail-Seite: "Tag testen" Button prüft ob Besucher erfasst werden
+
+### UI-Cleanup
+- [x] "Warum nur 1 Tag"-Hinweiscontainer auf Projekt-Detail-Seite entfernt
+
+### Tag-Einbettung
+- [x] Testoptimierer-Tag auf /ki-report eingebettet (useEffect mit script.src = /api/testoptimierer/tag/120001)

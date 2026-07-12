@@ -2,7 +2,7 @@
  * Testoptimierer – Projekt-Detail-Seite
  * Zeigt alle Tests, Elemente und Performance eines Projekts.
  */
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useLocation, useParams } from "wouter";
 import { SEO } from "@/components/SEO";
 import { trpc } from "@/lib/trpc";
@@ -10,7 +10,7 @@ import {
   Loader2, ArrowLeft, Plus, Play, Pause, Square, SkipForward,
   TrendingUp, TrendingDown, Minus, Users, Target, Clock,
   ExternalLink, Copy, FlaskConical, CheckCircle2, XCircle, AlertCircle,
-  BarChart3, Calendar,
+  BarChart3, Calendar, Trash2, Pencil, Shield, ShieldCheck, ShieldAlert,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -120,63 +120,8 @@ export default function TestoptimiererProjekt() {
       </header>
 
       <main className="container py-6 space-y-6">
-        {/* Tag Embed Code */}
-        <div className="rounded-xl border border-border/30 bg-card/60 p-4">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-semibold flex items-center gap-2">
-              <ExternalLink className="h-4 w-4 text-gold" />
-              Embed-Code
-            </h3>
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(`<script src="${tagUrl}"></script>`);
-                toast.success("Code kopiert!");
-              }}
-              className="flex items-center gap-1.5 text-xs text-gold hover:text-gold-soft transition"
-            >
-              <Copy className="h-3.5 w-3.5" />
-              Kopieren
-            </button>
-          </div>
-          <code className="block rounded-md bg-navy-deep/80 p-3 text-xs text-muted-foreground font-mono break-all">
-            {`<script src="${tagUrl}"></script>`}
-          </code>
-          <p className="text-xs text-muted-foreground mt-2">
-            Füge diesen Code vor dem schließenden &lt;/body&gt;-Tag auf deiner Zielseite ein.
-          </p>
-          <div className="mt-3 rounded-md bg-navy-deep/60 border border-border/20 p-3">
-            <p className="text-xs font-medium text-gold mb-1">Warum nur 1 Tag?</p>
-            <p className="text-[10px] text-muted-foreground leading-relaxed">
-              Du brauchst nur diesen einen Tag auf der Hauptseite. Die Conversion wird automatisch erkannt,
-              wenn der Besucher auf die Danke-Seite ({project.conversionUrlPattern || "/danke"}) gelangt –
-              egal ob durch Formular, Calendly oder Redirect. Kein zweiter Tag auf der Danke-Seite nötig!
-            </p>
-          </div>
-          {/* Manus Prompt */}
-          <div className="mt-3 rounded-md bg-navy-deep/60 border border-border/20 p-3">
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-xs font-medium text-gold">Manus-Prompt zum Einbetten</p>
-              <button
-                onClick={() => {
-                  const prompt = `Bitte füge folgenden Script-Tag vor dem schließenden </body>-Tag auf der Seite ${project.targetUrl} ein:\n\n<script src="${tagUrl}"></script>\n\nDanach bitte veröffentlichen.`;
-                  navigator.clipboard.writeText(prompt);
-                  toast.success("Prompt kopiert!");
-                }}
-                className="flex items-center gap-1.5 text-[10px] text-gold hover:text-gold-soft transition"
-              >
-                <Copy className="h-3 w-3" />
-                Kopieren
-              </button>
-            </div>
-            <code className="block text-[10px] text-muted-foreground font-mono whitespace-pre-wrap">
-{`Bitte füge folgenden Script-Tag vor dem schließenden </body>-Tag auf der Seite ${project.targetUrl} ein:
-
-<script src="${tagUrl}"></script>
-
-Danach bitte veröffentlichen.`}
-            </code>
-          </div>
-        </div>
+        {/* Tag Embed Code + Verification */}
+        <EmbedSection project={project} tagUrl={tagUrl} />
 
         {/* Overall Performance */}
         {performance && performance.completedTests > 0 && (
@@ -230,29 +175,323 @@ Danach bitte veröffentlichen.`}
           )}
         </div>
 
-        {/* Elements */}
-        <div>
-          <h3 className="text-sm font-semibold mb-3">Konfigurierte Elemente ({elements.length})</h3>
-          {elements.length === 0 ? (
-            <p className="text-muted-foreground text-sm">Noch keine Elemente konfiguriert.</p>
-          ) : (
-            <div className="space-y-2">
-              {elements.map(el => (
-                <div key={el.id} className="rounded-lg border border-border/20 bg-card/40 p-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-xs font-medium text-gold uppercase">{el.elementType.replace("_", " ")}</span>
-                      {el.label && <span className="text-xs text-muted-foreground ml-2">({el.label})</span>}
-                    </div>
-                  </div>
-                  <p className="text-sm mt-1 text-foreground/80 line-clamp-2">{el.originalText}</p>
-                  <code className="text-[10px] text-muted-foreground mt-1 block">{el.cssSelector}</code>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        {/* Elements with CRUD */}
+        <ElementsSection elements={elements} projectId={projectId} onRefetch={() => projectQuery.refetch()} />
       </main>
+    </div>
+  );
+}
+
+// ─── EMBED SECTION ─────────────────────────────────────────────────────────────
+
+function EmbedSection({ project, tagUrl }: { project: any; tagUrl: string }) {
+  const [verifying, setVerifying] = useState(false);
+  const [verifyResult, setVerifyResult] = useState<{ ok: boolean; embedded: boolean; message: string } | null>(null);
+
+  const handleVerify = async () => {
+    setVerifying(true);
+    setVerifyResult(null);
+    try {
+      const resp = await fetch(`/api/testoptimierer/verify/${project.id}`);
+      const data = await resp.json();
+      setVerifyResult(data);
+    } catch {
+      setVerifyResult({ ok: false, embedded: false, message: "Verbindungsfehler. Bitte erneut versuchen." });
+    } finally {
+      setVerifying(false);
+    }
+  };
+
+  return (
+    <div className="rounded-xl border border-border/30 bg-card/60 p-4">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-sm font-semibold flex items-center gap-2">
+          <ExternalLink className="h-4 w-4 text-gold" />
+          Embed-Code
+        </h3>
+        <button
+          onClick={() => {
+            navigator.clipboard.writeText(`<script src="${tagUrl}"></script>`);
+            toast.success("Code kopiert!");
+          }}
+          className="flex items-center gap-1.5 text-xs text-gold hover:text-gold-soft transition"
+        >
+          <Copy className="h-3.5 w-3.5" />
+          Kopieren
+        </button>
+      </div>
+      <code className="block rounded-md bg-navy-deep/80 p-3 text-xs text-muted-foreground font-mono break-all">
+        {`<script src="${tagUrl}"></script>`}
+      </code>
+      <p className="text-xs text-muted-foreground mt-2">
+        Füge diesen Code vor dem schließenden &lt;/body&gt;-Tag auf deiner Zielseite ein.
+      </p>
+
+      {/* Manus Prompt */}
+      <div className="mt-3 rounded-md bg-navy-deep/60 border border-border/20 p-3">
+        <div className="flex items-center justify-between mb-1">
+          <p className="text-xs font-medium text-gold">Manus-Prompt zum Einbetten</p>
+          <button
+            onClick={() => {
+              const prompt = `Bitte füge folgenden Script-Tag vor dem schließenden </body>-Tag auf der Seite ${project.targetUrl} ein:\n\n<script src="${tagUrl}"></script>\n\nDanach bitte veröffentlichen.`;
+              navigator.clipboard.writeText(prompt);
+              toast.success("Prompt kopiert!");
+            }}
+            className="flex items-center gap-1.5 text-[10px] text-gold hover:text-gold-soft transition"
+          >
+            <Copy className="h-3 w-3" />
+            Kopieren
+          </button>
+        </div>
+        <code className="block text-[10px] text-muted-foreground font-mono whitespace-pre-wrap">
+{`Bitte füge folgenden Script-Tag vor dem schließenden </body>-Tag auf der Seite ${project.targetUrl} ein:
+
+<script src="${tagUrl}"></script>
+
+Danach bitte veröffentlichen.`}
+        </code>
+      </div>
+
+      {/* Tag Verification */}
+      <div className="mt-3 flex items-center gap-3">
+        <button
+          onClick={handleVerify}
+          disabled={verifying}
+          className="flex items-center gap-2 rounded-md border border-border/30 bg-navy-deep/60 px-3 py-1.5 text-xs font-medium text-foreground hover:border-gold/50 transition disabled:opacity-50"
+        >
+          {verifying ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Shield className="h-3.5 w-3.5 text-gold" />
+          )}
+          Tag testen
+        </button>
+        {verifyResult && (
+          <div className={`flex items-center gap-1.5 text-xs font-medium ${
+            verifyResult.embedded ? "text-emerald-400" : "text-yellow-400"
+          }`}>
+            {verifyResult.embedded ? (
+              <ShieldCheck className="h-4 w-4" />
+            ) : (
+              <ShieldAlert className="h-4 w-4" />
+            )}
+            {verifyResult.message}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── ELEMENTS SECTION (CRUD) ───────────────────────────────────────────────────
+
+const ELEMENT_TYPE_OPTIONS = [
+  { value: "main_headline", label: "Haupt-Headline (H1)" },
+  { value: "pre_headline", label: "Pre-Headline (Badge)" },
+  { value: "sub_headline", label: "Sub-Headline" },
+  { value: "cta", label: "CTA-Button" },
+] as const;
+
+function ElementsSection({ elements, projectId, onRefetch }: { elements: any[]; projectId: number; onRefetch: () => void }) {
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [form, setForm] = useState({
+    elementType: "main_headline" as string,
+    cssSelector: "",
+    originalText: "",
+    label: "",
+  });
+
+  const createMutation = trpc.testoptimierer.createElement.useMutation({
+    onSuccess: () => {
+      toast.success("Element hinzugefügt!");
+      onRefetch();
+      resetForm();
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  const updateMutation = trpc.testoptimierer.updateElement.useMutation({
+    onSuccess: () => {
+      toast.success("Element aktualisiert!");
+      onRefetch();
+      resetForm();
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  const deleteMutation = trpc.testoptimierer.deleteElement.useMutation({
+    onSuccess: () => {
+      toast.success("Element gelöscht.");
+      onRefetch();
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  function resetForm() {
+    setShowForm(false);
+    setEditingId(null);
+    setForm({ elementType: "main_headline", cssSelector: "", originalText: "", label: "" });
+  }
+
+  function handleEdit(el: any) {
+    setEditingId(el.id);
+    setForm({
+      elementType: el.elementType,
+      cssSelector: el.cssSelector,
+      originalText: el.originalText,
+      label: el.label || "",
+    });
+    setShowForm(true);
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!form.cssSelector.trim() || !form.originalText.trim()) {
+      toast.error("CSS-Selektor und Text sind Pflichtfelder.");
+      return;
+    }
+    if (editingId) {
+      updateMutation.mutate({
+        id: editingId,
+        cssSelector: form.cssSelector.trim(),
+        originalText: form.originalText.trim(),
+        label: form.label.trim() || undefined,
+      });
+    } else {
+      createMutation.mutate({
+        projectId,
+        elementType: form.elementType as any,
+        cssSelector: form.cssSelector.trim(),
+        originalText: form.originalText.trim(),
+        label: form.label.trim() || undefined,
+      });
+    }
+  }
+
+  return (
+    <div className="rounded-xl border border-border/30 bg-card/60 p-4">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-semibold">Konfigurierte Elemente ({elements.length})</h3>
+        <button
+          onClick={() => { resetForm(); setShowForm(true); }}
+          className="flex items-center gap-1.5 rounded-md bg-gold/10 border border-gold/30 px-3 py-1.5 text-xs font-medium text-gold hover:bg-gold/20 transition active:scale-[0.97]"
+        >
+          <Plus className="h-3.5 w-3.5" />
+          Element hinzufügen
+        </button>
+      </div>
+
+      {/* Element List */}
+      {elements.length === 0 && !showForm && (
+        <p className="text-muted-foreground text-sm">Noch keine Elemente konfiguriert. Klicke "Element hinzufügen" oder nutze den Auto-Scan beim Projekt-Erstellen.</p>
+      )}
+      {elements.length > 0 && (
+        <div className="space-y-2 mb-3">
+          {elements.map(el => (
+            <div key={el.id} className="rounded-lg border border-border/20 bg-navy-deep/40 p-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-medium text-gold uppercase">{el.elementType.replace("_", " ")}</span>
+                  {el.label && <span className="text-xs text-muted-foreground">({el.label})</span>}
+                </div>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => handleEdit(el)}
+                    className="rounded p-1 text-muted-foreground hover:text-gold transition"
+                    title="Bearbeiten"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (confirm("Element wirklich löschen?")) {
+                        deleteMutation.mutate({ id: el.id });
+                      }
+                    }}
+                    className="rounded p-1 text-muted-foreground hover:text-red-400 transition"
+                    title="Löschen"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+              <p className="text-sm mt-1 text-foreground/80 line-clamp-2">{el.originalText}</p>
+              <code className="text-[10px] text-muted-foreground mt-1 block">{el.cssSelector}</code>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Add/Edit Form */}
+      {showForm && (
+        <form onSubmit={handleSubmit} className="rounded-lg border border-gold/20 bg-navy-deep/40 p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h4 className="text-xs font-semibold text-gold">
+              {editingId ? "Element bearbeiten" : "Neues Element"}
+            </h4>
+            <button type="button" onClick={resetForm} className="text-xs text-muted-foreground hover:text-foreground">
+              Abbrechen
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div>
+              <label className="text-[10px] text-muted-foreground mb-1 block">Element-Typ</label>
+              <select
+                value={form.elementType}
+                onChange={e => setForm({ ...form, elementType: e.target.value })}
+                disabled={!!editingId}
+                className="w-full rounded-md border border-border/30 bg-card/60 px-3 py-2 text-sm outline-none focus:border-gold disabled:opacity-50"
+              >
+                {ELEMENT_TYPE_OPTIONS.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-[10px] text-muted-foreground mb-1 block">Label (optional)</label>
+              <input
+                value={form.label}
+                onChange={e => setForm({ ...form, label: e.target.value })}
+                placeholder="z.B. Haupt-CTA"
+                className="w-full rounded-md border border-border/30 bg-card/60 px-3 py-2 text-sm outline-none focus:border-gold placeholder:text-muted-foreground/50"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="text-[10px] text-muted-foreground mb-1 block">CSS-Selektor</label>
+            <input
+              value={form.cssSelector}
+              onChange={e => setForm({ ...form, cssSelector: e.target.value })}
+              placeholder="z.B. h1 oder .hero-headline"
+              className="w-full rounded-md border border-border/30 bg-card/60 px-3 py-2 text-sm font-mono outline-none focus:border-gold placeholder:text-muted-foreground/50"
+            />
+            <p className="text-[10px] text-muted-foreground mt-1">Der CSS-Selektor, mit dem das Element auf der Seite gefunden wird.</p>
+          </div>
+
+          <div>
+            <label className="text-[10px] text-muted-foreground mb-1 block">Aktueller Text (Original)</label>
+            <textarea
+              value={form.originalText}
+              onChange={e => setForm({ ...form, originalText: e.target.value })}
+              placeholder="Der aktuelle Text des Elements..."
+              rows={2}
+              className="w-full rounded-md border border-border/30 bg-card/60 px-3 py-2 text-sm outline-none focus:border-gold placeholder:text-muted-foreground/50 resize-none"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={createMutation.isPending || updateMutation.isPending}
+            className="flex items-center gap-2 rounded-md bg-gold px-4 py-2 text-sm font-semibold text-navy-deep hover:bg-gold-soft transition disabled:opacity-50 active:scale-[0.97]"
+          >
+            {(createMutation.isPending || updateMutation.isPending) && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+            {editingId ? "Speichern" : "Hinzufügen"}
+          </button>
+        </form>
+      )}
     </div>
   );
 }

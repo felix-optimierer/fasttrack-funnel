@@ -170,6 +170,15 @@ export function generateTag(config: TagConfig | null): string {
     }
   }
 
+  // Global marker for verification
+  window.__TESTOPTIMIERER_LOADED = window.__TESTOPTIMIERER_LOADED || {};
+  window.__TESTOPTIMIERER_LOADED[CONFIG.projectId] = {
+    testId: CONFIG.testId,
+    variant: variant,
+    visitorId: visitorId,
+    loadedAt: new Date().toISOString()
+  };
+
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", tryApply);
   } else {
