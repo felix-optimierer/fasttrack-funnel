@@ -1,6 +1,6 @@
 // ANLEITUNG PAGE (vormals /vsl) — maximal on point.
 // EIN Hook: Webseite mit KI-Agenten in unter 60 Min. Trust-Siegel + Video + 1 CTA, dann echte Fallstudien + Buchung.
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { SEO } from "@/components/SEO";
 import { SEO_CONFIG } from "@/lib/seo-config";
 import { useLocation } from "wouter";
@@ -14,17 +14,22 @@ import {
   DoubleSeals,
   Footer,
 } from "@/components/funnel";
-import { Play, Volume2, Calendar, ArrowRight } from "lucide-react";
+import { Calendar, ArrowRight } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 
 export default function Anleitung() {
-  const [muted, setMuted] = useState(true);
   const [, navigate] = useLocation();
 
   usePageView("vsl");
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    // Load Wistia player script
+    const script = document.createElement("script");
+    script.src = "https://fast.wistia.net/player.js";
+    script.async = true;
+    document.body.appendChild(script);
+    return () => { document.body.removeChild(script); };
   }, []);
 
   function goToTermin() {
@@ -70,31 +75,22 @@ export default function Anleitung() {
         <section className="container pb-6 pt-4">
           <div className="mx-auto max-w-2xl">
             <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-black shadow-2xl">
-              <video
-                className="h-full w-full object-cover"
-                poster={ASSETS.dashboard}
-                autoPlay
-                loop
-                muted={muted}
-                playsInline
-              >
-                {/* Echtes VSL-Video hier einsetzen */}
-              </video>
-              <button
-                onClick={() => setMuted(!muted)}
-                className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-navy-deep/40 transition hover:bg-navy-deep/30"
-              >
-                <span className="flex h-16 w-16 items-center justify-center rounded-full bg-gold text-navy shadow-lg">
-                  {muted ? (
-                    <Volume2 className="h-7 w-7" />
-                  ) : (
-                    <Play className="h-7 w-7" />
-                  )}
-                </span>
-                <span className="rounded-full bg-navy-deep/70 px-4 py-1.5 text-sm font-semibold text-foreground backdrop-blur">
-                  {muted ? "Für Ton klicken" : "Video läuft"}
-                </span>
-              </button>
+              <div className="wistia_responsive_padding" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
+                <div className="wistia_responsive_wrapper" style={{ height: "100%", left: 0, position: "absolute", top: 0, width: "100%" }}>
+                  <iframe
+                    src="https://fast.wistia.net/embed/iframe/dp3vfy7i47?web_component=true&seo=true"
+                    title="VSL Neu Video"
+                    allow="autoplay; fullscreen"
+                    frameBorder="0"
+                    scrolling="no"
+                    className="wistia_embed"
+                    name="wistia_embed"
+                    width="100%"
+                    height="100%"
+                    style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+                  />
+                </div>
+              </div>
             </div>
 
             <GoldButton glow className="mt-4 w-full" onClick={goToTermin}>
