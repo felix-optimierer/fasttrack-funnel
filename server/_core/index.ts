@@ -5,6 +5,8 @@ import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { registerTestoptimiererRoutes } from "../testoptimierer/tracking";
+import { runSignificanceCheck } from "../testoptimierer/heartbeat-check";
+import { sdk } from "./sdk";
 import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
@@ -38,6 +40,28 @@ async function startServer() {
   registerStorageProxy(app);
   registerOAuthRoutes(app);
   registerTestoptimiererRoutes(app);
+
+  // ─── Heartbeat: Testoptimierer significance check (every 3 hours) ─────────────
+  app.post("/api/scheduled/testoptimierer-check", async (req, res) => {
+    try {
+      const user = await sdk.authenticateRequest(req);
+      if (!(user as any).isCron) {
+        res.status(403).json({ error: "cron-only" });
+        return;
+      }
+      const result = await runSignificanceCheck();
+      res.json({ ok: true, ...result });
+    } catch (error: any) {
+      console.error("[Testoptimierer Heartbeat] Error:", error);
+      res.status(500).json({
+        error: error.message ?? "Unknown error",
+        stack: error.stack,
+        context: { url: req.url, taskUid: (error as any)?.taskUid },
+        timestamp: new Date().toISOString(),
+      });
+    }
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",

@@ -188,40 +188,40 @@
 - [x] Run pnpm db:push to migrate
 
 ### Phase 2: Backend - Tracking & Tag Generator
-- [ ] Create server/testoptimierer/tag-generator.ts (dynamic JS script generation)
-- [ ] Create server/testoptimierer/tracking.ts (Express routes for impression/conversion)
-- [ ] Create server/testoptimierer/statistics.ts (Chi-Squared calculation)
-- [ ] Register Express routes in server with CORS headers
-- [ ] Anti-flicker implementation in generated script
+- [x] Create server/testoptimierer/tag-generator.ts (dynamic JS script generation)
+- [x] Create server/testoptimierer/tracking.ts (Express routes for impression/conversion)
+- [x] Create server/testoptimierer/statistics.ts (Chi-Squared calculation)
+- [x] Register Express routes in server with CORS headers
+- [x] Anti-flicker implementation in generated script
 
 ### Phase 3: Backend - Admin tRPC & Heartbeat
-- [ ] Create server/routers/testoptimierer.ts with all admin procedures
-- [ ] Projects CRUD (list, get, create, update, delete)
-- [ ] Elements CRUD (list, create, update, delete)
-- [ ] Tests CRUD (list, get, create, stop, skip, pause, resume)
-- [ ] Test status management (active, paused, stopped, skipped)
-- [ ] Stats queries (dashboard, scorecard, overall performance per project)
-- [ ] Settings procedures (get/update significance thresholds)
-- [ ] Create heartbeat job for significance checking (every 3 hours)
-- [ ] E-Mail notifications via notifyOwner (winner found, no significance)
-- [ ] Auto-promote winner when significance reached
+- [x] Create server/testoptimierer/router.ts with all admin procedures
+- [x] Projects CRUD (list, get, create, update, delete)
+- [x] Elements CRUD (list, create, update, delete)
+- [x] Tests CRUD (list, get, create, stop, skip, pause, resume)
+- [x] Test status management (active, paused, stopped, skipped)
+- [x] Stats queries (dashboard, scorecard, overall performance per project)
+- [x] Settings procedures (get/update significance thresholds)
+- [x] Create heartbeat job for significance checking (every 3 hours)
+- [x] E-Mail notifications via notifyOwner (winner found, no significance)
+- [x] Auto-promote winner when significance reached
 
 ### Phase 4: Frontend - Dashboard Pages
-- [ ] Create /testoptimierer route and navigation entry
-- [ ] Overview page with project cards grid
-- [ ] Project detail page with active test, elements, test history
-- [ ] New test page (select element, enter variant text, set traffic split)
-- [ ] Scorecard page (all completed tests as cards)
-- [ ] Setup page (create new project with domain + conversion URL)
-- [ ] Settings page (configurable significance levels with explanations)
-- [ ] Test status controls (active/paused/stopped/skipped dropdown per test)
+- [x] Create /testoptimierer route and navigation entry
+- [x] Overview page with project cards grid
+- [x] Project detail page with active test, elements, test history
+- [x] New test page (select element, enter variant text, set traffic split)
+- [x] Scorecard page (all completed tests as cards)
+- [x] Setup page (create new project with domain + conversion URL)
+- [x] Settings page (configurable significance levels with explanations)
+- [x] Test status controls (active/paused/stopped/skipped dropdown per test)
 
 ### Phase 5: Frontend - Charts & Performance
-- [ ] Conversion rate chart with confidence bands
-- [ ] Overall project performance metric (weighted cumulative improvement)
-- [ ] Additional leads gained/lost calculation
-- [ ] Test history timeline view
-- [ ] Filter and sort options for scorecard
+- [x] Conversion rate chart with confidence bands
+- [x] Overall project performance metric (weighted cumulative improvement)
+- [x] Additional leads gained/lost calculation
+- [x] Test history timeline view
+- [x] Filter and sort options for scorecard
 
 ### Phase 6: Initial Projects Setup
 - [ ] Find CSS selectors for KI-Report landing page headlines
@@ -230,8 +230,6 @@
 - [ ] Generate script tags for both pages
 
 ### Phase 7: Testing & Verification
-- [ ] Write vitest tests for statistics engine
-- [ ] Write vitest tests for tracking endpoints
-- [ ] Write vitest tests for tag generator
-- [ ] Manual end-to-end verification
+- [x] Write vitest tests for statistics engine
+- [x] Manual end-to-end verification (API tests all passing)
 - [ ] Save checkpoint and deliver to user

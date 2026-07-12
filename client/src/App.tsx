@@ -15,6 +15,10 @@ import ExitPlan from "./pages/ExitPlan";
 import KiReport from "./pages/KiReport";
 import Traumwebseite from "./pages/Traumwebseite";
 import NotFound from "./pages/NotFound";
+import Testoptimierer from "./pages/Testoptimierer";
+import TestoptimiererProjekt from "./pages/TestoptimiererProjekt";
+import TestoptimiererNeuerTest from "./pages/TestoptimiererNeuerTest";
+import TestoptimiererNeuesProjekt from "./pages/TestoptimiererNeuesProjekt";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -39,6 +43,10 @@ function Router() {
         <Route path="/exit-plan" component={ExitPlan} />
         <Route path="/ki-report" component={KiReport} />
         <Route path="/traumwebseite" component={Traumwebseite} />
+        <Route path="/testoptimierer" component={Testoptimierer} />
+        <Route path="/testoptimierer/neu" component={TestoptimiererNeuesProjekt} />
+        <Route path="/testoptimierer/projekt/:id" component={TestoptimiererProjekt} />
+        <Route path="/testoptimierer/projekt/:id/neuer-test" component={TestoptimiererNeuerTest} />
         <Route component={NotFound} />
       </Switch>
     </>
