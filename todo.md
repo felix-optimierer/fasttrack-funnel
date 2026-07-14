@@ -309,3 +309,23 @@
 - [x] KI-Report Terminseite: Grüner WhatsApp-Button mit API-Link (Keyword: "KI-Report 2026", Nummer: +491791653801)
 - [x] KI-Report Terminseite: Darunter weiterhin Calendly "Sichere dir jetzt deine 1:1-Praxisanalyse"
 - [x] Exit-Plan Terminseite: Gleicher Umbau mit Keyword "Exit-Plan"
+
+## Lead Automation Pipeline
+
+- [x] Backend: Phone validation + E.164 formatting utility
+- [x] Backend: KlickTipp integration (POST /subscriber/signin)
+- [x] Backend: Google Sheets integration (via Make.com Webhook)
+- [x] Backend: SalesSuite integration (contact find/create, deal create, note add)
+- [x] Backend: Slack notification (via Make.com Webhook)
+- [x] Backend: tRPC public procedure leads.create already calls processLeadAutomation
+- [x] Frontend: KiReport.tsx already wired via leads.create (source='ki-report')
+- [x] Frontend: ExitPlan.tsx already wired via leads.create (source='exit-plan')
+- [x] Frontend: Home.tsx (Traumwebseite) already wired via leads.create (source='home'→'traumwebseite')
+- [x] Frontend: UTM params already captured and passed to leads.create
+- [x] Add KLICKTIPP_API_KEY and SALESSUITE_API_KEY as webdev secrets
+
+## Admin Password & Production Fixes
+- [x] Set admin password to user-provided value
+- [x] Make Slack integration production-ready (via Make.com Webhook)
+- [x] Make Google Sheets integration production-ready (via Make.com Webhook)
+- [x] Deploy automation code (save checkpoint)

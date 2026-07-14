@@ -41,6 +41,7 @@ import {
 } from "./admin-auth";
 import { notifyOwner } from "./_core/notification";
 import { testoptimiererRouter } from "./testoptimierer/router";
+import { processLeadAutomation, type FunnelType } from "./leads/automation";
 
 const periodSchema = z.enum(["day", "week", "month"]);
 const channelSchema = z.enum(["ki-report", "exit-plan", "traumwebseite"]);
@@ -136,6 +137,40 @@ export const appRouter = router({
           title: "Neuer Lead im Fast-Track Funnel",
           content: `${input.name} · ${input.email} · ${input.phone} (Quelle: ${source})`,
         }).catch(() => {});
+
+        // ─── Lead Automation Pipeline (KlickTipp, Google Sheets, SalesSuite, Slack) ───
+        // Parse first/last name from the full name
+        const nameParts = input.name.trim().split(/\s+/);
+        const firstName = nameParts[0] || input.name;
+        const lastName = nameParts.slice(1).join(" ") || "";
+
+        // Map source to funnel type
+        const funnelMap: Record<string, FunnelType> = {
+          "ki-report": "ki-report",
+          "exit-plan": "exit-plan",
+          "traumwebseite": "traumwebseite",
+          "home": "traumwebseite",
+        };
+        const funnel: FunnelType = funnelMap[source] || "traumwebseite";
+
+        // Fire-and-forget: run automation pipeline in background
+        processLeadAutomation({
+          firstName,
+          lastName,
+          email: input.email,
+          phone: input.phone,
+          funnel,
+          utmSource: input.utmSource,
+          utmMedium: input.utmMedium,
+          utmCampaign: input.utmCampaign,
+          utmContent: input.utmContent,
+          utmTerm: input.utmTerm,
+          referrer: input.referrer,
+        }).then((result) => {
+          console.log(`[LeadAutomation] ${input.email} (${funnel}):`, JSON.stringify(result));
+        }).catch((err) => {
+          console.error(`[LeadAutomation] ${input.email} failed:`, err.message);
+        });
 
         return { success: true, id } as const;
       }),
