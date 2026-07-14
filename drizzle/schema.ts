@@ -44,6 +44,14 @@ export const leads = mysqlTable(
     referrer: varchar("referrer", { length: 2048 }),
     ipAddress: varchar("ipAddress", { length: 45 }),
     userAgent: text("userAgent"),
+    /** Facebook Click ID */
+    fbclid: varchar("fbclid", { length: 512 }),
+    /** Seiten-URL bei Opt-In */
+    pageUrl: varchar("pageUrl", { length: 2048 }),
+    /** Gerät (Desktop/Mobile/Tablet) */
+    device: varchar("device", { length: 32 }),
+    /** Browser-Name */
+    browser: varchar("browser", { length: 128 }),
     /** Verweildauer auf der Seite in Sekunden (vor Opt-In) */
     timeOnPageSeconds: int("timeOnPageSeconds"),
 

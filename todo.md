@@ -329,3 +329,14 @@
 - [x] Make Slack integration production-ready (via Make.com Webhook)
 - [x] Make Google Sheets integration production-ready (via Make.com Webhook)
 - [x] Deploy automation code (save checkpoint)
+
+## Webhook Payload Erweiterung
+- [x] Add fbclid to webhook payload
+- [x] Add referrer to webhook payload
+- [x] Add pageUrl to webhook payload
+- [x] Add device (Gerät) to webhook payload
+- [x] Add browser to webhook payload
+- [x] Add userAgent to webhook payload
+- [x] Add ipAddress to webhook payload
+- [x] Frontend: Capture fbclid from URL and pass to leads.create
+- [x] Frontend: Capture pageUrl and pass to leads.create

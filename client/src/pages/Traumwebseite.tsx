@@ -10,11 +10,13 @@ import { Lock, ArrowRight, Check } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { usePageView } from "@/hooks/usePageView";
+import { useTrackingData } from "@/hooks/useTrackingData";
 
 export default function Traumwebseite() {
   const [, navigate] = useLocation();
   const [form, setForm] = useState({ name: "", email: "", phone: "" });
   const createLead = trpc.leads.create.useMutation();
+  const tracking = useTrackingData();
 
   usePageView("traumwebseite");
 
@@ -29,7 +31,7 @@ export default function Traumwebseite() {
       return;
     }
     createLead.mutate(
-      { name: form.name, email: form.email, phone: form.phone, source: "home" },
+      { name: form.name, email: form.email, phone: form.phone, source: "home", ...tracking },
       {
         onSuccess: () => {
           toast.success("Perfekt! Hier kommen deine 9 Fallstudien.");

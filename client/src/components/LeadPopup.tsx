@@ -6,6 +6,7 @@ import { GoldButton } from "@/components/funnel";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
+import { useTrackingData } from "@/hooks/useTrackingData";
 
 interface LeadPopupProps {
   open: boolean;
@@ -47,6 +48,7 @@ export function LeadPopup({ open, onClose, headline, subtext, source, redirectTo
 
   const [, navigate] = useLocation();
   const leadMutation = trpc.leads.create.useMutation();
+  const tracking = useTrackingData();
 
   // ESC-Taste zum Schließen
   useEffect(() => {
@@ -95,6 +97,7 @@ export function LeadPopup({ open, onClose, headline, subtext, source, redirectTo
         email: email.trim(),
         phone: phone.trim(),
         source,
+        ...tracking,
       });
       if (redirectTo) {
         toast.success("Perfekt! Du wirst weitergeleitet...");

@@ -91,6 +91,10 @@ export const appRouter = router({
           utmTerm: z.string().max(255).optional(),
           utmContent: z.string().max(255).optional(),
           referrer: z.string().max(2048).optional(),
+          fbclid: z.string().max(512).optional(),
+          pageUrl: z.string().max(2048).optional(),
+          device: z.string().max(32).optional(),
+          browser: z.string().max(128).optional(),
           timeOnPageSeconds: z.number().int().min(0).optional(),
         }),
       )
@@ -111,6 +115,10 @@ export const appRouter = router({
           utmTerm: input.utmTerm ?? null,
           utmContent: input.utmContent ?? null,
           referrer: input.referrer ?? null,
+          fbclid: input.fbclid ?? null,
+          pageUrl: input.pageUrl ?? null,
+          device: input.device ?? null,
+          browser: input.browser ?? null,
           ipAddress,
           userAgent,
           timeOnPageSeconds: input.timeOnPageSeconds ?? null,
@@ -166,6 +174,12 @@ export const appRouter = router({
           utmContent: input.utmContent,
           utmTerm: input.utmTerm,
           referrer: input.referrer,
+          fbclid: input.fbclid,
+          pageUrl: input.pageUrl,
+          device: input.device,
+          browser: input.browser,
+          ipAddress: ipAddress ?? undefined,
+          userAgent: userAgent ?? undefined,
         }).then((result) => {
           console.log(`[LeadAutomation] ${input.email} (${funnel}):`, JSON.stringify(result));
         }).catch((err) => {

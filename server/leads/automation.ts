@@ -23,6 +23,12 @@ export interface LeadData {
   utmContent?: string;
   utmTerm?: string;
   referrer?: string;
+  fbclid?: string;
+  pageUrl?: string;
+  device?: string;
+  browser?: string;
+  ipAddress?: string;
+  userAgent?: string;
 }
 
 export interface AutomationResult {
@@ -339,6 +345,13 @@ async function processMakeWebhook(lead: LeadData): Promise<{ success: boolean; e
       utmContent: lead.utmContent || "",
       utmTerm: lead.utmTerm || "",
       referrer: lead.referrer || "",
+      // Tracking data
+      fbclid: lead.fbclid || "",
+      pageUrl: lead.pageUrl || "",
+      device: lead.device || "",
+      browser: lead.browser || "",
+      userAgent: lead.userAgent || "",
+      ipAddress: lead.ipAddress || "",
       // Metadata
       timestamp: new Date().toISOString(),
       timestampDE: new Date().toLocaleString("de-DE", { timeZone: "Europe/Berlin" }),
