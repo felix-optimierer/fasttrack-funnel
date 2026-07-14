@@ -28,4 +28,18 @@ describe("Make.com Webhook Validation", () => {
 
     expect(res.status).toBeLessThan(500);
   });
+
+  it("MAKE_WEBHOOK_EXIT_PLAN is set and reachable", async () => {
+    const url = process.env.MAKE_WEBHOOK_EXIT_PLAN;
+    expect(url).toBeDefined();
+    expect(url).toMatch(/^https:\/\/hook\..+\.make\.com\//);
+
+    const res = await fetch(url!, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ test: true, source: "vitest-validation" }),
+    });
+
+    expect(res.status).toBeLessThan(500);
+  });
 });
