@@ -51,7 +51,7 @@ const FUNNEL_FIELD_MAP: Record<FunnelType, string> = {
 const FUNNEL_DISPLAY: Record<FunnelType, string> = {
   "ki-report": "KI-Report 2026",
   "exit-plan": "Exit-Plan",
-  "traumwebseite": "Traumwebseite VSL",
+  "traumwebseite": "VSL_Traumwebseite",
 };
 
 // Make.com Webhook URLs per funnel (configured via env or DB settings)
