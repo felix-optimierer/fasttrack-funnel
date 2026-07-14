@@ -301,3 +301,11 @@
 
 ### Tag-Einbettung
 - [x] Testoptimierer-Tag auf /exit-plan eingebettet (useEffect mit /api/testoptimierer/tag/150001)
+
+## Terminseiten Umbau – WhatsApp CTA
+
+- [x] KI-Report Terminseite: Headline "Herzlichen Glückwunsch, du hast dir den KI-Report 2026 gesichert."
+- [x] KI-Report Terminseite: Badge "Klicke auf den Button und sende uns eine WhatsApp-Nachricht, um anschließend den KI-Report 2026 zu erhalten."
+- [x] KI-Report Terminseite: Grüner WhatsApp-Button mit API-Link (Keyword: "KI-Report 2026", Nummer: +491791653801)
+- [x] KI-Report Terminseite: Darunter weiterhin Calendly "Sichere dir jetzt deine 1:1-Praxisanalyse"
+- [x] Exit-Plan Terminseite: Gleicher Umbau mit Keyword "Exit-Plan"
