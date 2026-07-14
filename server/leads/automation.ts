@@ -55,8 +55,8 @@ const FUNNEL_FIELD_MAP: Record<FunnelType, string> = {
 
 // Funnel display names
 const FUNNEL_DISPLAY: Record<FunnelType, string> = {
-  "ki-report": "KI-Report 2026",
-  "exit-plan": "Exit-Plan",
+  "ki-report": "LM_KI-Report",
+  "exit-plan": "LM_Exit-Plan",
   "traumwebseite": "VSL_Traumwebseite",
 };
 
