@@ -340,3 +340,15 @@
 - [x] Add ipAddress to webhook payload
 - [x] Frontend: Capture fbclid from URL and pass to leads.create
 - [x] Frontend: Capture pageUrl and pass to leads.create
+
+## Resend E-Mail Integration
+- [ ] Add RESEND_API_KEY as webdev secret
+- [ ] Install resend npm package
+- [ ] Build email helper module (server/email.ts)
+- [ ] Test email sending with Resend API
+- [ ] Provide domain verification instructions
+
+## Wöchentlicher Montags-KPI-Report
+- [x] Send test email via Resend to felix@onboarding-prozesse.de
+- [x] Build weekly KPI report email template (visitors, signups, conversion per funnel)
+- [ ] Set up Heartbeat job for Monday morning delivery

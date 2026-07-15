@@ -6,6 +6,7 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { registerTestoptimiererRoutes } from "../testoptimierer/tracking";
 import { runSignificanceCheck } from "../testoptimierer/heartbeat-check";
+import { weeklyReportHandler } from "../weekly-report";
 import { sdk } from "./sdk";
 import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
@@ -61,6 +62,9 @@ async function startServer() {
       });
     }
   });
+
+  // ─── Heartbeat: Weekly Funnel KPI Report (every Monday 7:00 CET) ─────────────
+  app.post("/api/scheduled/weekly-report", weeklyReportHandler);
 
   // tRPC API
   app.use(
