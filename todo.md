@@ -377,6 +377,6 @@
 - [x] Show ad costs per day in existing ad-costs table
 
 ### Cron Jobs
-- [ ] AGENT Cron: Daily 00:30 UTC (sync previous day final costs)
-- [ ] AGENT Cron: Every 6 hours (update current day costs)
-- [ ] Backfill last 3 days for VSL Traumwebseite campaign
+- [x] AGENT Cron: Daily 00:30 UTC (sync previous day final costs) — combined into 6h cron (midnight run fetches yesterday's final data)
+- [x] AGENT Cron: Every 6 hours (update current day costs) — task_uid: Wy3ll5AZi7dllxZgN0kWFs
+- [x] Backfill last 3 days for VSL Traumwebseite campaign (Jul 14-16: €79.59, €243.19, €35.07 + Exit-Plan Jul 16: €91.31)
