@@ -342,16 +342,16 @@
 - [x] Frontend: Capture pageUrl and pass to leads.create
 
 ## Resend E-Mail Integration
-- [ ] Add RESEND_API_KEY as webdev secret
-- [ ] Install resend npm package
-- [ ] Build email helper module (server/email.ts)
-- [ ] Test email sending with Resend API
-- [ ] Provide domain verification instructions
+- [x] Add RESEND_API_KEY as webdev secret
+- [x] Install resend npm package
+- [x] Build email helper module (server/email.ts)
+- [x] Test email sending with Resend API
+- [x] Provide domain verification instructions (domain already verified by user)
 
 ## Wöchentlicher Montags-KPI-Report
 - [x] Send test email via Resend to felix@onboarding-prozesse.de
 - [x] Build weekly KPI report email template (visitors, signups, conversion per funnel)
-- [ ] Set up Heartbeat job for Monday morning delivery
+- [x] Set up Heartbeat job for Monday morning delivery (task_uid: aPzY94Nhe8f6xStgrjCEaH)
 
 ## Deduplizierung & Lead-Verwaltung
 - [x] Add isDuplicate boolean column to leads table
@@ -359,6 +359,6 @@
 - [x] Exclude isDuplicate leads from all statistics/KPI queries
 - [x] Admin: Single lead delete button with confirmation dialog
 - [x] Admin: Bulk select (checkbox) + bulk delete with confirmation
-- [ ] Set up Heartbeat cron job for Monday 7:00 CET weekly report
+- [x] Set up Heartbeat cron job for Monday 7:00 CET weekly report (task_uid: aPzY94Nhe8f6xStgrjCEaH)
 - [x] Admin: Configurable table columns (show/hide, reorder via drag-and-drop)
 - [x] Admin: All lead fields available as optional columns (UTM params, device, browser, etc.)
