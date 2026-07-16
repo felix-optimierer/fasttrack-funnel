@@ -436,9 +436,108 @@ function SubmissionsTab() {
   const [utmCampaignFilter, setUtmCampaignFilter] = useState("");
   const [page, setPage] = useState(0);
   const [selectedLeadId, setSelectedLeadId] = useState<number | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<number | null>(null);
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
+  const [showColumnConfig, setShowColumnConfig] = useState(false);
   const limit = 25;
 
+  // Column configuration with localStorage persistence
+  const ALL_COLUMNS = [
+    { id: "name", label: "Name", default: true },
+    { id: "email", label: "E-Mail", default: true },
+    { id: "phone", label: "Telefon", default: true },
+    { id: "source", label: "Quelle", default: true },
+    { id: "crmStatus", label: "CRM", default: true },
+    { id: "utmSource", label: "UTM Source", default: true },
+    { id: "utmMedium", label: "UTM Medium", default: false },
+    { id: "utmCampaign", label: "UTM Campaign", default: false },
+    { id: "utmContent", label: "UTM Content", default: false },
+    { id: "utmTerm", label: "UTM Term", default: false },
+    { id: "referrer", label: "Referrer", default: false },
+    { id: "fbclid", label: "FBClid", default: false },
+    { id: "pageUrl", label: "Seiten-URL", default: false },
+    { id: "device", label: "Gerät", default: false },
+    { id: "browser", label: "Browser", default: false },
+    { id: "isDuplicate", label: "Duplikat", default: false },
+    { id: "createdAt", label: "Datum", default: true },
+  ];
+
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem("admin-lead-columns");
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return ALL_COLUMNS.filter(c => c.default).map(c => c.id);
+  });
+
+  const [columnOrder, setColumnOrder] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem("admin-lead-column-order");
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return ALL_COLUMNS.map(c => c.id);
+  });
+
+  function saveColumnConfig(visible: string[], order: string[]) {
+    setVisibleColumns(visible);
+    setColumnOrder(order);
+    localStorage.setItem("admin-lead-columns", JSON.stringify(visible));
+    localStorage.setItem("admin-lead-column-order", JSON.stringify(order));
+  }
+
+  const sortedVisibleColumns = columnOrder.filter(id => visibleColumns.includes(id));
+
+  const utils = trpc.useUtils();
   const utmValuesQuery = trpc.admin.utmValues.useQuery();
+
+  const deleteOne = trpc.admin.deleteLead.useMutation({
+    onSuccess: () => { utils.admin.leadsEnhanced.invalidate(); toast.success("Lead gelöscht."); setShowDeleteConfirm(null); },
+    onError: () => toast.error("Fehler beim Löschen."),
+  });
+  const deleteBulk = trpc.admin.deleteLeadsBulk.useMutation({
+    onSuccess: (data) => { utils.admin.leadsEnhanced.invalidate(); toast.success(`${data.deleted} Leads gelöscht.`); setSelectedIds(new Set()); setShowBulkDeleteConfirm(false); },
+    onError: () => toast.error("Fehler beim Löschen."),
+  });
+
+  function toggleSelect(id: number) {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
+  function toggleSelectAll() {
+    if (!leadsQuery.data?.leads) return;
+    const allIds = leadsQuery.data.leads.map(l => l.id);
+    const allSelected = allIds.every(id => selectedIds.has(id));
+    if (allSelected) setSelectedIds(new Set());
+    else setSelectedIds(new Set(allIds));
+  }
+
+  // Render cell value based on column id
+  function renderCell(lead: any, colId: string) {
+    switch (colId) {
+      case "name": return <span className="font-medium text-foreground">{lead.name}</span>;
+      case "email": return <span className="text-muted-foreground">{lead.email}</span>;
+      case "phone": return <span className="text-muted-foreground">{lead.phone}</span>;
+      case "source": return <SourceBadge source={lead.source} />;
+      case "crmStatus": return <CrmBadge status={lead.crmStatus} />;
+      case "utmSource": return <span className="text-xs text-muted-foreground">{lead.utmSource ?? "–"}</span>;
+      case "utmMedium": return <span className="text-xs text-muted-foreground">{lead.utmMedium ?? "–"}</span>;
+      case "utmCampaign": return <span className="text-xs text-muted-foreground">{lead.utmCampaign ?? "–"}</span>;
+      case "utmContent": return <span className="text-xs text-muted-foreground">{lead.utmContent ?? "–"}</span>;
+      case "utmTerm": return <span className="text-xs text-muted-foreground">{lead.utmTerm ?? "–"}</span>;
+      case "referrer": return <span className="text-xs text-muted-foreground truncate max-w-[150px]" title={lead.referrer ?? ""}>{lead.referrer ?? "–"}</span>;
+      case "fbclid": return <span className="text-xs text-muted-foreground truncate max-w-[100px]" title={lead.fbclid ?? ""}>{lead.fbclid ? "✓" : "–"}</span>;
+      case "pageUrl": return <span className="text-xs text-muted-foreground truncate max-w-[150px]" title={lead.pageUrl ?? ""}>{lead.pageUrl ?? "–"}</span>;
+      case "device": return <span className="text-xs text-muted-foreground">{lead.device ?? "–"}</span>;
+      case "browser": return <span className="text-xs text-muted-foreground">{lead.browser ?? "–"}</span>;
+      case "isDuplicate": return lead.isDuplicate ? <span className="text-xs text-red-400 font-semibold">DOP</span> : <span className="text-xs text-green-400">–</span>;
+      case "createdAt": return <span className="text-xs text-muted-foreground">{new Date(lead.createdAt).toLocaleString("de-DE")}</span>;
+      default: return "–";
+    }
+  }
 
   const leadsQuery = trpc.admin.leadsEnhanced.useQuery({
     search: search || undefined,
@@ -484,10 +583,63 @@ function SubmissionsTab() {
             className="w-full rounded-md border border-input bg-white py-2.5 pl-9 pr-3 text-sm text-neutral-900 placeholder:text-neutral-500 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/40"
           />
         </div>
-        <button onClick={handleCsvExport} className="inline-flex items-center gap-1.5 rounded-md border border-border bg-secondary px-3 py-2 text-xs font-semibold text-foreground transition hover:border-gold/50">
-          <Download className="h-3.5 w-3.5" /> CSV Export
-        </button>
+        <div className="flex items-center gap-2">
+          {selectedIds.size > 0 && (
+            <button onClick={() => setShowBulkDeleteConfirm(true)} className="inline-flex items-center gap-1.5 rounded-md border border-red-500/50 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-400 transition hover:bg-red-500/20">
+              <X className="h-3.5 w-3.5" /> {selectedIds.size} löschen
+            </button>
+          )}
+          <button onClick={() => setShowColumnConfig(!showColumnConfig)} className="inline-flex items-center gap-1.5 rounded-md border border-border bg-secondary px-3 py-2 text-xs font-semibold text-foreground transition hover:border-gold/50">
+            <Settings className="h-3.5 w-3.5" /> Spalten
+          </button>
+          <button onClick={handleCsvExport} className="inline-flex items-center gap-1.5 rounded-md border border-border bg-secondary px-3 py-2 text-xs font-semibold text-foreground transition hover:border-gold/50">
+            <Download className="h-3.5 w-3.5" /> CSV Export
+          </button>
+        </div>
       </div>
+
+      {/* Column Config Panel */}
+      {showColumnConfig && (
+        <div className="rounded-xl border border-border bg-card p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-bold text-foreground">Spalten konfigurieren</span>
+            <button onClick={() => setShowColumnConfig(false)} className="text-muted-foreground hover:text-foreground"><X className="h-4 w-4" /></button>
+          </div>
+          <p className="text-xs text-muted-foreground">Spalten ein-/ausblenden. Ziehe zum Umsortieren.</p>
+          <div className="flex flex-wrap gap-2">
+            {columnOrder.map((colId, idx) => {
+              const col = ALL_COLUMNS.find(c => c.id === colId);
+              if (!col) return null;
+              const isVisible = visibleColumns.includes(colId);
+              return (
+                <button
+                  key={colId}
+                  draggable
+                  onDragStart={(e) => e.dataTransfer.setData("colIdx", String(idx))}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    const fromIdx = parseInt(e.dataTransfer.getData("colIdx"));
+                    const newOrder = [...columnOrder];
+                    const [moved] = newOrder.splice(fromIdx, 1);
+                    newOrder.splice(idx, 0, moved);
+                    saveColumnConfig(visibleColumns, newOrder);
+                  }}
+                  onClick={() => {
+                    const newVisible = isVisible
+                      ? visibleColumns.filter(v => v !== colId)
+                      : [...visibleColumns, colId];
+                    saveColumnConfig(newVisible, columnOrder);
+                  }}
+                  className={`cursor-grab rounded-md border px-2.5 py-1.5 text-xs font-medium transition ${isVisible ? "border-gold/50 bg-gold/10 text-gold" : "border-border bg-secondary text-muted-foreground"}`}
+                >
+                  {col.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2">
@@ -527,25 +679,37 @@ function SubmissionsTab() {
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-border text-xs uppercase tracking-wide text-muted-foreground">
-                  <th className="px-4 py-3 font-semibold">Name</th>
-                  <th className="px-4 py-3 font-semibold">E-Mail</th>
-                  <th className="px-4 py-3 font-semibold">Telefon</th>
-                  <th className="px-4 py-3 font-semibold">Quelle</th>
-                  <th className="px-4 py-3 font-semibold">CRM</th>
-                  <th className="px-4 py-3 font-semibold">UTM</th>
-                  <th className="px-4 py-3 font-semibold">Datum</th>
+                  <th className="px-2 py-3 w-8">
+                    <input type="checkbox" checked={leadsQuery.data?.leads.length ? leadsQuery.data.leads.every(l => selectedIds.has(l.id)) : false} onChange={toggleSelectAll} className="rounded border-border" />
+                  </th>
+                  {sortedVisibleColumns.map(colId => {
+                    const col = ALL_COLUMNS.find(c => c.id === colId);
+                    return <th key={colId} className="px-4 py-3 font-semibold">{col?.label}</th>;
+                  })}
+                  <th className="px-2 py-3 w-10"></th>
                 </tr>
               </thead>
               <tbody>
                 {leadsQuery.data?.leads.map((l) => (
-                  <tr key={l.id} onClick={() => setSelectedLeadId(l.id)} className="cursor-pointer border-b border-border/60 transition hover:bg-secondary/40">
-                    <td className="px-4 py-3 font-medium text-foreground">{l.name}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{l.email}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{l.phone}</td>
-                    <td className="px-4 py-3"><SourceBadge source={l.source} /></td>
-                    <td className="px-4 py-3"><CrmBadge status={l.crmStatus} /></td>
-                    <td className="px-4 py-3 text-xs text-muted-foreground">{l.utmSource ?? "–"}</td>
-                    <td className="px-4 py-3 text-muted-foreground text-xs">{new Date(l.createdAt).toLocaleString("de-DE")}</td>
+                  <tr key={l.id} className={`border-b border-border/60 transition hover:bg-secondary/40 ${l.isDuplicate ? "opacity-50" : ""}`}>
+                    <td className="px-2 py-3" onClick={(e) => e.stopPropagation()}>
+                      <input type="checkbox" checked={selectedIds.has(l.id)} onChange={() => toggleSelect(l.id)} className="rounded border-border" />
+                    </td>
+                    {sortedVisibleColumns.map(colId => (
+                      <td key={colId} className="px-4 py-3 cursor-pointer" onClick={() => setSelectedLeadId(l.id)}>{renderCell(l, colId)}</td>
+                    ))}
+                    <td className="px-2 py-3" onClick={(e) => e.stopPropagation()}>
+                      {showDeleteConfirm === l.id ? (
+                        <div className="flex items-center gap-1">
+                          <button onClick={() => deleteOne.mutate({ id: l.id })} className="rounded bg-red-500 px-2 py-1 text-[10px] font-bold text-white hover:bg-red-600">Ja</button>
+                          <button onClick={() => setShowDeleteConfirm(null)} className="rounded bg-secondary px-2 py-1 text-[10px] font-bold text-foreground hover:bg-secondary/80">Nein</button>
+                        </div>
+                      ) : (
+                        <button onClick={() => setShowDeleteConfirm(l.id)} className="rounded p-1 text-muted-foreground transition hover:bg-red-500/10 hover:text-red-400" title="Löschen">
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -566,6 +730,24 @@ function SubmissionsTab() {
           </div>
         )}
       </section>
+
+      {/* Bulk Delete Confirmation */}
+      {showBulkDeleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-2xl max-w-sm w-full mx-4">
+            <h3 className="text-lg font-bold text-foreground mb-2">Leads löschen?</h3>
+            <p className="text-sm text-muted-foreground mb-5">
+              Möchtest du wirklich <span className="font-bold text-red-400">{selectedIds.size}</span> Lead{selectedIds.size > 1 ? "s" : ""} unwiderruflich löschen?
+            </p>
+            <div className="flex items-center gap-3 justify-end">
+              <button onClick={() => setShowBulkDeleteConfirm(false)} className="rounded-md border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-secondary">Abbrechen</button>
+              <button onClick={() => deleteBulk.mutate({ ids: Array.from(selectedIds) })} disabled={deleteBulk.isPending} className="rounded-md bg-red-500 px-4 py-2 text-sm font-bold text-white hover:bg-red-600 disabled:opacity-50">
+                {deleteBulk.isPending ? "Lösche..." : "Endgültig löschen"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Lead Detail Modal */}
       {selectedLeadId !== null && (

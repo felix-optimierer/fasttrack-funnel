@@ -352,3 +352,13 @@
 - [x] Send test email via Resend to felix@onboarding-prozesse.de
 - [x] Build weekly KPI report email template (visitors, signups, conversion per funnel)
 - [ ] Set up Heartbeat job for Monday morning delivery
+
+## Deduplizierung & Lead-Verwaltung
+- [x] Add isDuplicate boolean column to leads table
+- [x] Auto-detect duplicates on insert (same email within 2 min)
+- [x] Exclude isDuplicate leads from all statistics/KPI queries
+- [x] Admin: Single lead delete button with confirmation dialog
+- [x] Admin: Bulk select (checkbox) + bulk delete with confirmation
+- [ ] Set up Heartbeat cron job for Monday 7:00 CET weekly report
+- [x] Admin: Configurable table columns (show/hide, reorder via drag-and-drop)
+- [x] Admin: All lead fields available as optional columns (UTM params, device, browser, etc.)

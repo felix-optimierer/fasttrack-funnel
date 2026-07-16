@@ -7,6 +7,9 @@ import { publicProcedure, router } from "./_core/trpc";
 import {
   CHANNELS,
   bulkImportAdSpend,
+  checkDuplicate,
+  deleteLead,
+  deleteLeadsBulk,
   fireChannelWebhook,
   fireWebhook,
   getAllWebhooks,
@@ -25,6 +28,7 @@ import {
   listAdSpend,
   listLeads,
   listLeadsEnhanced,
+  markLeadAsDuplicate,
   setAdSpend,
   setSetting,
   setWebhookByChannel,
@@ -103,7 +107,11 @@ export const appRouter = router({
         const ipAddress = getClientIp(ctx.req);
         const userAgent = ctx.req.headers?.["user-agent"] ?? null;
 
+        // Deduplizierung: gleiche E-Mail innerhalb 2 Minuten = Duplikat
+        const isDuplicate = await checkDuplicate(input.email);
+
         const id = await insertLead({
+          isDuplicate,
           name: input.name,
           email: input.email,
           phone: input.phone,
@@ -145,6 +153,12 @@ export const appRouter = router({
           title: "Neuer Lead im Fast-Track Funnel",
           content: `${input.name} · ${input.email} · ${input.phone} (Quelle: ${source})`,
         }).catch(() => {});
+
+        // Skip automation pipeline for duplicates
+        if (isDuplicate) {
+          console.log(`[LeadAutomation] DUPLICATE skipped: ${input.email} (${source})`);
+          return { success: true, id, isDuplicate: true } as const;
+        }
 
         // ─── Lead Automation Pipeline (KlickTipp, Google Sheets, SalesSuite, Slack) ───
         // Parse first/last name from the full name
@@ -350,6 +364,24 @@ export const appRouter = router({
         await assertAdmin(ctx.req);
         await updateLeadNotes(input.id, input.notes);
         return { success: true } as const;
+      }),
+
+    // ─── Lead Delete (single) ────────────────────────────────────────────
+    deleteLead: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        await assertAdmin(ctx.req);
+        await deleteLead(input.id);
+        return { success: true } as const;
+      }),
+
+    // ─── Lead Delete (bulk) ─────────────────────────────────────────────
+    deleteLeadsBulk: publicProcedure
+      .input(z.object({ ids: z.array(z.number()).min(1).max(500) }))
+      .mutation(async ({ input, ctx }) => {
+        await assertAdmin(ctx.req);
+        await deleteLeadsBulk(input.ids);
+        return { success: true, deleted: input.ids.length } as const;
       }),
 
     // ─── UTM Pivot ──────────────────────────────────────────────────────

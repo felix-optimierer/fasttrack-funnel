@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, like, sql } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, like, sql } from "drizzle-orm";
 import { getDb } from "./db";
 import {
   InsertLead,
@@ -29,6 +29,49 @@ const CHANNEL_SOURCES: Record<Channel, string[]> = {
 };
 
 // ─── LEADS ─────────────────────────────────────────────────────────────────────
+
+/**
+ * Check if a lead with the same email was created within the last 2 minutes.
+ * If so, mark the new lead as a duplicate.
+ */
+export async function checkDuplicate(email: string): Promise<boolean> {
+  const db = await getDb();
+  if (!db) return false;
+  const twoMinAgo = new Date(Date.now() - 2 * 60 * 1000);
+  const existing = await db
+    .select({ id: leads.id })
+    .from(leads)
+    .where(and(eq(leads.email, email), gte(leads.createdAt, twoMinAgo)))
+    .limit(1);
+  return existing.length > 0;
+}
+
+/**
+ * Mark a lead as duplicate.
+ */
+export async function markLeadAsDuplicate(id: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(leads).set({ isDuplicate: true }).where(eq(leads.id, id));
+}
+
+/**
+ * Delete a single lead by ID.
+ */
+export async function deleteLead(id: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(leads).where(eq(leads.id, id));
+}
+
+/**
+ * Delete multiple leads by IDs.
+ */
+export async function deleteLeadsBulk(ids: number[]) {
+  const db = await getDb();
+  if (!db || ids.length === 0) return;
+  await db.delete(leads).where(inArray(leads.id, ids));
+}
 
 export async function insertLead(data: InsertLead): Promise<number | null> {
   const db = await getDb();
@@ -225,10 +268,10 @@ export async function getStats(period: Period) {
   const views: Record<string, number> = { home: 0, vsl: 0, termin: 0 };
   for (const r of viewRows) views[r.page] = Number(r.count);
 
-  const leadRows = await db.select({ count: sql<number>`count(*)` }).from(leads).where(gte(leads.createdAt, start));
+  const leadRows = await db.select({ count: sql<number>`count(*)` }).from(leads).where(and(gte(leads.createdAt, start), eq(leads.isDuplicate, false)));
   const leadsInPeriod = Number(leadRows[0]?.count ?? 0);
 
-  const totalLeadRows = await db.select({ count: sql<number>`count(*)` }).from(leads);
+  const totalLeadRows = await db.select({ count: sql<number>`count(*)` }).from(leads).where(eq(leads.isDuplicate, false));
   const totalLeads = Number(totalLeadRows[0]?.count ?? 0);
 
   return { views: { home: views.home ?? 0, vsl: views.vsl ?? 0, termin: views.termin ?? 0 }, leads: leadsInPeriod, totalLeads };
@@ -280,7 +323,7 @@ export async function getFunnelStatsByChannel(period: Period): Promise<ChannelFu
   const leadRows = await db
     .select({ source: leads.source, count: sql<number>`count(*)` })
     .from(leads)
-    .where(gte(leads.createdAt, start))
+    .where(and(gte(leads.createdAt, start), eq(leads.isDuplicate, false)))
     .groupBy(leads.source);
   const leadMap: Record<string, number> = {};
   for (const r of leadRows) leadMap[r.source] = Number(r.count);
@@ -340,7 +383,7 @@ export async function getChannelSeries(days: number): Promise<ChannelDayPoint[]>
   const pvRows = (pvResult as unknown as any[][])[0] ?? [];
 
   const leadResult = await db.execute(
-    sql`SELECT DATE(createdAt) as day, source, count(*) as count FROM leads WHERE createdAt >= ${startStr} GROUP BY DATE(createdAt), source`
+    sql`SELECT DATE(createdAt) as day, source, count(*) as count FROM leads WHERE createdAt >= ${startStr} AND isDuplicate = 0 GROUP BY DATE(createdAt), source`
   );
   const leadRows = (leadResult as unknown as any[][])[0] ?? [];
 

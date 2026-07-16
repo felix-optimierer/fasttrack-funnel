@@ -1,0 +1,1 @@
+ALTER TABLE `leads` ADD `isDuplicate` boolean DEFAULT false NOT NULL;

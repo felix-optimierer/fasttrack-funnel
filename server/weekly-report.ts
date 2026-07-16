@@ -56,6 +56,7 @@ async function getMetrics(startDate: Date, endDate: Date, prevStartDate: Date, p
       SELECT COUNT(*) as total
       FROM leads 
       WHERE source = ${funnel.source} 
+        AND isDuplicate = false
         AND createdAt >= ${startDate} 
         AND createdAt < ${endDate}
     `);
@@ -76,6 +77,7 @@ async function getMetrics(startDate: Date, endDate: Date, prevStartDate: Date, p
       SELECT COUNT(*) as total
       FROM leads 
       WHERE source = ${funnel.source} 
+        AND isDuplicate = false
         AND createdAt >= ${prevStartDate} 
         AND createdAt < ${prevEndDate}
     `);

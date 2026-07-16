@@ -61,6 +61,9 @@ export const leads = mysqlTable(
     /** Notizen (JSON-Array als String) */
     notes: text("notes"),
 
+    /** Duplikat-Markierung: true wenn gleiche E-Mail innerhalb 2 Min erneut eingetragen */
+    isDuplicate: mysqlBoolean("isDuplicate").default(false).notNull(),
+
     createdAt: timestamp("createdAt").defaultNow().notNull(),
   },
   (t) => ({
