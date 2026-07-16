@@ -336,10 +336,12 @@ export async function getFunnelStatsByChannel(period: Period): Promise<ChannelFu
   const apptMap: Record<string, number> = {};
   for (const r of apptRows) apptMap[r.source] = Number(r.count);
 
+  // Filter ad_spend by the `date` column (YYYY-MM-DD string) to match the selected period
+  const startDateStr = start.toISOString().slice(0, 10);
   const spendRows = await db
     .select({ channel: adSpend.channel, total: sql<number>`SUM(${adSpend.amountCents})` })
     .from(adSpend)
-    .where(gte(adSpend.createdAt, start))
+    .where(gte(adSpend.date, startDateStr))
     .groupBy(adSpend.channel);
   const spendMap: Record<string, number> = {};
   for (const r of spendRows) spendMap[r.channel] = Number(r.total ?? 0);
@@ -393,7 +395,7 @@ export async function getChannelSeries(days: number): Promise<ChannelDayPoint[]>
   const apptRows = (apptResult as unknown as any[][])[0] ?? [];
 
   const spendResult = await db.execute(
-    sql`SELECT date as day, channel, SUM(amountCents) as total FROM ad_spend WHERE createdAt >= ${startStr} GROUP BY date, channel`
+    sql`SELECT date as day, channel, SUM(amountCents) as total FROM ad_spend WHERE date >= ${start.toISOString().slice(0, 10)} GROUP BY date, channel`
   );
   const spendRows = (spendResult as unknown as any[][])[0] ?? [];
 
@@ -509,7 +511,7 @@ export async function getAdSpendByChannel(channel: string, period: Period) {
   return db
     .select()
     .from(adSpend)
-    .where(and(eq(adSpend.channel, channel), gte(adSpend.createdAt, start)))
+    .where(and(eq(adSpend.channel, channel), gte(adSpend.date, start.toISOString().slice(0, 10))))
     .orderBy(adSpend.date);
 }
 
