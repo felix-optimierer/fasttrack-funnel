@@ -327,3 +327,29 @@ export const abSettings = mysqlTable("ab_settings", {
 
 export type AbSetting = typeof abSettings.$inferSelect;
 export type InsertAbSetting = typeof abSettings.$inferInsert;
+
+
+/**
+ * Ad Costs — tägliche Meta Ads Kosten pro Funnel/Kampagne.
+ * Wird automatisch per AGENT Cron alle 6h aktualisiert.
+ */
+export const adCosts = mysqlTable(
+  "ad_costs",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    date: varchar("date", { length: 10 }).notNull(), // YYYY-MM-DD
+    funnel: varchar("funnel", { length: 64 }).notNull(), // traumwebseite, exit-plan, ki-report
+    campaignId: varchar("campaignId", { length: 64 }).notNull(),
+    campaignName: varchar("campaignName", { length: 512 }),
+    spend: decimal("spend", { precision: 10, scale: 2 }).notNull().default("0.00"),
+    impressions: int("impressions").notNull().default(0),
+    clicks: int("clicks").notNull().default(0),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  },
+  (t) => ({
+    dateFunnelIdx: index("ad_costs_date_funnel_idx").on(t.date, t.funnel),
+    campaignIdx: index("ad_costs_campaign_idx").on(t.campaignId),
+  }),
+);
+export type AdCost = typeof adCosts.$inferSelect;
+export type InsertAdCost = typeof adCosts.$inferInsert;

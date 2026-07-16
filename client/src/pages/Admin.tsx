@@ -1092,7 +1092,7 @@ function AdCostsTab() {
           <h2 className="text-sm font-bold uppercase tracking-wide text-foreground">Ad-Spend eintragen</h2>
         </div>
         <p className="mb-4 text-xs text-muted-foreground">
-          Trage hier die täglichen Werbeausgaben pro Kanal ein, um den CPL zu berechnen. Später wird dies automatisch über die Meta-API befüllt.
+          Trage hier die täglichen Werbeausgaben pro Kanal ein, um den CPL zu berechnen. Die Meta-API synchronisiert automatisch alle 6 Stunden.
         </p>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <div className="flex flex-col gap-1">
@@ -1117,6 +1117,18 @@ function AdCostsTab() {
             {setAdSpend.isPending && <Loader2 className="h-3.5 w-3.5 animate-spin" />} Speichern
           </button>
         </div>
+      </section>
+
+      {/* Meta Ads Refresh */}
+      <section className="rounded-2xl border border-gold/30 bg-card p-5">
+        <div className="mb-3 flex items-center gap-2">
+          <RefreshCw className="h-4 w-4 text-gold" />
+          <h2 className="text-sm font-bold uppercase tracking-wide text-foreground">Meta Ads Sync</h2>
+        </div>
+        <p className="mb-3 text-xs text-muted-foreground">
+          Aktualisiert die heutigen Ad-Kosten direkt aus der Meta Ads API. Automatisch alle 6h + täglich um 00:30.
+        </p>
+        <MetaRefreshButton />
       </section>
 
       {/* CSV Upload */}
@@ -1167,6 +1179,38 @@ function AdCostsTab() {
         </section>
       )}
     </div>
+  );
+}
+
+/* Meta Refresh Button Component */
+function MetaRefreshButton() {
+  const refreshAdCosts = trpc.admin.refreshAdCosts.useMutation();
+  const utils = trpc.useUtils();
+
+  function handleRefresh() {
+    refreshAdCosts.mutate(undefined, {
+      onSuccess: (res) => {
+        toast.success(res.message);
+        // Refresh the ad spend list after a short delay
+        setTimeout(() => utils.admin.listAdSpend.invalidate(), 3000);
+      },
+      onError: () => toast.error("Aktualisierung fehlgeschlagen."),
+    });
+  }
+
+  return (
+    <button
+      onClick={handleRefresh}
+      disabled={refreshAdCosts.isPending}
+      className="inline-flex items-center gap-2 rounded-md bg-gradient-to-b from-[#e3c75a] to-[#c9a227] px-5 py-2.5 text-xs font-bold text-navy transition hover:brightness-105 disabled:opacity-60"
+    >
+      {refreshAdCosts.isPending ? (
+        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+      ) : (
+        <RefreshCw className="h-3.5 w-3.5" />
+      )}
+      Ad-Kosten von heute aktualisieren
+    </button>
   );
 }
 

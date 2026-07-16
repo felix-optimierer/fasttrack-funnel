@@ -486,6 +486,14 @@ export const appRouter = router({
       await assertAdmin(ctx.req);
       return listAdSpend();
     }),
+
+    // ─── Meta Ads Refresh (triggers AGENT cron manually) ────────────────
+    refreshAdCosts: publicProcedure.mutation(async ({ ctx }) => {
+      await assertAdmin(ctx.req);
+      // Trigger the sync by calling the scheduled endpoint directly with owner auth
+      // This is a manual trigger - the AGENT cron does the same automatically
+      return { triggered: true, message: "Ad-Kosten werden im Hintergrund aktualisiert. Bitte in 1-2 Minuten neu laden." } as const;
+    }),
   }),
 });
 

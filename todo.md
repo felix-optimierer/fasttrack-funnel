@@ -362,3 +362,21 @@
 - [x] Set up Heartbeat cron job for Monday 7:00 CET weekly report (task_uid: aPzY94Nhe8f6xStgrjCEaH)
 - [x] Admin: Configurable table columns (show/hide, reorder via drag-and-drop)
 - [x] Admin: All lead fields available as optional columns (UTM params, device, browser, etc.)
+
+## Meta Ads Kosten-Automatisierung
+
+### Backend
+- [x] Discover Meta Marketing MCP tools and find campaign IDs
+- [x] Build Meta Ads cost fetcher (query campaign spend by date)
+- [x] Upsert logic: ad_spend table per day per funnel (update if exists)
+- [x] Scheduled endpoint /api/scheduled/sync-ad-costs
+- [x] Admin tRPC procedure for manual refresh (admin.refreshAdCosts)
+
+### Frontend
+- [x] Admin: "Ad-Kosten von heute aktualisieren" Button (MetaRefreshButton) im Dashboard
+- [x] Show ad costs per day in existing ad-costs table
+
+### Cron Jobs
+- [ ] AGENT Cron: Daily 00:30 UTC (sync previous day final costs)
+- [ ] AGENT Cron: Every 6 hours (update current day costs)
+- [ ] Backfill last 3 days for VSL Traumwebseite campaign

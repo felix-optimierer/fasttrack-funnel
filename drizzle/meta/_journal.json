@@ -43,6 +43,13 @@
       "when": 1784177639565,
       "tag": "0005_rapid_agent_zero",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1784179298942,
+      "tag": "0006_long_zarek",
+      "breakpoints": true
     }
   ]
 }
