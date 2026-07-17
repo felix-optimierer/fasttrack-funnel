@@ -230,9 +230,10 @@ async function processSalesSuite(
         }
       }
     } else {
-      // Update existing contact with leadmagnet field
+      // Update existing contact with leadmagnet field + phone + UTM
       const patchBody: Record<string, any> = {
         [funnelField]: now,
+        phone: lead.phone,
       };
       // Also update UTM if provided
       if (lead.utmSource) patchBody.utm_source = lead.utmSource;

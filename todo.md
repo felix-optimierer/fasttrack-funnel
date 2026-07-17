@@ -384,3 +384,7 @@
 ## Bug Fix: Ad-Spend Zeitfilter
 
 - [x] Ad-Kosten (Ausgaben + CPL) müssen sich an den Zeitfilter (Heute/Diese Woche/Dieser Monat) anpassen — aktuell werden immer alle Kosten summiert statt nur die des gewählten Zeitraums
+
+## SalesSuite: Telefonnummer bei bestehendem Kontakt updaten
+
+- [x] Bei Schritt 2b (bestehender Kontakt) auch die Telefonnummer per PATCH aktualisieren
