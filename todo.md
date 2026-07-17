@@ -388,3 +388,7 @@
 ## SalesSuite: Telefonnummer bei bestehendem Kontakt updaten
 
 - [x] Bei Schritt 2b (bestehender Kontakt) auch die Telefonnummer per PATCH aktualisieren
+
+## SalesSuite: Deal-Logik anpassen
+
+- [x] Neuer Deal wenn: kein Deal in Setter/Closer Pipeline ODER nur Deal(s) in Phase "Verkauft" — bei aktiven Deals (nicht "Verkauft") kein neuer Deal

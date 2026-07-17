@@ -249,8 +249,7 @@ async function processSalesSuite(
 
     // 3. Check existing deals
     let dealId: string | undefined;
-    let hasVerkauftDeal = false;
-    let hasSetterCloserDeal = false;
+    let hasActiveDealInPipeline = false; // Deal in Setter/Closer that is NOT in "Verkauft"
     let existingDealId: string | undefined;
 
     const dealsRes = await fetch(
@@ -263,25 +262,26 @@ async function processSalesSuite(
       if (Array.isArray(deals)) {
         for (const deal of deals) {
           const d = deal.deal || deal;
-          if (d.phaseId === PHASE_VERKAUFT) {
-            hasVerkauftDeal = true;
-          }
-          // Check if deal is in Setter/Closer pipeline (any phase)
-          if (d.pipelineId === PIPELINE_ID || d.pipeline?.id === PIPELINE_ID) {
-            hasSetterCloserDeal = true;
-            existingDealId = d.id;
+          const isInPipeline = d.pipelineId === PIPELINE_ID || d.pipeline?.id === PIPELINE_ID;
+          if (isInPipeline) {
+            if (d.phaseId !== PHASE_VERKAUFT) {
+              // Active deal (not "Verkauft") → don't create a new one
+              hasActiveDealInPipeline = true;
+              existingDealId = d.id;
+            }
+            // Deals in "Verkauft" are ignored → new deal will be created
           }
         }
       }
     }
 
-    // 4. Create or skip deal
-    if (!hasVerkauftDeal && !hasSetterCloserDeal && contactId) {
+    // 4. Create deal if no ACTIVE deal in pipeline ("Verkauft" doesn't count)
+    if (!hasActiveDealInPipeline && contactId) {
       // Create new deal in "Anfrage eingegangen"
       const dealBody = {
         contactId,
         phaseId: PHASE_ANFRAGE,
-        name: `${lead.firstName} ${lead.lastName} – ${FUNNEL_DISPLAY[lead.funnel]}`,
+        name: `${lead.firstName} ${lead.lastName} \u2013 ${FUNNEL_DISPLAY[lead.funnel]}`,
       };
 
       const dealRes = await fetch(`${SALESSUITE_BASE}/v2/deal`, {
