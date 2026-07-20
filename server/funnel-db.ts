@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, inArray, like, sql } from "drizzle-orm";
+import { and, desc, eq, gte, lte, inArray, like, sql } from "drizzle-orm";
 import { getDb } from "./db";
 import {
   InsertLead,
@@ -162,11 +162,23 @@ export async function listLeadsEnhanced(opts: {
 }
 
 /** UTM-Aggregation für Pivot-Tabelle. */
-export async function getUtmPivot(period: Period) {
+export async function getUtmPivot(periodOrRange: Period | { startDate: string; endDate: string }) {
   const db = await getDb();
   if (!db) return [];
 
-  const start = periodStart(period);
+  let start: Date;
+  let endDate: Date | null = null;
+  if (typeof periodOrRange === "string") {
+    start = periodStart(periodOrRange);
+  } else {
+    const range = dateRangeToStartEnd(periodOrRange.startDate, periodOrRange.endDate);
+    start = range.start;
+    endDate = range.end;
+  }
+
+  const conditions = endDate
+    ? and(gte(leads.createdAt, start), lte(leads.createdAt, endDate))
+    : gte(leads.createdAt, start);
 
   const rows = await db
     .select({
@@ -176,7 +188,7 @@ export async function getUtmPivot(period: Period) {
       count: sql<number>`count(*)`,
     })
     .from(leads)
-    .where(gte(leads.createdAt, start))
+    .where(conditions)
     .groupBy(leads.utmSource, leads.utmMedium, leads.utmCampaign);
 
   return rows.map((r) => ({
@@ -251,6 +263,13 @@ function periodStart(period: Period): Date {
   return d;
 }
 
+/** Convert startDate/endDate strings (YYYY-MM-DD) to Date range */
+export function dateRangeToStartEnd(startDate: string, endDate: string): { start: Date; end: Date } {
+  const start = new Date(startDate + "T00:00:00");
+  const end = new Date(endDate + "T23:59:59");
+  return { start, end };
+}
+
 // ─── LEGACY STATS ──────────────────────────────────────────────────────────────
 
 export async function getStats(period: Period) {
@@ -306,42 +325,63 @@ export interface ChannelFunnelStats {
   cpl: number;
 }
 
-export async function getFunnelStatsByChannel(period: Period): Promise<ChannelFunnelStats[]> {
+export async function getFunnelStatsByChannel(periodOrRange: Period | { startDate: string; endDate: string }): Promise<ChannelFunnelStats[]> {
   const db = await getDb();
   if (!db) return CHANNELS.map((ch) => ({ channel: ch, visitors: 0, leads: 0, appointments: 0, lpCr: 0, terminCr: 0, adSpendCents: 0, cpl: 0 }));
 
-  const start = periodStart(period);
+  let start: Date;
+  let endDate: Date | null = null;
+  if (typeof periodOrRange === "string") {
+    start = periodStart(periodOrRange);
+  } else {
+    const range = dateRangeToStartEnd(periodOrRange.startDate, periodOrRange.endDate);
+    start = range.start;
+    endDate = range.end;
+  }
 
+  const viewConditions = endDate
+    ? and(gte(pageViews.createdAt, start), lte(pageViews.createdAt, endDate))
+    : gte(pageViews.createdAt, start);
   const viewRows = await db
     .select({ page: pageViews.page, count: sql<number>`count(*)` })
     .from(pageViews)
-    .where(gte(pageViews.createdAt, start))
+    .where(viewConditions)
     .groupBy(pageViews.page);
   const viewMap: Record<string, number> = {};
   for (const r of viewRows) viewMap[r.page] = Number(r.count);
 
+  const leadConditions = endDate
+    ? and(gte(leads.createdAt, start), lte(leads.createdAt, endDate), eq(leads.isDuplicate, false))
+    : and(gte(leads.createdAt, start), eq(leads.isDuplicate, false));
   const leadRows = await db
     .select({ source: leads.source, count: sql<number>`count(*)` })
     .from(leads)
-    .where(and(gte(leads.createdAt, start), eq(leads.isDuplicate, false)))
+    .where(leadConditions)
     .groupBy(leads.source);
   const leadMap: Record<string, number> = {};
   for (const r of leadRows) leadMap[r.source] = Number(r.count);
 
+  const apptConditions = endDate
+    ? and(gte(appointments.createdAt, start), lte(appointments.createdAt, endDate))
+    : gte(appointments.createdAt, start);
   const apptRows = await db
     .select({ source: appointments.source, count: sql<number>`count(*)` })
     .from(appointments)
-    .where(gte(appointments.createdAt, start))
+    .where(apptConditions)
     .groupBy(appointments.source);
   const apptMap: Record<string, number> = {};
   for (const r of apptRows) apptMap[r.source] = Number(r.count);
 
   // Filter ad_spend by the `date` column (YYYY-MM-DD string) to match the selected period
   const startDateStr = start.toISOString().slice(0, 10);
+  const endDateStr = endDate ? endDate.toISOString().slice(0, 10) : null;
+  const spendConditions = endDateStr
+    ? and(gte(adSpend.date, startDateStr), lte(adSpend.date, endDateStr))
+    : gte(adSpend.date, startDateStr);
   const spendRows = await db
     .select({ channel: adSpend.channel, total: sql<number>`SUM(${adSpend.amountCents})` })
     .from(adSpend)
-    .where(gte(adSpend.date, startDateStr))
+    .where(spendConditions)
     .groupBy(adSpend.channel);
   const spendMap: Record<string, number> = {};
   for (const r of spendRows) spendMap[r.channel] = Number(r.total ?? 0);
@@ -370,39 +410,51 @@ export interface ChannelDayPoint {
   adSpendCents: number;
 }
 
-export async function getChannelSeries(days: number): Promise<ChannelDayPoint[]> {
+export async function getChannelSeries(daysOrRange: number | { startDate: string; endDate: string }): Promise<ChannelDayPoint[]> {
   const db = await getDb();
   if (!db) return [];
 
-  const start = new Date();
-  start.setDate(start.getDate() - (days - 1));
-  start.setHours(0, 0, 0, 0);
+  let start: Date;
+  let end: Date;
+  if (typeof daysOrRange === "number") {
+    start = new Date();
+    start.setDate(start.getDate() - (daysOrRange - 1));
+    start.setHours(0, 0, 0, 0);
+    end = new Date();
+  } else {
+    const range = dateRangeToStartEnd(daysOrRange.startDate, daysOrRange.endDate);
+    start = range.start;
+    end = range.end;
+  }
   const startStr = start.toISOString().slice(0, 19).replace("T", " ");
 
+  const endStr = end.toISOString().slice(0, 19).replace("T", " ");
+  const startDateOnly = start.toISOString().slice(0, 10);
+  const endDateOnly = end.toISOString().slice(0, 10);
+
   const pvResult = await db.execute(
-    sql`SELECT DATE(createdAt) as day, page, count(*) as count FROM page_views WHERE createdAt >= ${startStr} GROUP BY DATE(createdAt), page`
+    sql`SELECT DATE(createdAt) as day, page, count(*) as count FROM page_views WHERE createdAt >= ${startStr} AND createdAt <= ${endStr} GROUP BY DATE(createdAt), page`
   );
   const pvRows = (pvResult as unknown as any[][])[0] ?? [];
 
   const leadResult = await db.execute(
-    sql`SELECT DATE(createdAt) as day, source, count(*) as count FROM leads WHERE createdAt >= ${startStr} AND isDuplicate = 0 GROUP BY DATE(createdAt), source`
+    sql`SELECT DATE(createdAt) as day, source, count(*) as count FROM leads WHERE createdAt >= ${startStr} AND createdAt <= ${endStr} AND isDuplicate = 0 GROUP BY DATE(createdAt), source`
   );
   const leadRows = (leadResult as unknown as any[][])[0] ?? [];
 
   const apptResult = await db.execute(
-    sql`SELECT DATE(createdAt) as day, source, count(*) as count FROM appointments WHERE createdAt >= ${startStr} GROUP BY DATE(createdAt), source`
+    sql`SELECT DATE(createdAt) as day, source, count(*) as count FROM appointments WHERE createdAt >= ${startStr} AND createdAt <= ${endStr} GROUP BY DATE(createdAt), source`
   );
   const apptRows = (apptResult as unknown as any[][])[0] ?? [];
 
   const spendResult = await db.execute(
-    sql`SELECT date as day, channel, SUM(amountCents) as total FROM ad_spend WHERE date >= ${start.toISOString().slice(0, 10)} GROUP BY date, channel`
+    sql`SELECT date as day, channel, SUM(amountCents) as total FROM ad_spend WHERE date >= ${startDateOnly} AND date <= ${endDateOnly} GROUP BY date, channel`
   );
   const spendRows = (spendResult as unknown as any[][])[0] ?? [];
 
   const allDays: string[] = [];
   const d = new Date(start);
-  const now = new Date();
-  while (d <= now) {
+  while (d <= end) {
     allDays.push(d.toISOString().slice(0, 10));
     d.setDate(d.getDate() + 1);
   }

@@ -408,3 +408,9 @@
 - [x] Überall €-Zeichen statt $-Zeichen verwenden (Euro-Icon aus lucide-react)
 - [x] Leads-Diagramm: Balkendiagramm mit Gesamtzahl Leads pro Tag + gestrichelte Durchschnittslinie
 - [x] Conversion-Rate-Diagramm: gestrichelte Linie für Tagesdurchschnitt CR + gewichteter Gesamtdurchschnitt (alle Besucher / alle Leads) als zweite Linie
+
+## Erweiterter Zeitraum-Picker (Meta-Style)
+
+- [x] Backend: funnelStats und channelSeries auf startDate/endDate umstellen (statt period)
+- [x] Frontend: DateRangePicker-Komponente mit Presets (Heute, Gestern, Letzte 7/14/30 Tage, Diese/Letzte Woche, Dieser/Letzter Monat, Dieses/Letztes Jahr, All Time) + Kalender
+- [x] Integration in Dashboard: alten Period-Picker ersetzen, alle Queries anpassen

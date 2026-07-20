@@ -1,5 +1,7 @@
 // ADMIN-DASHBOARD (/admin) — 6-Tab Dashboard: Übersicht, Funnel, Submissions, CRM, Ad-Kosten, Einstellungen
 import { useState, useMemo, useCallback, DragEvent } from "react";
+import { DateRangePicker, type DateRangeValue } from "@/components/DateRangePicker";
+import { format, startOfWeek, subDays } from "date-fns";
 import { useLocation } from "wouter";
 import { SEO } from "@/components/SEO";
 import { trpc } from "@/lib/trpc";
@@ -18,12 +20,7 @@ import {
   ResponsiveContainer, Legend, BarChart, Bar, ReferenceLine, ComposedChart,
 } from "recharts";
 
-type Period = "day" | "week" | "month";
 type Tab = "overview" | "funnel" | "submissions" | "crm" | "adcosts" | "settings";
-
-const PERIOD_LABEL: Record<Period, string> = {
-  day: "Heute", week: "Diese Woche", month: "Dieser Monat",
-};
 
 const CHANNEL_LABEL: Record<string, string> = {
   "ki-report": "KI-Report", "exit-plan": "Exit-Plan", "traumwebseite": "Traumwebseite",
@@ -123,8 +120,16 @@ function LoginScreen({ onLoggedIn }: { onLoggedIn: () => void }) {
    ═══════════════════════════════════════════════════════════════════════════════ */
 function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [, navigate] = useLocation();
-  const [period, setPeriod] = useState<Period>("week");
   const [tab, setTab] = useState<Tab>("overview");
+  const [dateRange, setDateRange] = useState<DateRangeValue>(() => {
+    const start = startOfWeek(new Date(), { weekStartsOn: 1 });
+    const end = new Date();
+    return {
+      startDate: format(start, "yyyy-MM-dd"),
+      endDate: format(end, "yyyy-MM-dd"),
+      label: "Diese Woche",
+    };
+  });
   const utils = trpc.useUtils();
   const logout = trpc.admin.logout.useMutation();
 
@@ -167,13 +172,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           </div>
           <div className="flex items-center gap-3">
             {(tab === "overview" || tab === "funnel") && (
-              <div className="inline-flex rounded-lg border border-border bg-card p-1">
-                {(["day", "week", "month"] as Period[]).map((p) => (
-                  <button key={p} onClick={() => setPeriod(p)} className={`rounded-md px-3 py-1.5 text-xs font-semibold transition ${period === p ? "bg-secondary text-foreground" : "text-muted-foreground hover:text-foreground"}`}>
-                    {PERIOD_LABEL[p]}
-                  </button>
-                ))}
-              </div>
+              <DateRangePicker value={dateRange} onChange={setDateRange} />
             )}
             <button onClick={handleRefresh} className="inline-flex items-center gap-1.5 rounded-md border border-border bg-secondary px-3 py-2 text-xs font-semibold text-muted-foreground transition hover:text-foreground">
               <RefreshCw className="h-3.5 w-3.5" />
@@ -181,8 +180,8 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           </div>
         </div>
 
-        {tab === "overview" && <OverviewTab period={period} />}
-        {tab === "funnel" && <FunnelTab period={period} />}
+        {tab === "overview" && <OverviewTab dateRange={dateRange} />}
+        {tab === "funnel" && <FunnelTab dateRange={dateRange} />}
         {tab === "submissions" && <SubmissionsTab />}
         {tab === "crm" && <CrmTab />}
         {tab === "adcosts" && <AdCostsTab />}
@@ -195,10 +194,9 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 /* ═══════════════════════════════════════════════════════════════════════════════
    OVERVIEW TAB — KPI Tiles + Per-Channel Funnel + Charts
    ═══════════════════════════════════════════════════════════════════════════════ */
-function OverviewTab({ period }: { period: Period }) {
-  const funnelQuery = trpc.admin.funnelStats.useQuery({ period });
-  const days = period === "day" ? 7 : period === "week" ? 14 : 30;
-  const seriesQuery = trpc.admin.channelSeries.useQuery({ days });
+function OverviewTab({ dateRange }: { dateRange: DateRangeValue }) {
+  const funnelQuery = trpc.admin.funnelStats.useQuery({ startDate: dateRange.startDate, endDate: dateRange.endDate });
+  const seriesQuery = trpc.admin.channelSeries.useQuery({ startDate: dateRange.startDate, endDate: dateRange.endDate });
 
   // KPI aggregation
   const kpis = useMemo(() => {
@@ -337,11 +335,10 @@ function KpiTile({ icon, label, value, accent }: { icon: React.ReactNode; label:
 /* ═══════════════════════════════════════════════════════════════════════════════
    FUNNEL TAB — Per-Channel Funnel + Charts + UTM Pivot
    ═══════════════════════════════════════════════════════════════════════════════ */
-function FunnelTab({ period }: { period: Period }) {
-  const funnelQuery = trpc.admin.funnelStats.useQuery({ period });
-  const utmPivotQuery = trpc.admin.utmPivot.useQuery({ period });
-  const days = period === "day" ? 7 : period === "week" ? 14 : 30;
-  const seriesQuery = trpc.admin.channelSeries.useQuery({ days });
+function FunnelTab({ dateRange }: { dateRange: DateRangeValue }) {
+  const funnelQuery = trpc.admin.funnelStats.useQuery({ startDate: dateRange.startDate, endDate: dateRange.endDate });
+  const utmPivotQuery = trpc.admin.utmPivot.useQuery({ startDate: dateRange.startDate, endDate: dateRange.endDate });
+  const seriesQuery = trpc.admin.channelSeries.useQuery({ startDate: dateRange.startDate, endDate: dateRange.endDate });
 
   const chartData = useMemo(() => {
     if (!seriesQuery.data) return [];

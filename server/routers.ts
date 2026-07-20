@@ -48,6 +48,7 @@ import { testoptimiererRouter } from "./testoptimierer/router";
 import { processLeadAutomation, type FunnelType } from "./leads/automation";
 
 const periodSchema = z.enum(["day", "week", "month"]);
+const dateRangeSchema = z.object({ startDate: z.string(), endDate: z.string() });
 const channelSchema = z.enum(["ki-report", "exit-plan", "traumwebseite"]);
 
 async function assertAdmin(req: any) {
@@ -386,10 +387,13 @@ export const appRouter = router({
 
     // ─── UTM Pivot ──────────────────────────────────────────────────────
     utmPivot: publicProcedure
-      .input(z.object({ period: periodSchema }))
+      .input(z.union([z.object({ period: periodSchema }), z.object({ startDate: z.string(), endDate: z.string() })]))
       .query(async ({ input, ctx }) => {
         await assertAdmin(ctx.req);
-        return getUtmPivot(input.period as Period);
+        if ("period" in input) {
+          return getUtmPivot(input.period as Period);
+        }
+        return getUtmPivot({ startDate: input.startDate, endDate: input.endDate });
       }),
 
     // ─── Distinct UTM Values (for filter dropdowns) ─────────────────────
@@ -400,17 +404,23 @@ export const appRouter = router({
 
     // ─── Per-Channel Funnel Stats ───────────────────────────────────────
     funnelStats: publicProcedure
-      .input(z.object({ period: periodSchema }))
+      .input(z.union([z.object({ period: periodSchema }), z.object({ startDate: z.string(), endDate: z.string() })]))
       .query(async ({ input, ctx }) => {
         await assertAdmin(ctx.req);
-        return getFunnelStatsByChannel(input.period as Period);
+        if ("period" in input) {
+          return getFunnelStatsByChannel(input.period as Period);
+        }
+        return getFunnelStatsByChannel({ startDate: input.startDate, endDate: input.endDate });
       }),
 
     channelSeries: publicProcedure
-      .input(z.object({ days: z.number().min(1).max(90) }))
+      .input(z.union([z.object({ days: z.number().min(1).max(365) }), z.object({ startDate: z.string(), endDate: z.string() })]))
       .query(async ({ input, ctx }) => {
         await assertAdmin(ctx.req);
-        return getChannelSeries(input.days);
+        if ("days" in input) {
+          return getChannelSeries(input.days);
+        }
+        return getChannelSeries({ startDate: input.startDate, endDate: input.endDate });
       }),
 
     // ─── Webhooks ───────────────────────────────────────────────────────
