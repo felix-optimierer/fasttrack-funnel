@@ -397,3 +397,8 @@
 
 - [x] libphonenumber einbauen: Normalisieren → Validieren → Korrigieren
 - [x] Ungültige Nummern trotzdem eintragen, aber Hinweis in der Notiz ergänzen
+
+## Impressum & Datenschutz Links korrigieren
+
+- [x] Alle Impressum-Links auf physiofreiheit.de/impressum mit UTM-Parametern ändern
+- [x] Alle Datenschutz-Links auf physiofreiheit.de/datenschutz mit UTM-Parametern ändern
