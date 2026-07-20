@@ -402,3 +402,9 @@
 
 - [x] Alle Impressum-Links auf physiofreiheit.de/impressum mit UTM-Parametern ändern
 - [x] Alle Datenschutz-Links auf physiofreiheit.de/datenschutz mit UTM-Parametern ändern
+
+## Admin Dashboard Verbesserungen
+
+- [x] Überall €-Zeichen statt $-Zeichen verwenden (Euro-Icon aus lucide-react)
+- [x] Leads-Diagramm: Balkendiagramm mit Gesamtzahl Leads pro Tag + gestrichelte Durchschnittslinie
+- [x] Conversion-Rate-Diagramm: gestrichelte Linie für Tagesdurchschnitt CR + gewichteter Gesamtdurchschnitt (alle Besucher / alle Leads) als zweite Linie

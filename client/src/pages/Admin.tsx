@@ -7,7 +7,7 @@ import { Logo, GoldButton } from "@/components/funnel";
 import { ASSETS } from "@/lib/site";
 import {
   Lock, LogOut, Users, Eye, Webhook, Send, Loader2, RefreshCw,
-  ArrowRight, TrendingUp, Calendar, DollarSign, Settings, BarChart3,
+  ArrowRight, TrendingUp, Calendar, Euro, Settings, BarChart3,
   Search, Download, X, ChevronLeft, ChevronRight, StickyNote,
   Table, Kanban, Globe, Monitor, ExternalLink, Phone, Mail, Clock,
   Filter, FileText, FlaskConical,
@@ -15,7 +15,7 @@ import {
 import { toast } from "sonner";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, Legend, BarChart, Bar,
+  ResponsiveContainer, Legend, BarChart, Bar, ReferenceLine, ComposedChart,
 } from "recharts";
 
 type Period = "day" | "week" | "month";
@@ -47,7 +47,7 @@ const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: "funnel", label: "Funnel", icon: <TrendingUp className="h-3.5 w-3.5" /> },
   { id: "submissions", label: "Alle Leads", icon: <Table className="h-3.5 w-3.5" /> },
   { id: "crm", label: "CRM", icon: <Kanban className="h-3.5 w-3.5" /> },
-  { id: "adcosts", label: "Ad-Kosten", icon: <DollarSign className="h-3.5 w-3.5" /> },
+  { id: "adcosts", label: "Ad-Kosten", icon: <Euro className="h-3.5 w-3.5" /> },
   { id: "settings", label: "Einstellungen", icon: <Settings className="h-3.5 w-3.5" /> },
 ];
 
@@ -221,15 +221,43 @@ function OverviewTab({ period }: { period: Period }) {
     if (!seriesQuery.data) return [];
     const dayMap = new Map<string, Record<string, any>>();
     for (const point of seriesQuery.data) {
-      if (!dayMap.has(point.day)) dayMap.set(point.day, { day: point.day });
+      if (!dayMap.has(point.day)) dayMap.set(point.day, { day: point.day, total_leads: 0, total_visitors: 0, total_day_leads: 0 });
       const entry = dayMap.get(point.day)!;
       const ch = point.channel;
       const cr = point.visitors > 0 ? (point.leads / point.visitors) * 100 : 0;
       entry[`cr_${ch}`] = parseFloat(cr.toFixed(1));
       entry[`leads_${ch}`] = point.leads;
+      entry.total_leads += point.leads;
+      entry.total_visitors += point.visitors;
     }
     return Array.from(dayMap.values()).sort((a, b) => a.day.localeCompare(b.day));
   }, [seriesQuery.data]);
+
+  // Average calculations for reference lines
+  const avgLeadsPerDay = useMemo(() => {
+    if (chartData.length === 0) return 0;
+    const total = chartData.reduce((sum, d) => sum + (d.total_leads || 0), 0);
+    return parseFloat((total / chartData.length).toFixed(1));
+  }, [chartData]);
+
+  const avgCrPerDay = useMemo(() => {
+    if (chartData.length === 0) return 0;
+    const daysWithData = chartData.filter(d => d.total_visitors > 0);
+    if (daysWithData.length === 0) return 0;
+    const avgCrs = daysWithData.reduce((sum, d) => {
+      const cr = d.total_visitors > 0 ? (d.total_leads / d.total_visitors) * 100 : 0;
+      return sum + cr;
+    }, 0);
+    return parseFloat((avgCrs / daysWithData.length).toFixed(1));
+  }, [chartData]);
+
+  const weightedOverallCr = useMemo(() => {
+    if (chartData.length === 0) return 0;
+    const totalVisitors = chartData.reduce((sum, d) => sum + (d.total_visitors || 0), 0);
+    const totalLeads = chartData.reduce((sum, d) => sum + (d.total_leads || 0), 0);
+    if (totalVisitors === 0) return 0;
+    return parseFloat(((totalLeads / totalVisitors) * 100).toFixed(1));
+  }, [chartData]);
 
   if (funnelQuery.isLoading) {
     return <div className="flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-gold" /></div>;
@@ -245,8 +273,8 @@ function OverviewTab({ period }: { period: Period }) {
           <KpiTile icon={<Calendar className="h-4 w-4" />} label="Termine" value={kpis.totalAppointments.toLocaleString("de-DE")} />
           <KpiTile icon={<TrendingUp className="h-4 w-4" />} label="LP-CR" value={`${kpis.avgCr.toFixed(1)}%`} />
           <KpiTile icon={<TrendingUp className="h-4 w-4" />} label="Termin-CR" value={`${kpis.avgTerminCr.toFixed(1)}%`} />
-          <KpiTile icon={<DollarSign className="h-4 w-4" />} label="CPL" value={kpis.avgCpl > 0 ? `${kpis.avgCpl.toFixed(2)} €` : "–"} />
-          <KpiTile icon={<DollarSign className="h-4 w-4" />} label="Ad-Spend" value={kpis.totalSpend > 0 ? `${(kpis.totalSpend / 100).toFixed(0)} €` : "–"} />
+          <KpiTile icon={<Euro className="h-4 w-4" />} label="CPL" value={kpis.avgCpl > 0 ? `${kpis.avgCpl.toFixed(2)} €` : "–"} />
+          <KpiTile icon={<Euro className="h-4 w-4" />} label="Ad-Spend" value={kpis.totalSpend > 0 ? `${(kpis.totalSpend / 100).toFixed(0)} €` : "–"} />
         </div>
       )}
 
@@ -258,8 +286,8 @@ function OverviewTab({ period }: { period: Period }) {
       {/* Charts */}
       {chartData.length > 0 && (
         <div className="grid gap-6 lg:grid-cols-2">
-          <ChartCard title="LP-Conversion-Rate (%)" subtitle="Leads / Besucher pro Tag">
-            <ResponsiveContainer width="100%" height={220}>
+          <ChartCard title="LP-Conversion-Rate (%)" subtitle={`Ø Tages-CR: ${avgCrPerDay}% · Gewichteter Gesamt-CR: ${weightedOverallCr}%`}>
+            <ResponsiveContainer width="100%" height={240}>
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
                 <XAxis dataKey="day" tick={{ fill: "#9fb2c7", fontSize: 11 }} tickFormatter={(v) => v.slice(5)} />
@@ -269,22 +297,26 @@ function OverviewTab({ period }: { period: Period }) {
                 {(["ki-report", "exit-plan", "traumwebseite"] as const).map((ch) => (
                   <Line key={ch} type="monotone" dataKey={`cr_${ch}`} name={CHANNEL_LABEL[ch]} stroke={CHANNEL_COLORS[ch]} strokeWidth={2} dot={false} />
                 ))}
+                <ReferenceLine y={avgCrPerDay} stroke="#f4f1e8" strokeDasharray="6 4" strokeWidth={1.5} label={{ value: `Ø ${avgCrPerDay}%`, position: "right", fill: "#f4f1e8", fontSize: 10 }} />
+                <ReferenceLine y={weightedOverallCr} stroke="#c9a227" strokeDasharray="3 3" strokeWidth={1.5} label={{ value: `Gesamt ${weightedOverallCr}%`, position: "left", fill: "#c9a227", fontSize: 10 }} />
               </LineChart>
             </ResponsiveContainer>
           </ChartCard>
 
-          <ChartCard title="Leads pro Tag" subtitle="Absolute Leads pro Kanal">
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={chartData}>
+          <ChartCard title="Leads pro Tag (Gesamt)" subtitle={`Ø ${avgLeadsPerDay} Leads/Tag`}>
+            <ResponsiveContainer width="100%" height={240}>
+              <ComposedChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
                 <XAxis dataKey="day" tick={{ fill: "#9fb2c7", fontSize: 11 }} tickFormatter={(v) => v.slice(5)} />
                 <YAxis tick={{ fill: "#9fb2c7", fontSize: 11 }} />
                 <Tooltip contentStyle={{ backgroundColor: "#0e2138", border: "1px solid rgba(201,162,39,0.3)", borderRadius: 8 }} labelStyle={{ color: "#f4f1e8" }} />
                 <Legend />
+                <Bar dataKey="total_leads" name="Gesamt Leads" fill="#c9a227" radius={[4, 4, 0, 0]} />
                 {(["ki-report", "exit-plan", "traumwebseite"] as const).map((ch) => (
-                  <Bar key={ch} dataKey={`leads_${ch}`} name={CHANNEL_LABEL[ch]} fill={CHANNEL_COLORS[ch]} radius={[2, 2, 0, 0]} />
+                  <Bar key={ch} dataKey={`leads_${ch}`} name={CHANNEL_LABEL[ch]} fill={CHANNEL_COLORS[ch]} radius={[2, 2, 0, 0]} stackId="channels" />
                 ))}
-              </BarChart>
+                <ReferenceLine y={avgLeadsPerDay} stroke="#f4f1e8" strokeDasharray="6 4" strokeWidth={1.5} label={{ value: `Ø ${avgLeadsPerDay}`, position: "right", fill: "#f4f1e8", fontSize: 10 }} />
+              </ComposedChart>
             </ResponsiveContainer>
           </ChartCard>
         </div>
@@ -1088,7 +1120,7 @@ function AdCostsTab() {
       {/* Manual Entry */}
       <section className="rounded-2xl border border-border bg-card p-5">
         <div className="mb-4 flex items-center gap-2">
-          <DollarSign className="h-4 w-4 text-gold" />
+          <Euro className="h-4 w-4 text-gold" />
           <h2 className="text-sm font-bold uppercase tracking-wide text-foreground">Ad-Spend eintragen</h2>
         </div>
         <p className="mb-4 text-xs text-muted-foreground">
@@ -1311,7 +1343,7 @@ function ChannelFunnelCard({ data }: { data: ChannelStats }) {
         <FunnelStep icon={<Calendar className="h-4 w-4" />} value={data.appointments} label="Termine" />
       </div>
       <div className="mt-4 flex items-center gap-2 rounded-lg bg-secondary/50 px-3 py-2">
-        <DollarSign className="h-3.5 w-3.5 text-gold" />
+        <Euro className="h-3.5 w-3.5 text-gold" />
         <span className="text-xs text-muted-foreground">CPL:</span>
         <span className="text-sm font-bold text-foreground">{data.cpl > 0 ? `${(data.cpl / 100).toFixed(2)} €` : "–"}</span>
         {data.adSpendCents > 0 && <span className="ml-auto text-[11px] text-muted-foreground">Ausgaben: {(data.adSpendCents / 100).toFixed(2)} €</span>}
