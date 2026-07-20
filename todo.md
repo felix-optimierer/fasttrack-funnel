@@ -392,3 +392,8 @@
 ## SalesSuite: Deal-Logik anpassen
 
 - [x] Neuer Deal wenn: kein Deal in Setter/Closer Pipeline ODER nur Deal(s) in Phase "Verkauft" — bei aktiven Deals (nicht "Verkauft") kein neuer Deal
+
+## Telefonnummer-Validierung vor SalesSuite
+
+- [ ] libphonenumber einbauen: Normalisieren → Validieren → Korrigieren
+- [ ] Ungültige Nummern trotzdem eintragen, aber Hinweis in der Notiz ergänzen

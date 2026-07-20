@@ -17,7 +17,7 @@ const OFFERS = [
   {
     title: "Deine Traumwebseite in 60 Minuten",
     description:
-      "Als Praxisinhaber deine Traumwebseite per KI-Agent bauen lassen – ohne Technikkenntnisse, ohne Agentur, ohne Baukasten.",
+      "Als Praxisinhaber deine Traumwebseite per KI-Agent bauen lassen ohne Technikkenntnisse, ohne Agentur, ohne Baukasten.",
     cta: "Jetzt Fallstudien ansehen",
     href: "/traumwebseite",
     mockup: TRAUMWEBSEITE_MOCKUP,
