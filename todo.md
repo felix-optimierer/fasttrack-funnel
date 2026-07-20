@@ -395,5 +395,5 @@
 
 ## Telefonnummer-Validierung vor SalesSuite
 
-- [ ] libphonenumber einbauen: Normalisieren → Validieren → Korrigieren
-- [ ] Ungültige Nummern trotzdem eintragen, aber Hinweis in der Notiz ergänzen
+- [x] libphonenumber einbauen: Normalisieren → Validieren → Korrigieren
+- [x] Ungültige Nummern trotzdem eintragen, aber Hinweis in der Notiz ergänzen

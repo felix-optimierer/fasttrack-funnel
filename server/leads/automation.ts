@@ -68,32 +68,76 @@ const MAKE_WEBHOOK_URLS: Record<FunnelType, string | undefined> = {
   "exit-plan": process.env.MAKE_WEBHOOK_EXIT_PLAN || undefined,
 };
 
-// ─── Phone Validation ────────────────────────────────────────────────────────
-/**
- * Normalize German phone number to E.164 format (+49...)
- */
-export function normalizePhone(phone: string): string {
-  // Remove all non-digit characters except leading +
-  let cleaned = phone.replace(/[^\d+]/g, "");
+// ─── Phone Validation & Normalization ────────────────────────────────────────
+import { parsePhoneNumberFromString, type PhoneNumber } from "libphonenumber-js";
 
-  // Handle common German formats
+export interface PhoneValidationResult {
+  /** The normalized phone number (E.164 format if valid, best-effort if invalid) */
+  normalized: string;
+  /** Whether the phone number is valid */
+  isValid: boolean;
+  /** Original input value */
+  original: string;
+  /** Human-readable issue description (only set if invalid) */
+  issue?: string;
+}
+
+/**
+ * Normalize and validate a phone number using libphonenumber.
+ * Always returns a normalized string (best-effort), plus validation info.
+ * Default country: DE (Germany)
+ */
+export function validateAndNormalizePhone(phone: string): PhoneValidationResult {
+  const original = phone.trim();
+  if (!original) {
+    return { normalized: "", isValid: false, original, issue: "Keine Telefonnummer angegeben" };
+  }
+
+  // Try parsing with DE as default country
+  const parsed: PhoneNumber | undefined = parsePhoneNumberFromString(original, "DE");
+
+  if (parsed && parsed.isValid()) {
+    // Valid number → return E.164 format
+    return {
+      normalized: parsed.format("E.164"),
+      isValid: true,
+      original,
+    };
+  }
+
+  // If parsing succeeded but number is not valid (e.g. wrong length)
+  if (parsed) {
+    return {
+      normalized: parsed.format("E.164"), // best-effort E.164
+      isValid: false,
+      original,
+      issue: `Nummer hat ungültige Länge oder ungültigen Nummernblock (erkannt als ${parsed.country || "unbekannt"})`,
+    };
+  }
+
+  // Parsing completely failed → fallback: manual cleanup
+  let cleaned = original.replace(/[^\d+]/g, "");
   if (cleaned.startsWith("00")) {
     cleaned = "+" + cleaned.slice(2);
   } else if (cleaned.startsWith("0")) {
     cleaned = "+49" + cleaned.slice(1);
-  } else if (cleaned.startsWith("49") && !cleaned.startsWith("+")) {
-    cleaned = "+49" + cleaned.slice(2);
   } else if (!cleaned.startsWith("+")) {
-    // Assume German number without prefix
     cleaned = "+49" + cleaned;
   }
 
-  // Ensure it starts with +
-  if (!cleaned.startsWith("+")) {
-    cleaned = "+" + cleaned;
-  }
+  return {
+    normalized: cleaned,
+    isValid: false,
+    original,
+    issue: `Konnte nicht als gültige Telefonnummer erkannt werden`,
+  };
+}
 
-  return cleaned;
+/**
+ * Legacy wrapper: just returns the normalized string (for backward compat)
+ */
+export function normalizePhone(phone: string): string {
+  return validateAndNormalizePhone(phone).normalized;
 }
 
 /**
@@ -144,7 +188,8 @@ async function processKlickTipp(lead: LeadData): Promise<{ success: boolean; err
 
 // ─── SalesSuite Integration ──────────────────────────────────────────────────
 async function processSalesSuite(
-  lead: LeadData
+  lead: LeadData,
+  phoneResult?: PhoneValidationResult
 ): Promise<{ success: boolean; error?: string; contactId?: string; dealId?: string }> {
   const apiKey = process.env.SALESSUITE_API_KEY;
   if (!apiKey) return { success: false, error: "SALESSUITE_API_KEY not set" };
@@ -300,10 +345,15 @@ async function processSalesSuite(
       dealId = existingDealId;
     }
 
-    // 5. Add note
+    // 5. Add note (with phone validation warning if applicable)
     const noteParam = dealId ? `dealId=${dealId}` : `contactId=${contactId}`;
     const noteDate = new Date().toLocaleString("de-DE", { timeZone: "Europe/Berlin" });
-    const noteHtml = `<p>Hat sich am <strong>${noteDate}</strong> den <strong>${FUNNEL_DISPLAY[lead.funnel]}</strong> von <strong>Bewegungsoptimierer</strong> eingetragen.</p>`;
+    let noteHtml = `<p>Hat sich am <strong>${noteDate}</strong> den <strong>${FUNNEL_DISPLAY[lead.funnel]}</strong> von <strong>Bewegungsoptimierer</strong> eingetragen.</p>`;
+
+    // Append phone validation warning if number is invalid
+    if (phoneResult && !phoneResult.isValid) {
+      noteHtml += `<p>\u26a0\ufe0f <strong>Telefonnummer ung\u00fcltig:</strong> Die eingegebene Nummer \u201e${phoneResult.original}\u201c ${phoneResult.issue || "konnte nicht validiert werden"}. Bitte manuell pr\u00fcfen.</p>`;
+    }
 
     await fetch(`${SALESSUITE_BASE}/v1/note?${noteParam}`, {
       method: "POST",
@@ -383,14 +433,15 @@ async function processMakeWebhook(lead: LeadData): Promise<{ success: boolean; e
  * Runs all integrations in parallel for speed, collects results.
  */
 export async function processLeadAutomation(lead: LeadData): Promise<AutomationResult> {
-  // Normalize phone
-  lead.phone = normalizePhone(lead.phone);
+  // Validate and normalize phone
+  const phoneResult = validateAndNormalizePhone(lead.phone);
+  lead.phone = phoneResult.normalized;
   lead.email = lead.email.trim().toLowerCase();
 
-  // Run all integrations in parallel
+  // Run all integrations in parallel (pass phone validation to SalesSuite for note)
   const [klicktipp, salesSuite, makeWebhook] = await Promise.allSettled([
     processKlickTipp(lead),
-    processSalesSuite(lead),
+    processSalesSuite(lead, phoneResult),
     processMakeWebhook(lead),
   ]);
 
