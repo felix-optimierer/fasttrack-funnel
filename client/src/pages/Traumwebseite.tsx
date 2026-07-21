@@ -24,6 +24,15 @@ export default function Traumwebseite() {
     window.scrollTo(0, 0);
   }, []);
 
+  // Testoptimierer A/B-Test Tag
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "/api/testoptimierer/tag/180001";
+    script.async = true;
+    document.body.appendChild(script);
+    return () => { document.body.removeChild(script); };
+  }, []);
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.name || !form.email || !form.phone) {

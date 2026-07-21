@@ -452,3 +452,23 @@
 ## Admin: Letzter Ad-Kosten-Sync Zeitstempel
 
 - [x] Neben dem Meta-Ads-Sync-Button anzeigen, wann die Ad-Kosten zuletzt aktualisiert wurden
+
+## Ad-Kosten Refresh Fix
+
+- [ ] Refresh-Button soll tatsächlich Meta API abfragen und Daten aktualisieren (nicht nur Platzhalter-Nachricht)
+- [ ] Sync soll immer alle Tage seit Kampagnenstart abfragen (nicht nur heute)
+
+## Testoptimierer Tag auf /traumwebseite
+
+- [x] Script-Tag /api/testoptimierer/tag/180001 auf /traumwebseite eingebettet
+
+## Testoptimierer – Sub-Headline und Bullets erkennen
+
+- [ ] Sub-Headline als testbares Element im Scanner erkennen
+- [ ] Bullet Points als testbare Elemente im Scanner erkennen
+
+## Setting-Termine aus Google Sheet importieren
+
+- [ ] Google Sheet auslesen (Setting-Termine)
+- [ ] Termine über E-Mail den Leads zuordnen und in appointments-Tabelle eintragen
+- [ ] Dashboard zeigt Termine korrekt an
