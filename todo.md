@@ -443,3 +443,31 @@
 ### M6: Cache-Headers
 - [x] Vite Build mit Content-Hash-Filenames (automatisch long-cache)
 - [x] manualChunks für vendor/charts/ui (bessere Cache-Invalidierung)
+
+## PageSpeed Mobil Optimierung (FCP/LCP grün)
+
+### M1: Fonts inlinen
+- [x] Google Fonts CSS aus head entfernen, @font-face direkt in index.css mit font-display:swap
+- [x] Wichtigste Font-Files (Inter 400/500/600/700, Sora 500/600/700/800) per preload laden
+
+### M2: JS-Bundle drastisch reduzieren (Option 2: aggressive manualChunks)
+- [x] Funnel-Seiten-Chunk: nur React + wouter + Funnel-Komponenten (index: 639KB → 131KB)
+- [x] tRPC + React Query + Sonner in separaten Chunk (trpc-stack: 101KB, sonner: 34KB)
+- [x] date-fns/react-day-picker nur im Admin-Chunk (admin-date: 70KB)
+- [x] Radix UI in separatem Chunk (ui-radix: 65KB)
+- [x] Lucide Icons in separatem Chunk (icons: 26KB)
+
+### M3: LCP-Bild preloaden
+- [x] link rel=preload für Hero-BG und Logo im HTML-Head
+
+### M4: Hero-Background preloaden
+- [x] link rel=preload für Hero-Hintergrundbild (CloudFront WebP)
+
+### M5: Nicht-zusammengesetzte Animationen fixen
+- [x] glowPulse: box-shadow auf ::after-Pseudo-Element mit will-change:opacity verschoben
+- [x] riseIn: will-change: transform, opacity hinzugefügt
+- [x] prefers-reduced-motion: reduce respektiert
+
+### M6: Bilder für Mobil optimieren
+- [x] 480px WebP-Varianten erstellt (KI-Report: 28KB, Exit-Plan: 35KB, Traumwebseite: 17KB)
+- [x] srcset + sizes auf Home.tsx, KiReport.tsx, ExitPlan.tsx Mockup-Bilder

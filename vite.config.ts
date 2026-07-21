@@ -169,10 +169,40 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ["react", "react-dom"],
-          charts: ["recharts"],
-          ui: ["@radix-ui/react-dialog", "@radix-ui/react-popover", "@radix-ui/react-select"],
+        manualChunks(id) {
+          // Core React runtime — needed by everything
+          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) {
+            return 'vendor';
+          }
+          // tRPC + React Query + superjson — needed for data fetching but not for initial paint
+          if (
+            id.includes('node_modules/@trpc/') ||
+            id.includes('node_modules/@tanstack/react-query') ||
+            id.includes('node_modules/@tanstack/query-core') ||
+            id.includes('node_modules/superjson')
+          ) {
+            return 'trpc-stack';
+          }
+          // Charts (recharts + d3) — only Admin page
+          if (id.includes('node_modules/recharts') || id.includes('node_modules/d3-')) {
+            return 'charts';
+          }
+          // Date utilities — only Admin DateRangePicker
+          if (id.includes('node_modules/date-fns') || id.includes('node_modules/react-day-picker')) {
+            return 'admin-date';
+          }
+          // All Radix UI primitives — used by shadcn components
+          if (id.includes('node_modules/@radix-ui/')) {
+            return 'ui-radix';
+          }
+          // Sonner toast library + next-themes
+          if (id.includes('node_modules/sonner') || id.includes('node_modules/next-themes')) {
+            return 'sonner';
+          }
+          // Lucide icons — tree-shaken but still sizeable
+          if (id.includes('node_modules/lucide-react')) {
+            return 'icons';
+          }
         },
       },
     },

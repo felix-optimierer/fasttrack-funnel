@@ -11,6 +11,7 @@ import { LeadPopup } from "@/components/LeadPopup";
 
 const BG_BLURRED_URL = "/manus-storage/ki-report-bg-final-optimized_189933a4.webp";
 const MOCKUP_SHARP_URL = "/manus-storage/ki-report-mockup-final-optimized_10098550.webp";
+const MOCKUP_MOBILE_URL = "/manus-storage/ki-report-mockup-mobile-480_4054ccdf.webp";
 
 const BENEFITS = [
   "7 getestete KI-Agenten Prompts speziell für Physiopraxen",
@@ -157,6 +158,8 @@ export default function KiReport() {
             >
               <img
                 src={MOCKUP_SHARP_URL}
+                srcSet={`${MOCKUP_MOBILE_URL} 480w, ${MOCKUP_SHARP_URL} 768w`}
+                sizes="(max-width: 640px) 340px, 768px"
                 width={768}
                 height={768}
                 alt="KI-Report Vorschau"
@@ -193,8 +196,10 @@ export default function KiReport() {
           >
             <img
               src={MOCKUP_SHARP_URL}
-                width={768}
-                height={768}
+              srcSet={`${MOCKUP_MOBILE_URL} 480w, ${MOCKUP_SHARP_URL} 768w`}
+              sizes="(max-width: 640px) 480px, 768px"
+              width={768}
+              height={768}
               alt="KI-Report Mockup"
               className="w-full max-w-lg object-contain drop-shadow-[0_20px_60px_rgba(0,0,0,0.5)] transition-transform duration-200 hover:scale-[1.02]"
             />

@@ -11,6 +11,7 @@ import { LeadPopup } from "@/components/LeadPopup";
 
 const BG_BLURRED_URL = "/manus-storage/exit-plan-bg-optimized_47209fe8.webp";
 const MOCKUP_URL = "/manus-storage/exit-plan-mockup-optimized_404b28d1.webp";
+const MOCKUP_MOBILE_URL = "/manus-storage/exit-plan-mockup-mobile-480_df28f30c.webp";
 
 const BENEFITS = [
   "Der 5-Schritte-Plan: Von Kassensystem-Abhängigkeit zum Hybrid-Modell",
@@ -158,6 +159,8 @@ export default function ExitPlan() {
             >
               <img
                 src={MOCKUP_URL}
+                srcSet={`${MOCKUP_MOBILE_URL} 480w, ${MOCKUP_URL} 768w`}
+                sizes="(max-width: 640px) 340px, 768px"
                 width={768}
                 height={768}
                 alt="Exit-Plan Vorschau"
@@ -194,8 +197,10 @@ export default function ExitPlan() {
           >
             <img
               src={MOCKUP_URL}
-                width={768}
-                height={768}
+              srcSet={`${MOCKUP_MOBILE_URL} 480w, ${MOCKUP_URL} 768w`}
+              sizes="(max-width: 640px) 480px, 768px"
+              width={768}
+              height={768}
               alt="Exit-Plan Mockup"
               className="w-full max-w-lg object-contain drop-shadow-[0_20px_60px_rgba(0,0,0,0.5)] transition-transform duration-200 hover:scale-[1.02]"
             />
