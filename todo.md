@@ -443,3 +443,12 @@
 ### M6: Cache-Headers
 - [x] Vite Build mit Content-Hash-Filenames (automatisch long-cache)
 - [x] manualChunks für vendor/charts/ui (bessere Cache-Invalidierung)
+
+## Popup Sub-Headline Text ändern
+
+- [x] KI-Report Popup: subtext auf "Die Inhalte kommen per WhatsApp deswegen gib bitte deine WhatsApp Nummer ein"
+- [x] Exit-Plan Popup: subtext auf "Die Inhalte kommen per WhatsApp deswegen gib bitte deine WhatsApp Nummer ein"
+
+## Admin: Letzter Ad-Kosten-Sync Zeitstempel
+
+- [x] Neben dem Meta-Ads-Sync-Button anzeigen, wann die Ad-Kosten zuletzt aktualisiert wurden

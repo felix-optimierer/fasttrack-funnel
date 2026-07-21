@@ -1214,6 +1214,7 @@ function AdCostsTab() {
 /* Meta Refresh Button Component */
 function MetaRefreshButton() {
   const refreshAdCosts = trpc.admin.refreshAdCosts.useMutation();
+  const listAdSpendQuery = trpc.admin.listAdSpend.useQuery();
   const utils = trpc.useUtils();
 
   function handleRefresh() {
@@ -1221,25 +1222,43 @@ function MetaRefreshButton() {
       onSuccess: (res) => {
         toast.success(res.message);
         // Refresh the ad spend list after a short delay
-        setTimeout(() => utils.admin.listAdSpend.invalidate(), 3000);
+        setTimeout(() => {
+          utils.admin.listAdSpend.invalidate();
+        }, 3000);
       },
       onError: () => toast.error("Aktualisierung fehlgeschlagen."),
     });
   }
 
+  // Find the most recent createdAt from ad_spend entries
+  const lastSync = listAdSpendQuery.data && listAdSpendQuery.data.length > 0
+    ? listAdSpendQuery.data.reduce((latest, row) => {
+        const rowDate = new Date(row.createdAt);
+        return rowDate > latest ? rowDate : latest;
+      }, new Date(0))
+    : null;
+
   return (
-    <button
-      onClick={handleRefresh}
-      disabled={refreshAdCosts.isPending}
-      className="inline-flex items-center gap-2 rounded-md bg-gradient-to-b from-[#e3c75a] to-[#c9a227] px-5 py-2.5 text-xs font-bold text-navy transition hover:brightness-105 disabled:opacity-60"
-    >
-      {refreshAdCosts.isPending ? (
-        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-      ) : (
-        <RefreshCw className="h-3.5 w-3.5" />
+    <div className="flex items-center gap-3 flex-wrap">
+      <button
+        onClick={handleRefresh}
+        disabled={refreshAdCosts.isPending}
+        className="inline-flex items-center gap-2 rounded-md bg-gradient-to-b from-[#e3c75a] to-[#c9a227] px-5 py-2.5 text-xs font-bold text-navy transition hover:brightness-105 disabled:opacity-60"
+      >
+        {refreshAdCosts.isPending ? (
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        ) : (
+          <RefreshCw className="h-3.5 w-3.5" />
+        )}
+        Ad-Kosten von heute aktualisieren
+      </button>
+      {lastSync && lastSync.getTime() > 0 && (
+        <span className="text-xs text-muted-foreground">
+          Letztes Update: {lastSync.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}{" "}
+          {lastSync.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })} Uhr
+        </span>
       )}
-      Ad-Kosten von heute aktualisieren
-    </button>
+    </div>
   );
 }
 

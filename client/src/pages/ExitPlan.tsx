@@ -211,7 +211,7 @@ export default function ExitPlan() {
         open={popupOpen}
         onClose={() => setPopupOpen(false)}
         headline="An wen dürfen wir den Exit-Plan senden?"
-        subtext="Die Inhalte kommen per WhatsApp – deswegen gib bitte deine WhatsApp Nummer ein (ohne 0)"
+        subtext="Die Inhalte kommen per WhatsApp deswegen gib bitte deine WhatsApp Nummer ein"
         source="exit-plan"
         redirectTo="/exit-plan-termin"
       />

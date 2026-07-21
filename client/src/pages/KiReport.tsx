@@ -210,7 +210,7 @@ export default function KiReport() {
         open={popupOpen}
         onClose={() => setPopupOpen(false)}
         headline="An wen dürfen wir den KI-Report senden?"
-        subtext="Die Inhalte kommen per WhatsApp – deswegen gib bitte deine WhatsApp Nummer ein (ohne 0)"
+        subtext="Die Inhalte kommen per WhatsApp deswegen gib bitte deine WhatsApp Nummer ein"
         source="ki-report"
         redirectTo="/ki-report-termin"
       />
