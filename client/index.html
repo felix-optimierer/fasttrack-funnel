@@ -41,20 +41,42 @@
     <meta name="twitter:image:alt" content="Physio Freiheit – Kostenlose Inhalte für Praxisinhaber" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <!-- PhysioFreiheit Visitor-Tracking -->
-    <script async src="https://vt.physiofreiheit.de/tracker.js?site-id=VT-3EDD3323-48250"></script>
+    <!-- Non-blocking font load: preload + swap -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" /></noscript>
   </head>
 
   <body>
-    <!-- PhysioFreiheit Cookie-Consent -->
-    <script async src="https://vt.physiofreiheit.de/cookie.js?site-id=VT-3EDD3323-48250"></script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script
-      defer
-      src="%VITE_ANALYTICS_ENDPOINT%/umami"
-      data-website-id="%VITE_ANALYTICS_WEBSITE_ID%"></script>
+    <!-- Deferred: Analytics & Tracking (loaded after main content) -->
+    <script>
+      // Delay non-critical scripts until after page is interactive
+      function loadDeferredScripts() {
+        // PhysioFreiheit Visitor-Tracking
+        var t = document.createElement('script');
+        t.src = 'https://vt.physiofreiheit.de/tracker.js?site-id=VT-3EDD3323-48250';
+        t.async = true;
+        document.body.appendChild(t);
+        // Cookie-Consent
+        var c = document.createElement('script');
+        c.src = 'https://vt.physiofreiheit.de/cookie.js?site-id=VT-3EDD3323-48250';
+        c.async = true;
+        document.body.appendChild(c);
+        // Umami Analytics
+        var u = document.createElement('script');
+        u.src = '%VITE_ANALYTICS_ENDPOINT%/umami';
+        u.defer = true;
+        u.dataset.websiteId = '%VITE_ANALYTICS_WEBSITE_ID%';
+        document.body.appendChild(u);
+      }
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadDeferredScripts, { timeout: 3000 });
+      } else {
+        setTimeout(loadDeferredScripts, 2000);
+      }
+    </script>
   </body>
 
 </html>

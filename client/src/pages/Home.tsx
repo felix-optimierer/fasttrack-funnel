@@ -8,10 +8,10 @@ import { Logo, GoldButton, DoubleSeals, Footer } from "@/components/funnel";
 import { ArrowRight, ExternalLink } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 
-const KI_REPORT_MOCKUP = "/manus-storage/ki-report-mockup-final_8c5ce4e0.webp";
-const EXIT_PLAN_MOCKUP = "/manus-storage/exit-plan-mockup_5abddb0b.webp";
+const KI_REPORT_MOCKUP = "/manus-storage/ki-report-mockup-final-optimized_10098550.webp";
+const EXIT_PLAN_MOCKUP = "/manus-storage/exit-plan-mockup-optimized_404b28d1.webp";
 
-const TRAUMWEBSEITE_MOCKUP = "/manus-storage/traumwebseite-mockup_38677c3c.webp";
+const TRAUMWEBSEITE_MOCKUP = "/manus-storage/traumwebseite-mockup-optimized_ea214e33.webp";
 
 const OFFERS = [
   {
@@ -82,6 +82,9 @@ export default function Home() {
                 <img
                   src={offer.mockup}
                   alt={offer.title}
+                  width={768}
+                  height={768}
+                  loading="lazy"
                   className="max-h-full w-auto object-contain drop-shadow-lg transition group-hover:scale-[1.03]"
                 />
               </div>

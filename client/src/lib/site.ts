@@ -4,7 +4,7 @@
 export const ASSETS = {
   heroBg:
     "https://d2xsxph8kpxj0f.cloudfront.net/310519663184004032/n4HsdnCPFsDhTY9NVz5q9i/hero-bg-F4uycHxjSbLve2mstTQRps.webp",
-  logo: "/manus-storage/physiofreiheit-logo-weiss_db1773b7.png",
+  logo: "/manus-storage/physiofreiheit-logo-weiss-optimized_5ecaade8.webp",
   case1:
     "https://d2xsxph8kpxj0f.cloudfront.net/310519663184004032/n4HsdnCPFsDhTY9NVz5q9i/case-1-NF8jJ5cUCwwqSeZvcEzuaw.webp",
   case2:
@@ -18,8 +18,8 @@ export const ASSETS = {
   sealB:
     "https://d2xsxph8kpxj0f.cloudfront.net/310519663184004032/n4HsdnCPFsDhTY9NVz5q9i/seal-b-DhsEryTV6E7xcirMM4E2fH.webp",
   // Echte TÜV Rheinland Zertifikate (ID 0217466534 & 0217466539)
-  tuv1: "/manus-storage/tuv-1-round_44a2fd80.png",
-  tuv2: "/manus-storage/tuv-2-round_d5e3f886.png",
+  tuv1: "/manus-storage/tuv-1-round-optimized_397e1cab.webp",
+  tuv2: "/manus-storage/tuv-2-round-optimized_4a0bf183.webp",
   // Echte Fallstudien-Bilder (von den Original-Webseiten)
   caseTorben: "/manus-storage/torben_moeller_ef873c93.jpeg",
   caseReichl: "/manus-storage/alexander_reichl_c936ba49.webp",

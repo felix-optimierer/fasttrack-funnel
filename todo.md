@@ -414,3 +414,32 @@
 - [x] Backend: funnelStats und channelSeries auf startDate/endDate umstellen (statt period)
 - [x] Frontend: DateRangePicker-Komponente mit Presets (Heute, Gestern, Letzte 7/14/30 Tage, Diese/Letzte Woche, Dieser/Letzter Monat, Dieses/Letztes Jahr, All Time) + Kalender
 - [x] Integration in Dashboard: alten Period-Picker ersetzen, alle Queries anpassen
+
+## PageSpeed Optimierung (M1-M6)
+
+### M1: Bilder optimieren
+- [x] Logo (physiofreiheit-logo-weiss.png) als WebP in max 300x94 px neu exportieren (2374 KiB → 12 KiB)
+- [x] TÜV-Siegel (tuv-1-round.png, tuv-2-round.png) als WebP in max 434x160 px (193 KiB → 18 KiB)
+- [x] KI-Report Mockup auf 768x768 verkleinern + WebP
+- [x] Exit-Plan Mockup-Bilder optimiert + WebP
+- [x] Alle img-Elemente mit expliziten width/height versehen
+
+### M2: Render-Blocking Fonts
+- [x] Google Fonts mit preload + font-display: swap laden (media="print" onload trick)
+- [x] Preconnect-Hints für fonts.googleapis.com und fonts.gstatic.com (waren schon da)
+
+### M3: CLS fixen
+- [x] Feste Dimensionen für Hero-Bereiche und Bilder (width/height auf allen img)
+- [x] Font-Loading Shift minimieren (stabile line-height in CSS)
+
+### M4: Code-Splitting
+- [x] React.lazy() für Admin-Dashboard, Testoptimierer, Termin-Seiten
+- [x] Recharts in separatem Chunk (manualChunks in vite.config.ts)
+
+### M5: Scripts verzögert laden
+- [x] Tracking-Scripts verzögert laden (requestIdleCallback / setTimeout 2s)
+- [x] Analytics-Script dynamisch injiziert statt blockierend
+
+### M6: Cache-Headers
+- [x] Vite Build mit Content-Hash-Filenames (automatisch long-cache)
+- [x] manualChunks für vendor/charts/ui (bessere Cache-Invalidierung)

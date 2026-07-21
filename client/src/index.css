@@ -75,10 +75,14 @@
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    /* CLS fix: ensure consistent line-height during font swap */
+    line-height: 1.5;
   }
   h1, h2, h3, h4, h5 {
     font-family: var(--font-display);
     letter-spacing: -0.02em;
+    /* CLS fix: stable line-height for headings */
+    line-height: 1.15;
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),

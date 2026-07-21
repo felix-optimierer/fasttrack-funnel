@@ -9,8 +9,8 @@ import { Download, Check } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import { LeadPopup } from "@/components/LeadPopup";
 
-const BG_BLURRED_URL = "/manus-storage/exit-plan-bg_73338363.webp";
-const MOCKUP_URL = "/manus-storage/exit-plan-mockup_5abddb0b.webp";
+const BG_BLURRED_URL = "/manus-storage/exit-plan-bg-optimized_47209fe8.webp";
+const MOCKUP_URL = "/manus-storage/exit-plan-mockup-optimized_404b28d1.webp";
 
 const BENEFITS = [
   "Der 5-Schritte-Plan: Von Kassensystem-Abhängigkeit zum Hybrid-Modell",
@@ -64,6 +64,8 @@ export default function ExitPlan() {
         {/* Collage image as full background */}
         <img
           src={BG_BLURRED_URL}
+          width={500}
+          height={500}
           alt=""
           aria-hidden="true"
           className="absolute inset-0 h-full w-full object-cover"
@@ -156,6 +158,8 @@ export default function ExitPlan() {
             >
               <img
                 src={MOCKUP_URL}
+                width={768}
+                height={768}
                 alt="Exit-Plan Vorschau"
                 className="w-full max-w-[340px] object-contain drop-shadow-[0_15px_40px_rgba(0,0,0,0.5)] transition-transform duration-200 hover:scale-[1.02]"
               />
@@ -190,6 +194,8 @@ export default function ExitPlan() {
           >
             <img
               src={MOCKUP_URL}
+                width={768}
+                height={768}
               alt="Exit-Plan Mockup"
               className="w-full max-w-lg object-contain drop-shadow-[0_20px_60px_rgba(0,0,0,0.5)] transition-transform duration-200 hover:scale-[1.02]"
             />

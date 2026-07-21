@@ -9,8 +9,8 @@ import { Download, Check } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import { LeadPopup } from "@/components/LeadPopup";
 
-const BG_BLURRED_URL = "/manus-storage/ki-report-bg-final_eaf43965.webp";
-const MOCKUP_SHARP_URL = "/manus-storage/ki-report-mockup-final_8c5ce4e0.webp";
+const BG_BLURRED_URL = "/manus-storage/ki-report-bg-final-optimized_189933a4.webp";
+const MOCKUP_SHARP_URL = "/manus-storage/ki-report-mockup-final-optimized_10098550.webp";
 
 const BENEFITS = [
   "7 getestete KI-Agenten Prompts speziell für Physiopraxen",
@@ -64,6 +64,8 @@ export default function KiReport() {
         {/* Collage image as full background */}
         <img
           src={BG_BLURRED_URL}
+          width={500}
+          height={500}
           alt=""
           aria-hidden="true"
           className="absolute inset-0 h-full w-full object-cover"
@@ -155,6 +157,8 @@ export default function KiReport() {
             >
               <img
                 src={MOCKUP_SHARP_URL}
+                width={768}
+                height={768}
                 alt="KI-Report Vorschau"
                 className="w-full max-w-[340px] object-contain drop-shadow-[0_15px_40px_rgba(0,0,0,0.5)] transition-transform duration-200 hover:scale-[1.02]"
               />
@@ -189,6 +193,8 @@ export default function KiReport() {
           >
             <img
               src={MOCKUP_SHARP_URL}
+                width={768}
+                height={768}
               alt="KI-Report Mockup"
               className="w-full max-w-lg object-contain drop-shadow-[0_20px_60px_rgba(0,0,0,0.5)] transition-transform duration-200 hover:scale-[1.02]"
             />

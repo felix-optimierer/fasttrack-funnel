@@ -7,6 +7,8 @@ export function Logo({ className = "" }: { className?: string }) {
     <img
       src={ASSETS.logo}
       alt={BRAND.name}
+      width={400}
+      height={125}
       className={`h-9 w-auto object-contain md:h-11 ${className}`}
     />
   );
@@ -185,6 +187,8 @@ export function DoubleSeals({
         <img
           src={ASSETS.tuv1}
           alt="TÜV Rheinland zertifiziert – ID 0217466534"
+          width={434}
+          height={160}
           className="h-14 w-auto rounded-sm shadow-lg md:h-20"
         />
       </a>
@@ -197,6 +201,8 @@ export function DoubleSeals({
         <img
           src={ASSETS.tuv2}
           alt="TÜV Rheinland zertifiziert – ID 0217466539"
+          width={434}
+          height={160}
           className="h-14 w-auto rounded-sm shadow-lg md:h-20"
         />
       </a>
