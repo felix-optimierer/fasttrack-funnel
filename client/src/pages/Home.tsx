@@ -9,11 +9,9 @@ import { ArrowRight, ExternalLink } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 
 const KI_REPORT_MOCKUP = "/manus-storage/ki-report-mockup-final-optimized_10098550.webp";
-const KI_REPORT_MOCKUP_MOBILE = "/manus-storage/ki-report-mockup-mobile-480_4054ccdf.webp";
 const EXIT_PLAN_MOCKUP = "/manus-storage/exit-plan-mockup-optimized_404b28d1.webp";
-const EXIT_PLAN_MOCKUP_MOBILE = "/manus-storage/exit-plan-mockup-mobile-480_df28f30c.webp";
+
 const TRAUMWEBSEITE_MOCKUP = "/manus-storage/traumwebseite-mockup-optimized_ea214e33.webp";
-const TRAUMWEBSEITE_MOCKUP_MOBILE = "/manus-storage/traumwebseite-mockup-mobile-480_b03394bf.webp";
 
 const OFFERS = [
   {
@@ -23,7 +21,6 @@ const OFFERS = [
     cta: "Jetzt Fallstudien ansehen",
     href: "/traumwebseite",
     mockup: TRAUMWEBSEITE_MOCKUP,
-    mockupMobile: TRAUMWEBSEITE_MOCKUP_MOBILE,
   },
   {
     title: "Physiopraxis KI-Report 2026",
@@ -32,7 +29,6 @@ const OFFERS = [
     cta: "KI-Report kostenlos sichern",
     href: "/ki-report",
     mockup: KI_REPORT_MOCKUP,
-    mockupMobile: KI_REPORT_MOCKUP_MOBILE,
   },
   {
     title: "Der 5-Schritte Exit-Plan",
@@ -41,7 +37,6 @@ const OFFERS = [
     cta: "Exit-Plan kostenlos sichern",
     href: "/exit-plan",
     mockup: EXIT_PLAN_MOCKUP,
-    mockupMobile: EXIT_PLAN_MOCKUP_MOBILE,
   },
 ];
 
@@ -86,8 +81,6 @@ export default function Home() {
               <div className="mb-2 flex h-52 items-center justify-center md:h-60">
                 <img
                   src={offer.mockup}
-                  srcSet={`${offer.mockupMobile} 480w, ${offer.mockup} 768w`}
-                  sizes="(max-width: 640px) 480px, 768px"
                   alt={offer.title}
                   width={768}
                   height={768}
