@@ -1220,11 +1220,14 @@ function MetaRefreshButton() {
   function handleRefresh() {
     refreshAdCosts.mutate(undefined, {
       onSuccess: (res) => {
-        toast.success(res.message);
-        // Refresh the ad spend list after a short delay
-        setTimeout(() => {
-          utils.admin.listAdSpend.invalidate();
-        }, 3000);
+        if (res.success) {
+          toast.success(res.message);
+        } else {
+          toast.error(res.message);
+        }
+        // Refresh the ad spend list and stats immediately
+        utils.admin.listAdSpend.invalidate();
+        utils.admin.funnelStats.invalidate();
       },
       onError: () => toast.error("Aktualisierung fehlgeschlagen."),
     });

@@ -13,7 +13,7 @@ import {
 import { toast } from "sonner";
 
 type DetectedElement = {
-  elementType: "main_headline" | "pre_headline" | "sub_headline" | "cta";
+  elementType: "main_headline" | "pre_headline" | "sub_headline" | "cta" | "bullet_point" | "body_copy";
   cssSelector: string;
   currentText: string;
   label: string;
@@ -25,13 +25,16 @@ const ELEMENT_ICONS: Record<string, typeof Type> = {
   pre_headline: Tag,
   sub_headline: MessageSquare,
   cta: MousePointerClick,
+  bullet_point: Tag,
+  body_copy: MessageSquare,
 };
-
 const ELEMENT_LABELS: Record<string, string> = {
   main_headline: "Haupt-Headline",
   pre_headline: "Pre-Headline",
   sub_headline: "Sub-Headline",
   cta: "CTA-Button",
+  bullet_point: "Bullet Point",
+  body_copy: "Body Copy",
 };
 
 export default function TestoptimiererNeuesProjekt() {

@@ -1,0 +1,1 @@
+ALTER TABLE `ab_elements` MODIFY COLUMN `elementType` enum('main_headline','pre_headline','sub_headline','cta','bullet_point','body_copy') NOT NULL;

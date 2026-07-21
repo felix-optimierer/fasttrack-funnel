@@ -225,7 +225,7 @@ export const abElements = mysqlTable(
   {
     id: int("id").autoincrement().primaryKey(),
     projectId: int("projectId").notNull(),
-    elementType: mysqlEnum("elementType", ["main_headline", "pre_headline", "sub_headline", "cta"]).notNull(),
+    elementType: mysqlEnum("elementType", ["main_headline", "pre_headline", "sub_headline", "cta", "bullet_point", "body_copy"]).notNull(),
     cssSelector: varchar("cssSelector", { length: 1000 }).notNull(),
     originalText: text("originalText").notNull(),
     label: varchar("label", { length: 255 }),

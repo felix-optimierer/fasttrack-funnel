@@ -464,11 +464,13 @@
 
 ## Testoptimierer – Sub-Headline und Bullets erkennen
 
-- [ ] Sub-Headline als testbares Element im Scanner erkennen
-- [ ] Bullet Points als testbare Elemente im Scanner erkennen
+- [x] Sub-Headline als testbares Element im Scanner erkennen (inkl. "Satz über der Box")
+- [x] Bullet Points als testbare Elemente im Scanner erkennen
+- [x] Body Copy als testbares Element im Scanner erkennen
+- [x] Neue Element-Typen: bullet_point, body_copy in Schema + Router + Frontend
 
 ## Setting-Termine aus Google Sheet importieren
 
-- [ ] Google Sheet auslesen (Setting-Termine)
-- [ ] Termine über E-Mail den Leads zuordnen und in appointments-Tabelle eintragen
-- [ ] Dashboard zeigt Termine korrekt an
+- [x] Google Sheet auslesen (Setting-Termine) – 59 Settings importiert
+- [x] Termine über E-Mail den Leads zuordnen und in appointments-Tabelle eintragen (2 Matches)
+- [ ] Dashboard zeigt Termine korrekt an (Gesamt / direkt gebucht / insgesamt terminiert)

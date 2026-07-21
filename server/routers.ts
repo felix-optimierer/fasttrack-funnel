@@ -497,12 +497,19 @@ export const appRouter = router({
       return listAdSpend();
     }),
 
-    // ─── Meta Ads Refresh (triggers AGENT cron manually) ────────────────
+    // ─── Meta Ads Refresh (calls Meta API directly) ────────────────
     refreshAdCosts: publicProcedure.mutation(async ({ ctx }) => {
       await assertAdmin(ctx.req);
-      // Trigger the sync by calling the scheduled endpoint directly with owner auth
-      // This is a manual trigger - the AGENT cron does the same automatically
-      return { triggered: true, message: "Ad-Kosten werden im Hintergrund aktualisiert. Bitte in 1-2 Minuten neu laden." } as const;
+      try {
+        const { refreshMetaAdCosts } = await import("./meta-ads-refresh");
+        const result = await refreshMetaAdCosts();
+        if (result.errors.length > 0) {
+          return { triggered: true, success: true, upserted: result.upserted, message: `${result.upserted} Tage aktualisiert. Fehler: ${result.errors.join("; ")}` } as const;
+        }
+        return { triggered: true, success: true, upserted: result.upserted, message: `Erfolgreich! ${result.upserted} Tage aktualisiert.` } as const;
+      } catch (err: any) {
+        return { triggered: true, success: false, upserted: 0, message: `Fehler: ${err.message}` } as const;
+      }
     }),
   }),
 });

@@ -120,7 +120,7 @@ export const testoptimiererRouter = router({
   createElement: publicProcedure
     .input(z.object({
       projectId: z.number(),
-      elementType: z.enum(["main_headline", "pre_headline", "sub_headline", "cta"]),
+      elementType: z.enum(["main_headline", "pre_headline", "sub_headline", "cta", "bullet_point", "body_copy"]),
       cssSelector: z.string().min(1).max(1000),
       originalText: z.string().min(1),
       label: z.string().max(255).optional(),
@@ -268,7 +268,7 @@ export const testoptimiererRouter = router({
       await assertAdmin(ctx.req);
 
       type DetectedElement = {
-        elementType: "main_headline" | "pre_headline" | "sub_headline" | "cta";
+        elementType: "main_headline" | "pre_headline" | "sub_headline" | "cta" | "bullet_point" | "body_copy";
         cssSelector: string;
         currentText: string;
         label: string;
@@ -444,6 +444,68 @@ export const testoptimiererRouter = router({
           }
         }
 
+        // Extract Bullet Points (spans with Check icon inside a flex container)
+        const bulletContainerMatch = source.match(/\{\/* Bullet-Trust \*\/\}[\s\S]*?<div[^>]*>([\s\S]*?)<\/div>/)
+          || source.match(/<div[^>]*flex[^>]*wrap[^>]*>([\s\S]*?(?:<Check[\s\S]*?<\/span>[\s\S]*?){2,})<\/div>/);
+        if (bulletContainerMatch) {
+          // Extract individual bullet text items
+          const bulletSpans = Array.from(bulletContainerMatch[1].matchAll(/<span[^>]*inline-flex[^>]*>[\s\S]*?<Check[^>]*\/>[\s\S]*?([^<]+)<\/span>/g));
+          let bulletIdx = 0;
+          for (const match of bulletSpans) {
+            const bulletText = match[1].trim();
+            if (bulletText.length > 2) {
+              bulletIdx++;
+              detected.push({
+                elementType: "bullet_point",
+                cssSelector: `.inline-flex:nth-child(${bulletIdx})`,
+                currentText: bulletText,
+                label: `Bullet Point ${bulletIdx}`,
+              });
+            }
+          }
+        }
+
+        // Extract Body Copy (p tags after h1 that are not italic sub-headlines)
+        const bodyCopyMatches = Array.from(source.matchAll(/<p[^>]*(?:leading-relaxed|text-muted-foreground)[^>]*>([\s\S]*?)<\/p>/g));
+        let bodyIdx = 0;
+        for (const match of bodyCopyMatches) {
+          // Skip if it's already detected as sub_headline (italic)
+          if (match[0].includes("italic") && match[0].includes("text-gold")) continue;
+          const bodyText = match[1]
+            .replace(/<[^>]+>/g, "")
+            .replace(/\{[^}]*\}/g, "")
+            .replace(/&amp;/g, "&")
+            .replace(/\s+/g, " ")
+            .trim();
+          if (bodyText.length > 20 && bodyText.length < 500) {
+            bodyIdx++;
+            detected.push({
+              elementType: "body_copy",
+              cssSelector: `p.leading-relaxed:nth-of-type(${bodyIdx})`,
+              currentText: bodyText,
+              label: `Body Copy ${bodyIdx}`,
+            });
+          }
+        }
+
+        // Extract "Satz über der Box" (sub-headline text like "Jetzt eintragen → 9 Fallstudien")
+        const satzMatch = source.match(/\{\/\* Satz .ber der Box[\s\S]*?<div[^>]*>([\s\S]*?)<\/div>/);
+        if (satzMatch) {
+          const satzText = satzMatch[1]
+            .replace(/<[^>]+>/g, "")
+            .replace(/\{[^}]*\}/g, "")
+            .replace(/\s+/g, " ")
+            .trim();
+          if (satzText.length > 5 && !detected.some(d => d.currentText === satzText)) {
+            detected.push({
+              elementType: "sub_headline",
+              cssSelector: "main > div:has(> .uppercase)",
+              currentText: satzText,
+              label: "Sub-Headline (über Formular)",
+            });
+          }
+        }
+
         // Extract page title from SEO component or file name
         const titleMatch = source.match(/title[=:]\s*["'`]([^"'`]+)["'`]/);
         const pageTitle = titleMatch ? titleMatch[1] : componentFile.replace(".tsx", "");
@@ -548,7 +610,7 @@ export const testoptimiererRouter = router({
   suggestVariant: publicProcedure
     .input(z.object({
       originalText: z.string().min(1),
-      elementType: z.enum(["main_headline", "pre_headline", "sub_headline", "cta"]),
+      elementType: z.enum(["main_headline", "pre_headline", "sub_headline", "cta", "bullet_point", "body_copy"]),
       context: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
