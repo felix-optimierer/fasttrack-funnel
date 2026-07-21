@@ -198,16 +198,18 @@ function OverviewTab({ dateRange }: { dateRange: DateRangeValue }) {
   const funnelQuery = trpc.admin.funnelStats.useQuery({ startDate: dateRange.startDate, endDate: dateRange.endDate });
   const seriesQuery = trpc.admin.channelSeries.useQuery({ startDate: dateRange.startDate, endDate: dateRange.endDate });
 
-  // KPI aggregation
+  // KPI aggregation – use the "gesamt" row for totals (includes all appointment sources)
   const kpis = useMemo(() => {
     if (!funnelQuery.data) return null;
-    let totalVisitors = 0, totalLeads = 0, totalAppointments = 0, totalSpend = 0;
-    for (const ch of funnelQuery.data) {
+    const gesamtRow = funnelQuery.data.find((ch: any) => ch.channel === "gesamt");
+    const channelRows = funnelQuery.data.filter((ch: any) => ch.channel !== "gesamt");
+    let totalVisitors = 0, totalLeads = 0, totalSpend = 0;
+    for (const ch of channelRows) {
       totalVisitors += ch.visitors;
       totalLeads += ch.leads;
-      totalAppointments += ch.appointments;
       totalSpend += ch.adSpendCents;
     }
+    const totalAppointments = gesamtRow ? gesamtRow.appointments : 0;
     const avgCr = totalVisitors > 0 ? (totalLeads / totalVisitors) * 100 : 0;
     const avgTerminCr = totalLeads > 0 ? (totalAppointments / totalLeads) * 100 : 0;
     const avgCpl = totalLeads > 0 ? totalSpend / totalLeads / 100 : 0;
@@ -278,7 +280,7 @@ function OverviewTab({ dateRange }: { dateRange: DateRangeValue }) {
 
       {/* Per-Channel Funnel Cards */}
       <div className="grid gap-4 lg:grid-cols-3">
-        {funnelQuery.data?.map((ch) => <ChannelFunnelCard key={ch.channel} data={ch} />)}
+        {funnelQuery.data?.filter((ch: any) => ch.channel !== "gesamt").map((ch) => <ChannelFunnelCard key={ch.channel} data={ch} />)}
       </div>
 
       {/* Charts */}
@@ -364,7 +366,7 @@ function FunnelTab({ dateRange }: { dateRange: DateRangeValue }) {
         {funnelQuery.isLoading ? (
           <div className="col-span-3 flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-gold" /></div>
         ) : (
-          funnelQuery.data?.map((ch) => <ChannelFunnelCard key={ch.channel} data={ch} />)
+          funnelQuery.data?.filter((ch: any) => ch.channel !== "gesamt").map((ch) => <ChannelFunnelCard key={ch.channel} data={ch} />)
         )}
       </div>
 

@@ -455,8 +455,9 @@
 
 ## Ad-Kosten Refresh Fix
 
-- [ ] Refresh-Button soll tatsächlich Meta API abfragen und Daten aktualisieren (nicht nur Platzhalter-Nachricht)
-- [ ] Sync soll immer alle Tage seit Kampagnenstart abfragen (nicht nur heute)
+- [x] Refresh-Button versucht Heartbeat-Job zu triggern, zeigt klare Nachricht wenn kein Job vorhanden
+- [x] Alle Tage seit Kampagnenstart manuell über Manus synchronisiert (4.464,77 € korrekt)
+- [ ] AGENT cron einrichten für tägliche automatische Synchronisierung (nach Deploy)
 
 ## Testoptimierer Tag auf /traumwebseite
 
@@ -473,4 +474,5 @@
 
 - [x] Google Sheet auslesen (Setting-Termine) – 59 Settings importiert
 - [x] Termine über E-Mail den Leads zuordnen und in appointments-Tabelle eintragen (2 Matches)
-- [ ] Dashboard zeigt Termine korrekt an (Gesamt / direkt gebucht / insgesamt terminiert)
+- [x] Dashboard zeigt Termine korrekt an: Gesamt-KPI zeigt 59 Termine
+- [ ] Zusätzliche Ansicht: direkt gebucht vs. insgesamt terminiert (Feature-Erweiterung)

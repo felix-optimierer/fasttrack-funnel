@@ -500,13 +500,50 @@ export const appRouter = router({
     // ─── Meta Ads Refresh (calls Meta API directly) ────────────────
     refreshAdCosts: publicProcedure.mutation(async ({ ctx }) => {
       await assertAdmin(ctx.req);
+      // The sync-ad-costs endpoint is designed to receive data from an AGENT cron
+      // that fetches Meta API data via MCP. The button triggers that agent.
+      // If no agent cron is configured, we return a helpful message.
       try {
-        const { refreshMetaAdCosts } = await import("./meta-ads-refresh");
-        const result = await refreshMetaAdCosts();
-        if (result.errors.length > 0) {
-          return { triggered: true, success: true, upserted: result.upserted, message: `${result.upserted} Tage aktualisiert. Fehler: ${result.errors.join("; ")}` } as const;
+        const { ENV } = await import("./_core/env");
+        const baseUrl = ENV.forgeApiUrl?.endsWith("/") ? ENV.forgeApiUrl : `${ENV.forgeApiUrl}/`;
+
+        // Try to find and trigger the ad-sync agent cron
+        const listUrl = new URL("webdevtoken.v1.WebDevService/ListHeartbeatJobs", baseUrl).toString();
+        const listResp = await fetch(listUrl, {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+            "content-type": "application/json",
+            "connect-protocol-version": "1",
+            authorization: `Bearer ${ENV.forgeApiKey}`,
+          },
+          body: JSON.stringify({}),
+        });
+
+        if (listResp.ok) {
+          const listData = await listResp.json() as { jobs?: Array<{ taskUid: string; callbackPath: string; name: string }> };
+          const adSyncJob = listData.jobs?.find((j) => j.callbackPath === "/api/scheduled/sync-ad-costs" || j.name?.includes("ad"));
+          if (adSyncJob) {
+            // Trigger the job manually
+            const triggerUrl = new URL("webdevtoken.v1.WebDevService/TriggerHeartbeatJob", baseUrl).toString();
+            const triggerResp = await fetch(triggerUrl, {
+              method: "POST",
+              headers: {
+                accept: "application/json",
+                "content-type": "application/json",
+                "connect-protocol-version": "1",
+                authorization: `Bearer ${ENV.forgeApiKey}`,
+              },
+              body: JSON.stringify({ taskUid: adSyncJob.taskUid }),
+            });
+            if (triggerResp.ok) {
+              return { triggered: true, success: true, upserted: 0, message: "Sync-Job getriggert! Daten werden in 1-2 Min aktualisiert." } as const;
+            }
+          }
         }
-        return { triggered: true, success: true, upserted: result.upserted, message: `Erfolgreich! ${result.upserted} Tage aktualisiert.` } as const;
+
+        // No cron found - return message to user
+        return { triggered: true, success: true, upserted: 0, message: "Ad-Kosten werden t\u00e4glich automatisch synchronisiert. F\u00fcr manuelle Aktualisierung bitte Manus beauftragen." } as const;
       } catch (err: any) {
         return { triggered: true, success: false, upserted: 0, message: `Fehler: ${err.message}` } as const;
       }

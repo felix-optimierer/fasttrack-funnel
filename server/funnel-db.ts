@@ -370,7 +370,11 @@ export async function getFunnelStatsByChannel(periodOrRange: Period | { startDat
     .where(apptConditions)
     .groupBy(appointments.source);
   const apptMap: Record<string, number> = {};
-  for (const r of apptRows) apptMap[r.source] = Number(r.count);
+  let totalAppts = 0;
+  for (const r of apptRows) {
+    apptMap[r.source] = Number(r.count);
+    totalAppts += Number(r.count);
+  }
 
   // Filter ad_spend by the `date` column (YYYY-MM-DD string) to match the selected period
   const startDateStr = start.toISOString().slice(0, 10);
@@ -386,7 +390,7 @@ export async function getFunnelStatsByChannel(periodOrRange: Period | { startDat
   const spendMap: Record<string, number> = {};
   for (const r of spendRows) spendMap[r.channel] = Number(r.total ?? 0);
 
-  return CHANNELS.map((ch) => {
+  const channelResults = CHANNELS.map((ch) => {
     const visitors = CHANNEL_PAGES[ch].reduce((sum, p) => sum + (viewMap[p] ?? 0), 0);
     const channelLeads = CHANNEL_SOURCES[ch].reduce((sum, s) => sum + (leadMap[s] ?? 0), 0);
     const channelAppts = apptMap[ch] ?? 0;
@@ -397,6 +401,27 @@ export async function getFunnelStatsByChannel(periodOrRange: Period | { startDat
 
     return { channel: ch, visitors, leads: channelLeads, appointments: channelAppts, lpCr, terminCr, adSpendCents: channelSpend, cpl };
   });
+
+  // Add a "gesamt" row that includes ALL appointments (also those from other/klicktipp sources)
+  const gesamtVisitors = channelResults.reduce((s, c) => s + c.visitors, 0);
+  const gesamtLeads = channelResults.reduce((s, c) => s + c.leads, 0);
+  const gesamtSpend = channelResults.reduce((s, c) => s + c.adSpendCents, 0);
+  const gesamtLpCr = gesamtVisitors > 0 ? gesamtLeads / gesamtVisitors : 0;
+  const gesamtTerminCr = gesamtLeads > 0 ? totalAppts / gesamtLeads : 0;
+  const gesamtCpl = gesamtLeads > 0 ? Math.round(gesamtSpend / gesamtLeads) : 0;
+
+  channelResults.push({
+    channel: "gesamt" as any,
+    visitors: gesamtVisitors,
+    leads: gesamtLeads,
+    appointments: totalAppts,
+    lpCr: gesamtLpCr,
+    terminCr: gesamtTerminCr,
+    adSpendCents: gesamtSpend,
+    cpl: gesamtCpl,
+  });
+
+  return channelResults;
 }
 
 // ─── PER-CHANNEL DAILY SERIES ─────────────────────────────────────────────────
