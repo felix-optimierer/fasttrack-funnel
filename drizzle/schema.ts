@@ -176,6 +176,12 @@ export const adSpend = mysqlTable(
     channel: varchar("channel", { length: 64 }).notNull(),
     date: varchar("date", { length: 10 }).notNull(),
     amountCents: int("amountCents").default(0).notNull(),
+    /** Meta: Impressions */
+    impressions: int("impressions").default(0).notNull(),
+    /** Meta: Klicks (alle) */
+    clicks: int("clicks").default(0).notNull(),
+    /** Meta: Reichweite (unique Personen) */
+    reach: int("reach").default(0).notNull(),
     /** Optional: Campaign-Name für Zuordnung */
     campaignName: varchar("campaignName", { length: 255 }),
     /** Optional: Notizen */

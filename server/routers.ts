@@ -35,6 +35,7 @@ import {
   updateLeadCrmStatus,
   updateLeadNotes,
   updateLeadWebhookStatus,
+  getFullFunnelStats,
   type Period,
 } from "./funnel-db";
 import {
@@ -421,6 +422,16 @@ export const appRouter = router({
           return getChannelSeries(input.days);
         }
         return getChannelSeries({ startDate: input.startDate, endDate: input.endDate });
+      }),
+
+    fullFunnelStats: publicProcedure
+      .input(z.union([z.object({ period: periodSchema }), z.object({ startDate: z.string(), endDate: z.string() })]))
+      .query(async ({ input, ctx }) => {
+        await assertAdmin(ctx.req);
+        if ("period" in input) {
+          return getFullFunnelStats(input.period as Period);
+        }
+        return getFullFunnelStats({ startDate: input.startDate, endDate: input.endDate });
       }),
 
     // ─── Webhooks ───────────────────────────────────────────────────────

@@ -75,7 +75,14 @@ export const testoptimiererRouter = router({
       if (!project) throw new TRPCError({ code: "NOT_FOUND" });
       const elements = await abDb.listElements(input.id);
       const tests = await abDb.listTests(input.id);
-      return { project, elements, tests };
+      // Calculate improvementPercent live from current visitor/conversion data
+      const enrichedTests = tests.map(t => {
+        const crA = t.visitorsA > 0 ? t.conversionsA / t.visitorsA : 0;
+        const crB = t.visitorsB > 0 ? t.conversionsB / t.visitorsB : 0;
+        const liveImprovement = crA > 0 ? ((crB - crA) / crA) * 100 : 0;
+        return { ...t, improvementPercent: liveImprovement.toFixed(2) };
+      });
+      return { project, elements, tests: enrichedTests };
     }),
 
   createProject: publicProcedure
@@ -216,14 +223,20 @@ export const testoptimiererRouter = router({
     .query(async ({ input, ctx }) => {
       await assertAdmin(ctx.req);
       const tests = await abDb.getProjectPerformanceData(input.projectId);
-      const testData = tests.map(t => ({
-        status: t.status,
-        visitorsA: t.visitorsA,
-        visitorsB: t.visitorsB,
-        conversionsA: t.conversionsA,
-        conversionsB: t.conversionsB,
-        improvementPercent: t.improvementPercent ? parseFloat(t.improvementPercent) : null,
-      }));
+      const testData = tests.map(t => {
+        // Calculate improvementPercent live from current data instead of stale stored value
+        const crA = t.visitorsA > 0 ? t.conversionsA / t.visitorsA : 0;
+        const crB = t.visitorsB > 0 ? t.conversionsB / t.visitorsB : 0;
+        const liveImprovement = crA > 0 ? ((crB - crA) / crA) * 100 : null;
+        return {
+          status: t.status,
+          visitorsA: t.visitorsA,
+          visitorsB: t.visitorsB,
+          conversionsA: t.conversionsA,
+          conversionsB: t.conversionsB,
+          improvementPercent: liveImprovement,
+        };
+      });
       return calculateOverallPerformance(testData);
     }),
 
@@ -709,14 +722,20 @@ Generiere 3 alternative Varianten.`;
 
     const scorecard = await Promise.all(projects.map(async (project) => {
       const tests = await abDb.getProjectPerformanceData(project.id);
-      const testData = tests.map(t => ({
-        status: t.status,
-        visitorsA: t.visitorsA,
-        visitorsB: t.visitorsB,
-        conversionsA: t.conversionsA,
-        conversionsB: t.conversionsB,
-        improvementPercent: t.improvementPercent ? parseFloat(t.improvementPercent) : null,
-      }));
+      // Calculate improvementPercent live from current data instead of stale stored value
+      const testData = tests.map(t => {
+        const crA = t.visitorsA > 0 ? t.conversionsA / t.visitorsA : 0;
+        const crB = t.visitorsB > 0 ? t.conversionsB / t.visitorsB : 0;
+        const liveImprovement = crA > 0 ? ((crB - crA) / crA) * 100 : null;
+        return {
+          status: t.status,
+          visitorsA: t.visitorsA,
+          visitorsB: t.visitorsB,
+          conversionsA: t.conversionsA,
+          conversionsB: t.conversionsB,
+          improvementPercent: liveImprovement,
+        };
+      });
       const performance = calculateOverallPerformance(testData);
 
       // Calculate LP CR: baseline (first test) vs current (latest completed test)
@@ -734,20 +753,25 @@ Generiere 3 alternative Varianten.`;
         currentCR = Math.max(latestCR_A, latestCR_B);
       }
 
-      // Include test details for drill-down
-      const testDetails = tests.map(t => ({
-        id: t.id,
-        controlText: t.controlText ?? "",
-        variantText: t.variantText ?? "",
-        status: t.status,
-        visitorsA: t.visitorsA,
-        visitorsB: t.visitorsB,
-        conversionsA: t.conversionsA,
-        conversionsB: t.conversionsB,
-        improvementPercent: t.improvementPercent ? parseFloat(t.improvementPercent) : null,
-        startedAt: t.startedAt,
-        endedAt: t.endedAt,
-      }));
+      // Include test details for drill-down with live-calculated improvement
+      const testDetails = tests.map(t => {
+        const crA = t.visitorsA > 0 ? t.conversionsA / t.visitorsA : 0;
+        const crB = t.visitorsB > 0 ? t.conversionsB / t.visitorsB : 0;
+        const liveImprovement = crA > 0 ? ((crB - crA) / crA) * 100 : null;
+        return {
+          id: t.id,
+          controlText: t.controlText ?? "",
+          variantText: t.variantText ?? "",
+          status: t.status,
+          visitorsA: t.visitorsA,
+          visitorsB: t.visitorsB,
+          conversionsA: t.conversionsA,
+          conversionsB: t.conversionsB,
+          improvementPercent: liveImprovement,
+          startedAt: t.startedAt,
+          endedAt: t.endedAt,
+        };
+      });
 
       return {
         project,

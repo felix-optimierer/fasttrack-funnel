@@ -361,9 +361,10 @@ export async function getFunnelStatsByChannel(periodOrRange: Period | { startDat
   const leadMap: Record<string, number> = {};
   for (const r of leadRows) leadMap[r.source] = Number(r.count);
 
+  // Only count appointments that are matched to funnel leads (leadId IS NOT NULL)
   const apptConditions = endDate
-    ? and(gte(appointments.createdAt, start), lte(appointments.createdAt, endDate))
-    : gte(appointments.createdAt, start);
+    ? and(gte(appointments.createdAt, start), lte(appointments.createdAt, endDate), sql`${appointments.leadId} IS NOT NULL`)
+    : and(gte(appointments.createdAt, start), sql`${appointments.leadId} IS NOT NULL`);
   const apptRows = await db
     .select({ source: appointments.source, count: sql<number>`count(*)` })
     .from(appointments)
@@ -468,7 +469,7 @@ export async function getChannelSeries(daysOrRange: number | { startDate: string
   const leadRows = (leadResult as unknown as any[][])[0] ?? [];
 
   const apptResult = await db.execute(
-    sql`SELECT DATE(createdAt) as day, source, count(*) as count FROM appointments WHERE createdAt >= ${startStr} AND createdAt <= ${endStr} GROUP BY DATE(createdAt), source`
+    sql`SELECT DATE(createdAt) as day, source, count(*) as count FROM appointments WHERE createdAt >= ${startStr} AND createdAt <= ${endStr} AND leadId IS NOT NULL GROUP BY DATE(createdAt), source`
   );
   const apptRows = (apptResult as unknown as any[][])[0] ?? [];
 
@@ -633,4 +634,166 @@ export async function fireWebhook(payload: Record<string, unknown>): Promise<"se
     console.error("[Webhook] Versand fehlgeschlagen:", e);
     return "failed";
   }
+}
+
+// ─── FULL-FUNNEL STATS (Impressions → Termine) ───────────────────────────────
+
+export interface FullFunnelRow {
+  channel: string;
+  impressions: number;
+  clicks: number;
+  ctr: number;
+  reach: number;
+  lpViews: number;
+  landingRate: number;
+  leads: number;
+  leadRate: number;
+  appointments: number;
+  terminRate: number;
+  adSpendCents: number;
+  cpl: number;
+}
+
+export async function getFullFunnelStats(periodOrRange: Period | { startDate: string; endDate: string }): Promise<FullFunnelRow[]> {
+  const db = await getDb();
+  if (!db) return [];
+
+  let start: Date;
+  let endDate: Date | null = null;
+  if (typeof periodOrRange === "string") {
+    start = periodStart(periodOrRange);
+  } else {
+    const range = dateRangeToStartEnd(periodOrRange.startDate, periodOrRange.endDate);
+    start = range.start;
+    endDate = range.end;
+  }
+
+  // 1. Ad Spend + Impressions + Clicks + Reach from ad_spend
+  const startDateStr = start.toISOString().slice(0, 10);
+  const endDateStr = endDate ? endDate.toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
+  const spendConditions = endDate
+    ? and(gte(adSpend.date, startDateStr), lte(adSpend.date, endDateStr))
+    : gte(adSpend.date, startDateStr);
+  const spendRows = await db
+    .select({
+      channel: adSpend.channel,
+      totalSpend: sql<number>`SUM(${adSpend.amountCents})`,
+      totalImpressions: sql<number>`SUM(${adSpend.impressions})`,
+      totalClicks: sql<number>`SUM(${adSpend.clicks})`,
+      totalReach: sql<number>`SUM(${adSpend.reach})`,
+    })
+    .from(adSpend)
+    .where(spendConditions)
+    .groupBy(adSpend.channel);
+  const spendMap: Record<string, { spend: number; impressions: number; clicks: number; reach: number }> = {};
+  for (const r of spendRows) {
+    spendMap[r.channel] = {
+      spend: Number(r.totalSpend ?? 0),
+      impressions: Number(r.totalImpressions ?? 0),
+      clicks: Number(r.totalClicks ?? 0),
+      reach: Number(r.totalReach ?? 0),
+    };
+  }
+
+  // 2. LP Views from page_views
+  const viewConditions = endDate
+    ? and(gte(pageViews.createdAt, start), lte(pageViews.createdAt, endDate))
+    : gte(pageViews.createdAt, start);
+  const viewRows = await db
+    .select({ page: pageViews.page, count: sql<number>`count(*)` })
+    .from(pageViews)
+    .where(viewConditions)
+    .groupBy(pageViews.page);
+  const viewMap: Record<string, number> = {};
+  for (const r of viewRows) viewMap[r.page] = Number(r.count);
+
+  // 3. Leads
+  const leadConditions = endDate
+    ? and(gte(leads.createdAt, start), lte(leads.createdAt, endDate), eq(leads.isDuplicate, false))
+    : and(gte(leads.createdAt, start), eq(leads.isDuplicate, false));
+  const leadRows = await db
+    .select({ source: leads.source, count: sql<number>`count(*)` })
+    .from(leads)
+    .where(leadConditions)
+    .groupBy(leads.source);
+  const leadMap: Record<string, number> = {};
+  for (const r of leadRows) leadMap[r.source] = Number(r.count);
+
+  // 4. Appointments (only matched to funnel leads)
+  const apptConditions = endDate
+    ? and(gte(appointments.createdAt, start), lte(appointments.createdAt, endDate), sql`${appointments.leadId} IS NOT NULL`)
+    : and(gte(appointments.createdAt, start), sql`${appointments.leadId} IS NOT NULL`);
+  const apptRows = await db
+    .select({ source: appointments.source, count: sql<number>`count(*)` })
+    .from(appointments)
+    .where(apptConditions)
+    .groupBy(appointments.source);
+  const apptMap: Record<string, number> = {};
+  let totalAppts = 0;
+  for (const r of apptRows) {
+    apptMap[r.source] = Number(r.count);
+    totalAppts += Number(r.count);
+  }
+
+  // Build per-channel rows
+  const rows: FullFunnelRow[] = CHANNELS.map((ch) => {
+    const adData = spendMap[ch] ?? { spend: 0, impressions: 0, clicks: 0, reach: 0 };
+    const lpViews = CHANNEL_PAGES[ch].reduce((sum, p) => sum + (viewMap[p] ?? 0), 0);
+    const channelLeads = CHANNEL_SOURCES[ch].reduce((sum, s) => sum + (leadMap[s] ?? 0), 0);
+    const channelAppts = apptMap[ch] ?? 0;
+
+    const ctr = adData.impressions > 0 ? (adData.clicks / adData.impressions) * 100 : 0;
+    const landingRate = adData.clicks > 0 ? (lpViews / adData.clicks) * 100 : 0;
+    const leadRate = lpViews > 0 ? (channelLeads / lpViews) * 100 : 0;
+    const terminRate = channelLeads > 0 ? (channelAppts / channelLeads) * 100 : 0;
+    const cpl = channelLeads > 0 ? Math.round(adData.spend / channelLeads) : 0;
+
+    return {
+      channel: ch,
+      impressions: adData.impressions,
+      clicks: adData.clicks,
+      ctr,
+      reach: adData.reach,
+      lpViews,
+      landingRate,
+      leads: channelLeads,
+      leadRate,
+      appointments: channelAppts,
+      terminRate,
+      adSpendCents: adData.spend,
+      cpl,
+    };
+  });
+
+  // Add Gesamt row
+  const totals = rows.reduce(
+    (acc, r) => ({
+      impressions: acc.impressions + r.impressions,
+      clicks: acc.clicks + r.clicks,
+      reach: acc.reach + r.reach,
+      lpViews: acc.lpViews + r.lpViews,
+      leads: acc.leads + r.leads,
+      appointments: acc.appointments + r.appointments,
+      adSpendCents: acc.adSpendCents + r.adSpendCents,
+    }),
+    { impressions: 0, clicks: 0, reach: 0, lpViews: 0, leads: 0, appointments: 0, adSpendCents: 0 }
+  );
+
+  rows.push({
+    channel: "gesamt",
+    impressions: totals.impressions,
+    clicks: totals.clicks,
+    ctr: totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0,
+    reach: totals.reach,
+    lpViews: totals.lpViews,
+    landingRate: totals.clicks > 0 ? (totals.lpViews / totals.clicks) * 100 : 0,
+    leads: totals.leads,
+    leadRate: totals.lpViews > 0 ? (totals.leads / totals.lpViews) * 100 : 0,
+    appointments: totalAppts,
+    terminRate: totals.leads > 0 ? (totalAppts / totals.leads) * 100 : 0,
+    adSpendCents: totals.adSpendCents,
+    cpl: totals.leads > 0 ? Math.round(totals.adSpendCents / totals.leads) : 0,
+  });
+
+  return rows;
 }

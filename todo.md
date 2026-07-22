@@ -476,3 +476,28 @@
 - [x] Termine über E-Mail den Leads zuordnen und in appointments-Tabelle eintragen (2 Matches)
 - [x] Dashboard zeigt Termine korrekt an: Gesamt-KPI zeigt 59 Termine
 - [ ] Zusätzliche Ansicht: direkt gebucht vs. insgesamt terminiert (Feature-Erweiterung)
+
+## Dashboard Erweiterung – Full Funnel + CPL
+
+### DB & Backend: Meta-Metriken synchronisieren
+- [x] ad_spend Tabelle erweitern um impressions, clicks, reach (INT Felder)
+- [x] Meta API Daten (Impressions, Clicks, Reach) für alle Tage synchronisieren
+- [ ] Sync-Endpoint erweitern für neue Felder
+
+### Übersicht: CPL anzeigen
+- [x] CPL-KPI-Karte in der Übersicht (neben Leads + Ad-Spend) – war bereits vorhanden
+
+### Full-Funnel Backend
+- [x] Neue Query: fullFunnelStats pro Kanal + Gesamt
+- [x] Berechnung: Impressions → CTR → Klicks → Landing-Rate → LP-Aufrufe → Lead-Rate → Leads → Termin-Rate → Termine
+
+### Full-Funnel Frontend (Reiter "Funnel")
+- [x] Funnel-Tabelle: Jede Zeile = ein Kanal (KI-Report, Exit-Plan, Traumwebseite, Gesamt)
+- [x] Spalten: Impressions, CTR, Klicks, Landing-Rate, LP-Aufrufe, Lead-Rate, Leads, Termin-Rate, Termine, CPL
+- [x] Zeilen untereinander, gut lesbar
+
+## Testoptimierer – Steigerung-Berechnung inkonsistent
+
+- [x] Wochen-Performance zeigt +16,3% aber Test-Historie zeigt +24,59% – beide müssen gleich sein
+- [x] Ursache: gespeicherter improvementPercent in ab_tests war veraltet (vom letzten Heartbeat-Lauf), während Wochen-Performance live aus ab_visitors berechnet
+- [x] Fix: Alle Endpunkte (getProject, getProjectPerformance, getScorecard) berechnen improvementPercent jetzt LIVE aus aktuellen Besucher-/Conversion-Daten statt den gespeicherten Wert zu nutzen

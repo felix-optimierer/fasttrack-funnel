@@ -339,6 +339,7 @@ function KpiTile({ icon, label, value, accent }: { icon: React.ReactNode; label:
    ═══════════════════════════════════════════════════════════════════════════════ */
 function FunnelTab({ dateRange }: { dateRange: DateRangeValue }) {
   const funnelQuery = trpc.admin.funnelStats.useQuery({ startDate: dateRange.startDate, endDate: dateRange.endDate });
+  const fullFunnelQuery = trpc.admin.fullFunnelStats.useQuery({ startDate: dateRange.startDate, endDate: dateRange.endDate });
   const utmPivotQuery = trpc.admin.utmPivot.useQuery({ startDate: dateRange.startDate, endDate: dateRange.endDate });
   const seriesQuery = trpc.admin.channelSeries.useQuery({ startDate: dateRange.startDate, endDate: dateRange.endDate });
 
@@ -361,6 +362,64 @@ function FunnelTab({ dateRange }: { dateRange: DateRangeValue }) {
 
   return (
     <div className="space-y-6">
+      {/* Full-Funnel Table */}
+      <section className="rounded-2xl border border-border bg-card p-5">
+        <div className="mb-4 flex items-center gap-2">
+          <BarChart3 className="h-4 w-4 text-gold" />
+          <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">Full-Funnel Übersicht</h3>
+        </div>
+        {fullFunnelQuery.isLoading ? (
+          <div className="flex items-center justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-gold" /></div>
+        ) : fullFunnelQuery.data && fullFunnelQuery.data.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="border-b border-border text-[10px] uppercase tracking-wide text-muted-foreground">
+                  <th className="px-3 py-2.5 font-semibold">Kanal</th>
+                  <th className="px-3 py-2.5 font-semibold text-right">Impressions</th>
+                  <th className="px-3 py-2.5 font-semibold text-right">CTR</th>
+                  <th className="px-3 py-2.5 font-semibold text-right">Klicks</th>
+                  <th className="px-3 py-2.5 font-semibold text-right">Landing-Rate</th>
+                  <th className="px-3 py-2.5 font-semibold text-right">LP-Aufrufe</th>
+                  <th className="px-3 py-2.5 font-semibold text-right">Lead-Rate</th>
+                  <th className="px-3 py-2.5 font-semibold text-right">Leads</th>
+                  <th className="px-3 py-2.5 font-semibold text-right">Termin-Rate</th>
+                  <th className="px-3 py-2.5 font-semibold text-right">Termine</th>
+                  <th className="px-3 py-2.5 font-semibold text-right">CPL</th>
+                </tr>
+              </thead>
+              <tbody>
+                {fullFunnelQuery.data.map((row: any) => {
+                  const isGesamt = row.channel === "gesamt";
+                  return (
+                    <tr key={row.channel} className={`border-b border-border/40 transition hover:bg-secondary/30 ${isGesamt ? "font-bold bg-secondary/20" : ""}`}>
+                      <td className="px-3 py-2.5">
+                        <div className="flex items-center gap-2">
+                          {!isGesamt && <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: CHANNEL_COLORS[row.channel] ?? "#888" }} />}
+                          <span className={isGesamt ? "text-gold" : ""}>{isGesamt ? "Gesamt" : (CHANNEL_LABEL[row.channel] ?? row.channel)}</span>
+                        </div>
+                      </td>
+                      <td className="px-3 py-2.5 text-right tabular-nums">{row.impressions > 0 ? row.impressions.toLocaleString("de-DE") : "–"}</td>
+                      <td className="px-3 py-2.5 text-right tabular-nums">{row.ctr > 0 ? `${row.ctr.toFixed(2)}%` : "–"}</td>
+                      <td className="px-3 py-2.5 text-right tabular-nums">{row.clicks > 0 ? row.clicks.toLocaleString("de-DE") : "–"}</td>
+                      <td className="px-3 py-2.5 text-right tabular-nums">{row.landingRate > 0 ? `${row.landingRate.toFixed(1)}%` : "–"}</td>
+                      <td className="px-3 py-2.5 text-right tabular-nums">{row.lpViews > 0 ? row.lpViews.toLocaleString("de-DE") : "–"}</td>
+                      <td className="px-3 py-2.5 text-right tabular-nums">{row.leadRate > 0 ? `${row.leadRate.toFixed(1)}%` : "–"}</td>
+                      <td className="px-3 py-2.5 text-right tabular-nums font-semibold text-gold">{row.leads > 0 ? row.leads : "–"}</td>
+                      <td className="px-3 py-2.5 text-right tabular-nums">{row.terminRate > 0 ? `${row.terminRate.toFixed(1)}%` : "–"}</td>
+                      <td className="px-3 py-2.5 text-right tabular-nums">{row.appointments > 0 ? row.appointments : "–"}</td>
+                      <td className="px-3 py-2.5 text-right tabular-nums">{row.cpl > 0 ? `${(row.cpl / 100).toFixed(2)} €` : "–"}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">Keine Daten für den gewählten Zeitraum.</p>
+        )}
+      </section>
+
       {/* Per-Channel Funnel Cards */}
       <div className="grid gap-4 lg:grid-cols-3">
         {funnelQuery.isLoading ? (
