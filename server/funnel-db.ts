@@ -325,9 +325,14 @@ export interface ChannelFunnelStats {
   cpl: number;
 }
 
-export async function getFunnelStatsByChannel(periodOrRange: Period | { startDate: string; endDate: string }): Promise<ChannelFunnelStats[]> {
+export interface FunnelStatsResult {
+  channels: ChannelFunnelStats[];
+  totals: Omit<ChannelFunnelStats, 'channel'>;
+}
+
+export async function getFunnelStatsByChannel(periodOrRange: Period | { startDate: string; endDate: string }): Promise<FunnelStatsResult> {
   const db = await getDb();
-  if (!db) return CHANNELS.map((ch) => ({ channel: ch, visitors: 0, leads: 0, appointments: 0, lpCr: 0, terminCr: 0, adSpendCents: 0, cpl: 0 }));
+  if (!db) return { channels: CHANNELS.map((ch) => ({ channel: ch, visitors: 0, leads: 0, appointments: 0, lpCr: 0, terminCr: 0, adSpendCents: 0, cpl: 0 })), totals: { visitors: 0, leads: 0, appointments: 0, lpCr: 0, terminCr: 0, adSpendCents: 0, cpl: 0 } };
 
   let start: Date;
   let endDate: Date | null = null;
@@ -403,7 +408,7 @@ export async function getFunnelStatsByChannel(periodOrRange: Period | { startDat
     return { channel: ch, visitors, leads: channelLeads, appointments: channelAppts, lpCr, terminCr, adSpendCents: channelSpend, cpl };
   });
 
-  // Add a "gesamt" row that includes ALL appointments (also those from other/klicktipp sources)
+  // Compute totals for KPI usage (returned as separate field, not in the array)
   const gesamtVisitors = channelResults.reduce((s, c) => s + c.visitors, 0);
   const gesamtLeads = channelResults.reduce((s, c) => s + c.leads, 0);
   const gesamtSpend = channelResults.reduce((s, c) => s + c.adSpendCents, 0);
@@ -411,18 +416,18 @@ export async function getFunnelStatsByChannel(periodOrRange: Period | { startDat
   const gesamtTerminCr = gesamtLeads > 0 ? totalAppts / gesamtLeads : 0;
   const gesamtCpl = gesamtLeads > 0 ? Math.round(gesamtSpend / gesamtLeads) : 0;
 
-  channelResults.push({
-    channel: "gesamt" as any,
-    visitors: gesamtVisitors,
-    leads: gesamtLeads,
-    appointments: totalAppts,
-    lpCr: gesamtLpCr,
-    terminCr: gesamtTerminCr,
-    adSpendCents: gesamtSpend,
-    cpl: gesamtCpl,
-  });
-
-  return channelResults;
+  return {
+    channels: channelResults,
+    totals: {
+      visitors: gesamtVisitors,
+      leads: gesamtLeads,
+      appointments: totalAppts,
+      lpCr: gesamtLpCr,
+      terminCr: gesamtTerminCr,
+      adSpendCents: gesamtSpend,
+      cpl: gesamtCpl,
+    },
+  };
 }
 
 // ─── PER-CHANNEL DAILY SERIES ─────────────────────────────────────────────────
@@ -763,36 +768,6 @@ export async function getFullFunnelStats(periodOrRange: Period | { startDate: st
       adSpendCents: adData.spend,
       cpl,
     };
-  });
-
-  // Add Gesamt row
-  const totals = rows.reduce(
-    (acc, r) => ({
-      impressions: acc.impressions + r.impressions,
-      clicks: acc.clicks + r.clicks,
-      reach: acc.reach + r.reach,
-      lpViews: acc.lpViews + r.lpViews,
-      leads: acc.leads + r.leads,
-      appointments: acc.appointments + r.appointments,
-      adSpendCents: acc.adSpendCents + r.adSpendCents,
-    }),
-    { impressions: 0, clicks: 0, reach: 0, lpViews: 0, leads: 0, appointments: 0, adSpendCents: 0 }
-  );
-
-  rows.push({
-    channel: "gesamt",
-    impressions: totals.impressions,
-    clicks: totals.clicks,
-    ctr: totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0,
-    reach: totals.reach,
-    lpViews: totals.lpViews,
-    landingRate: totals.clicks > 0 ? (totals.lpViews / totals.clicks) * 100 : 0,
-    leads: totals.leads,
-    leadRate: totals.lpViews > 0 ? (totals.leads / totals.lpViews) * 100 : 0,
-    appointments: totalAppts,
-    terminRate: totals.leads > 0 ? (totalAppts / totals.leads) * 100 : 0,
-    adSpendCents: totals.adSpendCents,
-    cpl: totals.leads > 0 ? Math.round(totals.adSpendCents / totals.leads) : 0,
   });
 
   return rows;

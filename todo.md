@@ -501,3 +501,9 @@
 - [x] Wochen-Performance zeigt +16,3% aber Test-Historie zeigt +24,59% – beide müssen gleich sein
 - [x] Ursache: gespeicherter improvementPercent in ab_tests war veraltet (vom letzten Heartbeat-Lauf), während Wochen-Performance live aus ab_visitors berechnet
 - [x] Fix: Alle Endpunkte (getProject, getProjectPerformance, getScorecard) berechnen improvementPercent jetzt LIVE aus aktuellen Besucher-/Conversion-Daten statt den gespeicherten Wert zu nutzen
+
+## Dashboard Bugs – Gesamt-Karte + Leads/Ad-Spend Diskrepanz
+
+- [x] Gesamt-Karte aus der Funnel-Ansicht UND Full-Funnel-Tabelle entfernt
+- [x] Ad-Spend 10.032 € war doppelt gezählt (Kanal-Summe + Gesamt-Zeile) – Backend gibt jetzt channels[] + totals{} getrennt zurück
+- [x] 630 Leads war doppelt gezählt – gleiche Ursache, Frontend nutzt jetzt nur noch totals vom Backend

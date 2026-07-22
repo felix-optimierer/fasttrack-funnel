@@ -198,22 +198,14 @@ function OverviewTab({ dateRange }: { dateRange: DateRangeValue }) {
   const funnelQuery = trpc.admin.funnelStats.useQuery({ startDate: dateRange.startDate, endDate: dateRange.endDate });
   const seriesQuery = trpc.admin.channelSeries.useQuery({ startDate: dateRange.startDate, endDate: dateRange.endDate });
 
-  // KPI aggregation – use the "gesamt" row for totals (includes all appointment sources)
+  // KPI aggregation – use totals from backend (no more double-counting risk)
   const kpis = useMemo(() => {
     if (!funnelQuery.data) return null;
-    const gesamtRow = funnelQuery.data.find((ch: any) => ch.channel === "gesamt");
-    const channelRows = funnelQuery.data.filter((ch: any) => ch.channel !== "gesamt");
-    let totalVisitors = 0, totalLeads = 0, totalSpend = 0;
-    for (const ch of channelRows) {
-      totalVisitors += ch.visitors;
-      totalLeads += ch.leads;
-      totalSpend += ch.adSpendCents;
-    }
-    const totalAppointments = gesamtRow ? gesamtRow.appointments : 0;
-    const avgCr = totalVisitors > 0 ? (totalLeads / totalVisitors) * 100 : 0;
-    const avgTerminCr = totalLeads > 0 ? (totalAppointments / totalLeads) * 100 : 0;
-    const avgCpl = totalLeads > 0 ? totalSpend / totalLeads / 100 : 0;
-    return { totalVisitors, totalLeads, totalAppointments, avgCr, avgTerminCr, avgCpl, totalSpend };
+    const { totals } = funnelQuery.data;
+    const avgCr = totals.visitors > 0 ? (totals.leads / totals.visitors) * 100 : 0;
+    const avgTerminCr = totals.leads > 0 ? (totals.appointments / totals.leads) * 100 : 0;
+    const avgCpl = totals.leads > 0 ? totals.adSpendCents / totals.leads / 100 : 0;
+    return { totalVisitors: totals.visitors, totalLeads: totals.leads, totalAppointments: totals.appointments, avgCr, avgTerminCr, avgCpl, totalSpend: totals.adSpendCents };
   }, [funnelQuery.data]);
 
   // Chart data
@@ -280,7 +272,7 @@ function OverviewTab({ dateRange }: { dateRange: DateRangeValue }) {
 
       {/* Per-Channel Funnel Cards */}
       <div className="grid gap-4 lg:grid-cols-3">
-        {funnelQuery.data?.filter((ch: any) => ch.channel !== "gesamt").map((ch) => <ChannelFunnelCard key={ch.channel} data={ch} />)}
+        {funnelQuery.data?.channels.map((ch) => <ChannelFunnelCard key={ch.channel} data={ch} />)}
       </div>
 
       {/* Charts */}
@@ -389,14 +381,12 @@ function FunnelTab({ dateRange }: { dateRange: DateRangeValue }) {
                 </tr>
               </thead>
               <tbody>
-                {fullFunnelQuery.data.map((row: any) => {
-                  const isGesamt = row.channel === "gesamt";
-                  return (
-                    <tr key={row.channel} className={`border-b border-border/40 transition hover:bg-secondary/30 ${isGesamt ? "font-bold bg-secondary/20" : ""}`}>
+                {fullFunnelQuery.data.map((row: any) => (
+                    <tr key={row.channel} className="border-b border-border/40 transition hover:bg-secondary/30">
                       <td className="px-3 py-2.5">
                         <div className="flex items-center gap-2">
-                          {!isGesamt && <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: CHANNEL_COLORS[row.channel] ?? "#888" }} />}
-                          <span className={isGesamt ? "text-gold" : ""}>{isGesamt ? "Gesamt" : (CHANNEL_LABEL[row.channel] ?? row.channel)}</span>
+                          <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: CHANNEL_COLORS[row.channel] ?? "#888" }} />
+                          <span>{CHANNEL_LABEL[row.channel] ?? row.channel}</span>
                         </div>
                       </td>
                       <td className="px-3 py-2.5 text-right tabular-nums">{row.impressions > 0 ? row.impressions.toLocaleString("de-DE") : "–"}</td>
@@ -410,8 +400,7 @@ function FunnelTab({ dateRange }: { dateRange: DateRangeValue }) {
                       <td className="px-3 py-2.5 text-right tabular-nums">{row.appointments > 0 ? row.appointments : "–"}</td>
                       <td className="px-3 py-2.5 text-right tabular-nums">{row.cpl > 0 ? `${(row.cpl / 100).toFixed(2)} €` : "–"}</td>
                     </tr>
-                  );
-                })}
+                ))}
               </tbody>
             </table>
           </div>
@@ -425,7 +414,7 @@ function FunnelTab({ dateRange }: { dateRange: DateRangeValue }) {
         {funnelQuery.isLoading ? (
           <div className="col-span-3 flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-gold" /></div>
         ) : (
-          funnelQuery.data?.filter((ch: any) => ch.channel !== "gesamt").map((ch) => <ChannelFunnelCard key={ch.channel} data={ch} />)
+          funnelQuery.data?.channels.map((ch) => <ChannelFunnelCard key={ch.channel} data={ch} />)
         )}
       </div>
 
