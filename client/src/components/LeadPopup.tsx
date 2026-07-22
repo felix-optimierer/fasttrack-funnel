@@ -175,7 +175,7 @@ export function LeadPopup({ open, onClose, headline, subtext, source, redirectTo
                   type="text"
                   value={name}
                   onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: undefined })); }}
-                  placeholder="Wie heißt du?"
+                  placeholder="Dein Vor- und Nachname"
                   className={`w-full rounded-lg border px-4 py-3.5 text-sm text-neutral-900 placeholder:text-neutral-400 outline-none transition ${errors.name ? "border-red-500 focus:ring-red-200" : "border-neutral-300 focus:border-gold focus:ring-gold/30"} focus:ring-2`}
                 />
                 {errors.name && <p className="mt-1 text-xs font-medium text-red-500">{errors.name}</p>}

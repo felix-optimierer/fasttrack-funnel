@@ -126,7 +126,7 @@ export default function Traumwebseite() {
           <input
             type="text"
             value={form.name}
-            placeholder="Dein Name"
+            placeholder="Dein Vor- und Nachname"
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             className="w-full rounded-md border border-input bg-white px-4 py-3 text-sm text-neutral-900 placeholder:text-neutral-500 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/40"
           />
