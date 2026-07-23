@@ -21,6 +21,15 @@ export default function KiReportTermin() {
 
   usePageView("ki-report-termin");
 
+  // Testoptimierer: Load tag on conversion page to track conversion
+  useEffect(() => {
+    const toScript = document.createElement("script");
+    toScript.src = "/api/testoptimierer/tag/120001";
+    toScript.async = true;
+    document.body.appendChild(toScript);
+    return () => { try { document.body.removeChild(toScript); } catch(e) {} };
+  }, []);
+
   useEffect(() => {
     window.scrollTo(0, 0);
     // Calendly-Widget-Skript laden

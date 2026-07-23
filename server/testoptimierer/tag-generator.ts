@@ -167,6 +167,8 @@ export function generateTag(config: TagConfig | null): string {
       // Fallback: remove anti-flicker even if element not found
       var flickerStyle = document.getElementById("to-antiflicker-" + CONFIG.testId);
       if (flickerStyle) flickerStyle.remove();
+      // Also check conversion – we might be on the conversion page
+      checkConversion();
     }
   }
 
@@ -178,6 +180,9 @@ export function generateTag(config: TagConfig | null): string {
     visitorId: visitorId,
     loadedAt: new Date().toISOString()
   };
+
+  // Check conversion immediately (handles page-load on conversion URL)
+  checkConversion();
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", tryApply);

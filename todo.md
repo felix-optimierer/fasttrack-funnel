@@ -507,3 +507,11 @@
 - [x] Gesamt-Karte aus der Funnel-Ansicht UND Full-Funnel-Tabelle entfernt
 - [x] Ad-Spend 10.032 € war doppelt gezählt (Kanal-Summe + Gesamt-Zeile) – Backend gibt jetzt channels[] + totals{} getrennt zurück
 - [x] 630 Leads war doppelt gezählt – gleiche Ursache, Frontend nutzt jetzt nur noch totals vom Backend
+
+## Testoptimierer – VXL Traumwebseite 0 Conversions Fix
+
+- [x] Ursache: checkConversion() wurde nur aufgerufen wenn CSS-Element gefunden wurde. Auf der Conversion-Seite existiert das Element nicht → Conversion nie getrackt
+- [x] Fix 1: tag-generator.ts – checkConversion() wird jetzt sofort beim Script-Load aufgerufen (vor tryApply)
+- [x] Fix 2: tag-generator.ts – checkConversion() wird auch im Fallback-Branch aufgerufen (wenn Element nach 20 Retries nicht gefunden)
+- [x] Fix 3: Tag-Script auf allen Conversion-Seiten geladen (WebseiteTermin, ExitPlanTermin, KiReportTermin)
+- [x] Conversion-Endpoint ist bereits idempotent (prüft visitor.converted vor dem Zählen)
