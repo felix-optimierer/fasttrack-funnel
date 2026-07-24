@@ -515,3 +515,13 @@
 - [x] Fix 2: tag-generator.ts – checkConversion() wird auch im Fallback-Branch aufgerufen (wenn Element nach 20 Retries nicht gefunden)
 - [x] Fix 3: Tag-Script auf allen Conversion-Seiten geladen (WebseiteTermin, ExitPlanTermin, KiReportTermin)
 - [x] Conversion-Endpoint ist bereits idempotent (prüft visitor.converted vor dem Zählen)
+
+## DSGVO-Prüfung
+
+- [x] Google Fonts lokal hosten (Sora + Inter als WOFF2, @font-face in index.css)
+- [ ] Cookie-Consent-Banner implementieren (GTM, FB Pixel, Calendly, Wistia erst nach Opt-in)
+- [ ] Eigene Datenschutzseite erstellen (/datenschutz)
+- [ ] Wistia 2-Click-Lösung implementieren
+- [ ] Calendly erst nach Cookie-Consent laden
+- [ ] Datenschutz-Checkbox in Traumwebseite/Home Formulare
+- [ ] Consent-Text im LeadPopup erweitern (E-Mail + WhatsApp)
