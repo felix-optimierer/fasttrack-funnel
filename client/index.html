@@ -65,16 +65,36 @@
         u.defer = true;
         u.dataset.websiteId = '%VITE_ANALYTICS_WEBSITE_ID%';
         document.body.appendChild(u);
-        // Taboola Pixel (ID 2081173)
-        window._tfa = window._tfa || [];
-        window._tfa.push({notify: 'event', name: 'page_view', id: 2081173});
-        var tb = document.createElement('script');
-        tb.async = true;
-        tb.src = '//cdn.taboola.com/libtrc/unip/2081173/tfa.js';
-        tb.id = 'tb_tfa_script';
-        if (!document.getElementById('tb_tfa_script')) {
+        // Taboola Pixel (ID 2081173) – nur nach Cookie-Consent laden
+        function loadTaboolaAfterConsent() {
+          // Prüfe ob Consent erteilt wurde (Vibetrack setzt avelor-cookie-consent)
+          var consentCookie = document.cookie.split(';').find(function(c) {
+            return c.trim().indexOf('avelor-cookie-consent=') === 0;
+          });
+          if (consentCookie && consentCookie.indexOf('accepted') !== -1) {
+            fireTaboola();
+          } else {
+            // Warte auf Consent-Event vom Cookie-Banner
+            document.addEventListener('click', function handler(e) {
+              var target = e.target;
+              if (target && (target.id === 'avelor-cookie-accept' || (target.closest && target.closest('#avelor-cookie-accept')))) {
+                setTimeout(fireTaboola, 100);
+                document.removeEventListener('click', handler);
+              }
+            });
+          }
+        }
+        function fireTaboola() {
+          if (document.getElementById('tb_tfa_script')) return;
+          window._tfa = window._tfa || [];
+          window._tfa.push({notify: 'event', name: 'page_view', id: 2081173});
+          var tb = document.createElement('script');
+          tb.async = true;
+          tb.src = '//cdn.taboola.com/libtrc/unip/2081173/tfa.js';
+          tb.id = 'tb_tfa_script';
           document.body.appendChild(tb);
         }
+        loadTaboolaAfterConsent();
       }
       if ('requestIdleCallback' in window) {
         requestIdleCallback(loadDeferredScripts, { timeout: 3000 });

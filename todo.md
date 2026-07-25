@@ -533,3 +533,8 @@
 
 - [x] Taboola Pixel (ID 2081173) auf allen Seiten einbinden (verzögert geladen)
 - [x] Taboola in Datenschutzerklärung ergänzen
+
+## DSGVO Fixes (Runde 2)
+
+- [x] Telefonnummer +4917670534198 klickbar im Impressum ergänzen
+- [x] Taboola-Pixel erst nach Cookie-Consent feuern (nicht mehr direkt im HTML)

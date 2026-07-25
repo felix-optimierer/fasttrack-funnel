@@ -36,7 +36,8 @@ export default function Impressum() {
 
               <div>
                 <p className="font-semibold text-foreground">Kontakt:</p>
-                <p>E-Mail: support@bewegungsoptimierer.de</p>
+                <p>Telefon: <a href="tel:+4917670534198" className="text-gold hover:underline">+49 176 70534198</a></p>
+                <p>E-Mail: <a href="mailto:support@bewegungsoptimierer.de" className="text-gold hover:underline">support@bewegungsoptimierer.de</a></p>
               </div>
 
               <div>
