@@ -218,7 +218,9 @@ export function LeadPopup({ open, onClose, headline, subtext, source, redirectTo
                     className="mt-0.5 h-5 w-5 rounded border-neutral-300 text-gold accent-gold"
                   />
                   <span className="text-sm text-neutral-700">
-                    Ja, ich möchte von der Bewegungsoptimierer GmbH gelegentlich mit relevanten Infos per WhatsApp kontaktiert werden.
+                    Ich stimme der Verarbeitung meiner Daten gemäß der{" "}
+                    <a href="/datenschutz" target="_blank" className="underline text-gold hover:text-gold/80">Datenschutzerklärung</a>{" "}
+                    zu und möchte von der Bewegungsoptimierer GmbH per E-Mail und WhatsApp kontaktiert werden.
                   </span>
                 </label>
                 {errors.consent && <p className="mt-1 text-xs font-medium text-red-500">{errors.consent}</p>}

@@ -15,6 +15,7 @@ import { useTrackingData } from "@/hooks/useTrackingData";
 export default function Traumwebseite() {
   const [, navigate] = useLocation();
   const [form, setForm] = useState({ name: "", email: "", phone: "" });
+  const [consent, setConsent] = useState(false);
   const createLead = trpc.leads.create.useMutation();
   const tracking = useTrackingData();
 
@@ -37,6 +38,10 @@ export default function Traumwebseite() {
     e.preventDefault();
     if (!form.name || !form.email || !form.phone) {
       toast.error("Bitte fülle alle Felder aus.");
+      return;
+    }
+    if (!consent) {
+      toast.error("Bitte stimme der Datenschutzerklärung zu.");
       return;
     }
     createLead.mutate(
@@ -144,6 +149,19 @@ export default function Traumwebseite() {
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
             className="w-full rounded-md border border-input bg-white px-4 py-3 text-sm text-neutral-900 placeholder:text-neutral-500 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/40"
           />
+          <label className="flex items-start gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={consent}
+              onChange={(e) => setConsent(e.target.checked)}
+              className="mt-0.5 h-4 w-4 rounded border-neutral-300 text-gold accent-gold"
+            />
+            <span className="text-[11px] leading-snug text-neutral-600">
+              Ich stimme der Verarbeitung meiner Daten gemäß der{" "}
+              <a href="/datenschutz" target="_blank" className="underline text-gold hover:text-gold/80">Datenschutzerklärung</a>{" "}
+              zu und möchte per E-Mail und WhatsApp kontaktiert werden.
+            </span>
+          </label>
           <GoldButton
             type="submit"
             glow

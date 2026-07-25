@@ -219,22 +219,8 @@ export function Footer() {
           © {new Date().getFullYear()} {BRAND.parent} – Alle Rechte vorbehalten.
         </p>
         <div className="flex gap-5 text-xs text-muted-foreground">
-          <a
-            href="https://physiofreiheit.de/impressum?utm_source=fasttrack-funnel&utm_medium=footer&utm_campaign=legal"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-gold"
-          >
-            Impressum
-          </a>
-          <a
-            href="https://physiofreiheit.de/datenschutz?utm_source=fasttrack-funnel&utm_medium=footer&utm_campaign=legal"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-gold"
-          >
-            Datenschutz
-          </a>
+          <a href="/impressum" className="hover:text-gold">Impressum</a>
+          <a href="/datenschutz" className="hover:text-gold">Datenschutz</a>
         </div>
         <p className="max-w-2xl text-[11px] leading-relaxed text-muted-foreground/70">
           Wir verwenden die im Rahmen der Anmeldung zu unserem kostenlosen

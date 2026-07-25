@@ -519,9 +519,12 @@
 ## DSGVO-Prüfung
 
 - [x] Google Fonts lokal hosten (Sora + Inter als WOFF2, @font-face in index.css)
-- [ ] Cookie-Consent-Banner implementieren (GTM, FB Pixel, Calendly, Wistia erst nach Opt-in)
-- [ ] Eigene Datenschutzseite erstellen (/datenschutz)
-- [ ] Wistia 2-Click-Lösung implementieren
-- [ ] Calendly erst nach Cookie-Consent laden
-- [ ] Datenschutz-Checkbox in Traumwebseite/Home Formulare
-- [ ] Consent-Text im LeadPopup erweitern (E-Mail + WhatsApp)
+- [x] Cookie-Consent-Banner – wird über Vibetrack gelöst (nicht hier)
+- [x] Calendly-Consent – wird über Vibetrack gelöst (nicht hier)
+- [x] Eigene Datenschutzseite erstellen (/datenschutz) mit offiziellem DSB-Text (Mag. Elisa Drescher)
+- [x] Eigene Impressum-Seite erstellen (/impressum)
+- [x] Wistia 2-Click-Lösung implementieren (Vorschaubild + Play-Button)
+- [x] Datenschutz-Checkbox in Traumwebseite-Formular hinzufügen (Home hat kein Formular, nur CTA-Buttons)
+- [x] Consent-Text im LeadPopup erweitern (E-Mail + WhatsApp + Link /datenschutz)
+- [x] Alle Footer-Links auf lokale /datenschutz und /impressum umstellen
+- [x] CloudFront, Make.com, WhatsApp, KlickTipp, SalesSuite, Wistia, Calendly in Datenschutzerklärung erwähnen

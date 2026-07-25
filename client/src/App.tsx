@@ -25,6 +25,8 @@ const TestoptimiererEinstellungen = lazy(() => import("./pages/TestoptimiererEin
 const TestoptimiererProjekt = lazy(() => import("./pages/TestoptimiererProjekt"));
 const TestoptimiererNeuerTest = lazy(() => import("./pages/TestoptimiererNeuerTest"));
 const TestoptimiererNeuesProjekt = lazy(() => import("./pages/TestoptimiererNeuesProjekt"));
+const Impressum = lazy(() => import("./pages/Impressum"));
+const Datenschutz = lazy(() => import("./pages/Datenschutz"));
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -66,6 +68,8 @@ function Router() {
           <Route path="/testoptimierer/neu" component={TestoptimiererNeuesProjekt} />
           <Route path="/testoptimierer/projekt/:id" component={TestoptimiererProjekt} />
           <Route path="/testoptimierer/projekt/:id/neuer-test" component={TestoptimiererNeuerTest} />
+          <Route path="/impressum" component={Impressum} />
+          <Route path="/datenschutz" component={Datenschutz} />
           <Route component={NotFound} />
         </Switch>
       </Suspense>

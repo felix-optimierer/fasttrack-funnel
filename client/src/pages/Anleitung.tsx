@@ -20,19 +20,24 @@ import { usePageView } from "@/hooks/usePageView";
 export default function Anleitung() {
   const [, navigate] = useLocation();
   const [ctaVisible, setCtaVisible] = useState(false);
+  const [videoConsent, setVideoConsent] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   usePageView("vsl");
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    // Load Wistia player script
+  }, []);
+
+  // Load Wistia script only after user clicks play (2-Click DSGVO)
+  useEffect(() => {
+    if (!videoConsent) return;
     const script = document.createElement("script");
     script.src = "https://fast.wistia.net/player.js";
     script.async = true;
     document.body.appendChild(script);
     return () => { document.body.removeChild(script); };
-  }, []);
+  }, [videoConsent]);
 
   // Listen for Wistia iframe API to detect when video reaches 5:43 (343 seconds)
   useEffect(() => {
@@ -117,23 +122,49 @@ export default function Anleitung() {
         <section className="container pb-6 pt-4">
           <div className="mx-auto max-w-2xl">
             <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-black shadow-2xl">
-              <div className="wistia_responsive_padding" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
-                <div className="wistia_responsive_wrapper" style={{ height: "100%", left: 0, position: "absolute", top: 0, width: "100%" }}>
-                  <iframe
-                    ref={iframeRef}
-                    src="https://fast.wistia.net/embed/iframe/dp3vfy7i47?web_component=true&seo=true"
-                    title="VSL Neu Video"
-                    allow="autoplay; fullscreen"
-                    frameBorder="0"
-                    scrolling="no"
-                    className="wistia_embed"
-                    name="wistia_embed"
-                    width="100%"
-                    height="100%"
-                    style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+              {!videoConsent ? (
+                /* 2-Click: Vorschaubild + Play-Button */
+                <button
+                  onClick={() => setVideoConsent(true)}
+                  className="group relative flex h-full w-full items-center justify-center bg-navy-deep"
+                  aria-label="Video abspielen (lädt Wistia)"
+                >
+                  <img
+                    src="/manus-storage/wistia-thumbnail_107eaa5e.jpg"
+                    alt="Video-Vorschau"
+                    className="absolute inset-0 h-full w-full object-cover opacity-70 transition-opacity group-hover:opacity-90"
                   />
+                  {/* Play-Button */}
+                  <div className="relative z-10 flex h-16 w-16 items-center justify-center rounded-full bg-gold/90 shadow-lg transition-transform group-hover:scale-110 md:h-20 md:w-20">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="h-7 w-7 translate-x-0.5 text-navy-deep md:h-9 md:w-9">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
+                  <p className="absolute bottom-3 left-0 right-0 text-center text-[10px] text-muted-foreground md:text-xs">
+                    Mit Klick auf Play wird eine Verbindung zu Wistia hergestellt.{" "}
+                    <a href="/datenschutz" className="underline hover:text-gold" onClick={(e) => e.stopPropagation()}>Datenschutz</a>
+                  </p>
+                </button>
+              ) : (
+                /* Wistia iframe nach Consent */
+                <div className="wistia_responsive_padding" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
+                  <div className="wistia_responsive_wrapper" style={{ height: "100%", left: 0, position: "absolute", top: 0, width: "100%" }}>
+                    <iframe
+                      ref={iframeRef}
+                      src="https://fast.wistia.net/embed/iframe/dp3vfy7i47?web_component=true&seo=true&autoPlay=true"
+                      title="VSL Neu Video"
+                      allow="autoplay; fullscreen"
+                      frameBorder="0"
+                      scrolling="no"
+                      className="wistia_embed"
+                      name="wistia_embed"
+                      width="100%"
+                      height="100%"
+                      style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             <div
