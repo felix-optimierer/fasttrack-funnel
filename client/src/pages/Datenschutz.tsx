@@ -167,6 +167,18 @@ export default function Datenschutz() {
               </p>
             </section>
 
+            {/* Taboola */}
+            <section className="space-y-3">
+              <h2 className="text-lg font-bold text-foreground">Taboola</h2>
+              <p>
+                Mit Ihrer Einwilligung nach Art. 6 Abs. 1 lit. a DSGVO setzen wir auf unserer Website das Taboola-Pixel ein, einen Dienst der Taboola Inc., 16 Madison Square West, 7th Floor, New York, NY 10010, USA. Das Taboola-Pixel ermöglicht es uns, die Wirksamkeit unserer Werbeanzeigen auf der Taboola-Plattform zu messen und Ihnen auf Basis Ihres Nutzungsverhaltens interessenbezogene Inhalte und Werbung anzuzeigen. Dabei können Daten über Ihre Nutzung unserer Website (z.&nbsp;B. aufgerufene Seiten, IP-Adresse, Browser-Informationen) an Server von Taboola, auch in den USA, übertragen werden.
+              </p>
+              <p>
+                Für Übermittlungen in die USA stützen wir uns auf den Angemessenheitsbeschluss zum EU-US Data Privacy Framework (Art. 45 DSGVO), ergänzend auf Standardvertragsklauseln (Art. 46 DSGVO). Sie können Ihre Einwilligung jederzeit mit Wirkung für die Zukunft über den Cookie-Banner widerrufen. Weitere Informationen:{" "}
+                <a href="https://www.taboola.com/policies/privacy-policy" target="_blank" rel="noopener noreferrer" className="underline text-gold hover:text-gold/80">https://www.taboola.com/policies/privacy-policy</a>
+              </p>
+            </section>
+
             {/* Matomo */}
             <section className="space-y-3">
               <h2 className="text-lg font-bold text-foreground">Matomo</h2>

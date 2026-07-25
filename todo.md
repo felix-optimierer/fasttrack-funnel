@@ -528,3 +528,8 @@
 - [x] Consent-Text im LeadPopup erweitern (E-Mail + WhatsApp + Link /datenschutz)
 - [x] Alle Footer-Links auf lokale /datenschutz und /impressum umstellen
 - [x] CloudFront, Make.com, WhatsApp, KlickTipp, SalesSuite, Wistia, Calendly in Datenschutzerklärung erwähnen
+
+## Taboola Pixel Installation
+
+- [x] Taboola Pixel (ID 2081173) auf allen Seiten einbinden (verzögert geladen)
+- [x] Taboola in Datenschutzerklärung ergänzen

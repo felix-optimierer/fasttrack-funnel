@@ -65,6 +65,16 @@
         u.defer = true;
         u.dataset.websiteId = '%VITE_ANALYTICS_WEBSITE_ID%';
         document.body.appendChild(u);
+        // Taboola Pixel (ID 2081173)
+        window._tfa = window._tfa || [];
+        window._tfa.push({notify: 'event', name: 'page_view', id: 2081173});
+        var tb = document.createElement('script');
+        tb.async = true;
+        tb.src = '//cdn.taboola.com/libtrc/unip/2081173/tfa.js';
+        tb.id = 'tb_tfa_script';
+        if (!document.getElementById('tb_tfa_script')) {
+          document.body.appendChild(tb);
+        }
       }
       if ('requestIdleCallback' in window) {
         requestIdleCallback(loadDeferredScripts, { timeout: 3000 });
