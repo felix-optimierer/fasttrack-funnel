@@ -95,6 +95,49 @@
           document.body.appendChild(tb);
         }
         loadTaboolaAfterConsent();
+        // Outbrain Pixel (ID 006a0684f4b8a7b829c28d36ce6bd19a06) – nur nach Cookie-Consent laden
+        function loadOutbrainAfterConsent() {
+          var consentCookie = document.cookie.split(';').find(function(c) {
+            return c.trim().indexOf('avelor-cookie-consent=') === 0;
+          });
+          if (consentCookie && consentCookie.indexOf('accepted') !== -1) {
+            fireOutbrain();
+          } else {
+            document.addEventListener('click', function handler(e) {
+              var target = e.target;
+              if (target && (target.id === 'avelor-cookie-accept' || (target.closest && target.closest('#avelor-cookie-accept')))) {
+                setTimeout(fireOutbrain, 100);
+                document.removeEventListener('click', handler);
+              }
+            });
+          }
+        }
+        function fireOutbrain() {
+          if (document.getElementById('ob_pixel_script')) return;
+          var OB_ADV_ID = '006a0684f4b8a7b829c28d36ce6bd19a06';
+          if (window.obApi) {
+            var toArray = function(object) {
+              return Object.prototype.toString.call(object) === '[object Array]' ? object : [object];
+            };
+            window.obApi.marketerId = toArray(window.obApi.marketerId).concat(toArray(OB_ADV_ID));
+            return;
+          }
+          var api = window.obApi = function() {
+            api.dispatch ? api.dispatch.apply(api, arguments) : api.queue.push(arguments);
+          };
+          api.version = '1.1';
+          api.loaded = true;
+          api.marketerId = OB_ADV_ID;
+          api.queue = [];
+          var tag = document.createElement('script');
+          tag.async = true;
+          tag.src = '//amplify.outbrain.com/cp/obtp.js';
+          tag.type = 'text/javascript';
+          tag.id = 'ob_pixel_script';
+          document.body.appendChild(tag);
+          api('track', 'PAGE_VIEW');
+        }
+        loadOutbrainAfterConsent();
       }
       if ('requestIdleCallback' in window) {
         requestIdleCallback(loadDeferredScripts, { timeout: 3000 });

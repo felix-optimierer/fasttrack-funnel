@@ -538,3 +538,8 @@
 
 - [x] Telefonnummer +4917670534198 klickbar im Impressum ergänzen
 - [x] Taboola-Pixel erst nach Cookie-Consent feuern (nicht mehr direkt im HTML)
+
+## Outbrain Pixel Installation
+
+- [x] Outbrain Pixel (ID 006a0684f4b8a7b829c28d36ce6bd19a06) consent-gated einbinden
+- [x] Outbrain in Datenschutzerklärung ergänzen

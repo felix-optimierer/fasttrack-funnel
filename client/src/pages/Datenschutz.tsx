@@ -179,6 +179,18 @@ export default function Datenschutz() {
               </p>
             </section>
 
+            {/* Outbrain */}
+            <section className="space-y-3">
+              <h2 className="text-lg font-bold text-foreground">Outbrain</h2>
+              <p>
+                Mit Ihrer Einwilligung nach Art. 6 Abs. 1 lit. a DSGVO setzen wir auf unserer Website das Outbrain-Pixel ein, einen Dienst der Outbrain Inc., 39 West 13th Street, 3rd Floor, New York, NY 10011, USA. Das Outbrain-Pixel ermöglicht es uns, die Wirksamkeit unserer Werbeanzeigen auf der Outbrain-Plattform zu messen und Ihnen auf Basis Ihres Nutzungsverhaltens interessenbezogene Inhalte und Werbung anzuzeigen. Dabei können Daten über Ihre Nutzung unserer Website (z.&nbsp;B. aufgerufene Seiten, IP-Adresse, Browser-Informationen) an Server von Outbrain, auch in den USA, übertragen werden.
+              </p>
+              <p>
+                Für Übermittlungen in die USA stützen wir uns auf den Angemessenheitsbeschluss zum EU-US Data Privacy Framework (Art. 45 DSGVO), ergänzend auf Standardvertragsklauseln (Art. 46 DSGVO). Sie können Ihre Einwilligung jederzeit mit Wirkung für die Zukunft über den Cookie-Banner widerrufen. Weitere Informationen:{" "}
+                <a href="https://www.outbrain.com/privacy/" target="_blank" rel="noopener noreferrer" className="underline text-gold hover:text-gold/80">https://www.outbrain.com/privacy/</a>
+              </p>
+            </section>
+
             {/* Matomo */}
             <section className="space-y-3">
               <h2 className="text-lg font-bold text-foreground">Matomo</h2>
