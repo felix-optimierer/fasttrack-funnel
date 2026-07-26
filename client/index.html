@@ -40,41 +40,36 @@
     <meta name="twitter:image" content="/manus-storage/og-image_4af61512.png" />
     <meta name="twitter:image:alt" content="Physio Freiheit – Kostenlose Inhalte für Praxisinhaber" />
     <!-- Fonts: Lokal gehostet (DSGVO-konform) – @font-face in index.css -->
+
+    <!-- Vibetrack Tracker (Header) – Tracking & Cookie-Consent-Management -->
+    <script async src="https://vt.physiofreiheit.de/tracker.js?site-id=VT-3EDD3323-48250"></script>
   </head>
 
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <!-- Deferred: Analytics & Tracking (loaded after main content) -->
+
+    <!-- Vibetrack Cookie-Banner (Body) – zeigt Cookie-Consent-Banner -->
+    <script async src="https://vt.physiofreiheit.de/cookie.js?site-id=VT-3EDD3323-48250"></script>
+
+    <!-- Deferred: Analytics & Marketing Pixels (loaded after main content) -->
     <script>
-      // Delay non-critical scripts until after page is interactive
       function loadDeferredScripts() {
-        // PhysioFreiheit Visitor-Tracking
-        var t = document.createElement('script');
-        t.src = 'https://vt.physiofreiheit.de/tracker.js?site-id=VT-3EDD3323-48250';
-        t.async = true;
-        document.body.appendChild(t);
-        // Cookie-Consent
-        var c = document.createElement('script');
-        c.src = 'https://vt.physiofreiheit.de/cookie.js?site-id=VT-3EDD3323-48250';
-        c.async = true;
-        document.body.appendChild(c);
         // Umami Analytics
         var u = document.createElement('script');
         u.src = '%VITE_ANALYTICS_ENDPOINT%/umami';
         u.defer = true;
         u.dataset.websiteId = '%VITE_ANALYTICS_WEBSITE_ID%';
         document.body.appendChild(u);
+
         // Taboola Pixel (ID 2081173) – nur nach Cookie-Consent laden
         function loadTaboolaAfterConsent() {
-          // Prüfe ob Consent erteilt wurde (Vibetrack setzt avelor-cookie-consent)
           var consentCookie = document.cookie.split(';').find(function(c) {
             return c.trim().indexOf('avelor-cookie-consent=') === 0;
           });
           if (consentCookie && consentCookie.indexOf('accepted') !== -1) {
             fireTaboola();
           } else {
-            // Warte auf Consent-Event vom Cookie-Banner
             document.addEventListener('click', function handler(e) {
               var target = e.target;
               if (target && (target.id === 'avelor-cookie-accept' || (target.closest && target.closest('#avelor-cookie-accept')))) {
@@ -95,6 +90,7 @@
           document.body.appendChild(tb);
         }
         loadTaboolaAfterConsent();
+
         // Outbrain Pixel (ID 006a0684f4b8a7b829c28d36ce6bd19a06) – nur nach Cookie-Consent laden
         function loadOutbrainAfterConsent() {
           var consentCookie = document.cookie.split(';').find(function(c) {

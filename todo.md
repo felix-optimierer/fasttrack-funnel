@@ -543,3 +543,7 @@
 
 - [x] Outbrain Pixel (ID 006a0684f4b8a7b829c28d36ce6bd19a06) consent-gated einbinden
 - [x] Outbrain in Datenschutzerklärung ergänzen
+
+## Vibetrack Fix
+
+- [x] Vibetrack tracker.js (Header) und cookie.js (Body) korrekt installieren und verifizieren
