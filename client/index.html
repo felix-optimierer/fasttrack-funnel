@@ -55,13 +55,6 @@
     <!-- Deferred: Analytics & Marketing Pixels (loaded after main content) -->
     <script>
       function loadDeferredScripts() {
-        // Umami Analytics
-        var u = document.createElement('script');
-        u.src = '%VITE_ANALYTICS_ENDPOINT%/umami';
-        u.defer = true;
-        u.dataset.websiteId = '%VITE_ANALYTICS_WEBSITE_ID%';
-        document.body.appendChild(u);
-
         // Taboola Pixel (ID 2081173) – nur nach Cookie-Consent laden
         function loadTaboolaAfterConsent() {
           var consentCookie = document.cookie.split(';').find(function(c) {

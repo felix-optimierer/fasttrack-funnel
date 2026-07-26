@@ -554,3 +554,9 @@
 - [x] Bilder-Problem fixen (/manus-storage/ Proxy auf Hetzner verifiziert - funktioniert)
 - [x] 404-Button-Fix auf Hetzner deployen
 - [x] DSGVO-Check der Hetzner-Version durchführen
+
+## Manus Analytics & Datenbank-Fix
+
+- [x] Manus Analytics (Umami) aus index.html entfernen
+- [ ] DATABASE_URL auf Hetzner/Coolify setzen
+- [ ] Verlorene Leads seit DNS-Switch identifizieren
