@@ -547,3 +547,10 @@
 ## Vibetrack Fix
 
 - [x] Vibetrack tracker.js (Header) und cookie.js (Body) korrekt installieren und verifizieren
+
+## Hetzner Deployment Fixes
+
+- [x] Preview-Domain in Coolify erreichbar machen
+- [x] Bilder-Problem fixen (/manus-storage/ Proxy auf Hetzner verifiziert - funktioniert)
+- [x] 404-Button-Fix auf Hetzner deployen
+- [x] DSGVO-Check der Hetzner-Version durchführen

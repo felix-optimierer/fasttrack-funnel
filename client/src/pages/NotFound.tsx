@@ -29,8 +29,8 @@ export default function NotFound() {
         Die Seite gibt es nicht – aber der schnellste Weg zu deiner
         Traumwebseite wartet auf der Startseite.
       </p>
-      <GoldButton className="mt-7 w-auto px-8" onClick={() => navigate("/")}>
-        Zurück zum Fast-Track
+      <GoldButton className="mt-7 !w-auto inline-flex px-8" onClick={() => navigate("/")}>
+        Zurück zu unseren kostenlosen Inhalten
         <ArrowRight className="h-5 w-5" />
       </GoldButton>
       <Footer />
