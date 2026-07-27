@@ -567,3 +567,11 @@
 - [x] Test-Leads aufgeräumt (LocalDBTest + DB-Test-Hetzner gelöscht)
 - [x] Admin-Dashboard verifiziert (Login + Stats + Leads + FunnelStats funktionieren auf Hetzner)
 - [x] Site online bestätigt (HTTP 200, Container running, DB-Verbindung OK)
+
+## Verlorene Leads aus SalesSuite nachtragen
+
+- [x] SalesSuite CRM API erkunden (Kontakte/Deals Endpoints)
+- [x] Kontakte/Deals aus Downtime-Zeitraum (26.07. 11:10 - 27.07. 09:07 UTC) abfragen
+- [x] UTM-Parameter und alle Lead-Daten aus SalesSuite extrahieren
+- [x] 16 Leads in TiDB-Datenbank nachgetragen (mit UTM-Parametern, Telefon, Referrer, fbclid)
+- [x] Nachgetragene Daten verifiziert (499 Leads total, alle 16 korrekt in DB)
