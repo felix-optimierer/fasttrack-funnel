@@ -558,5 +558,12 @@
 ## Manus Analytics & Datenbank-Fix
 
 - [x] Manus Analytics (Umami) aus index.html entfernen
-- [ ] DATABASE_URL auf Hetzner/Coolify setzen
-- [ ] Verlorene Leads seit DNS-Switch identifizieren
+- [x] DATABASE_URL auf Hetzner/Coolify setzen (ssl-Parameter-Fix in db.ts + Coolify ENV)
+- [x] Verlorene Leads seit DNS-Switch identifizieren (~30-35 Leads verloren zwischen 26.07. 11:10 UTC und 27.07. 09:07 UTC)
+- [x] email.ts Fix: Graceful handling wenn RESEND_API_KEY fehlt
+- [x] nixpacks.toml hinzugefügt für Coolify Build-Prozess
+- [x] Build-Dependencies von devDependencies nach dependencies verschoben
+- [x] RESEND_API_KEY, SALESSUITE_API_KEY, OWNER_NAME in Coolify ENV hinzugefügt
+- [x] Test-Leads aufgeräumt (LocalDBTest + DB-Test-Hetzner gelöscht)
+- [x] Admin-Dashboard verifiziert (Login + Stats + Leads + FunnelStats funktionieren auf Hetzner)
+- [x] Site online bestätigt (HTTP 200, Container running, DB-Verbindung OK)
