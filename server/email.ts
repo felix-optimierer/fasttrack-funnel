@@ -4,7 +4,7 @@
  */
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 // Default sender – update once domain is verified in Resend
 const DEFAULT_FROM = "PhysioFreiheit <noreply@go.physiofreiheit.de>";
@@ -66,6 +66,10 @@ export async function sendEmail(options: SendEmailOptions): Promise<SendEmailRes
     if (cc) payload.cc = Array.isArray(cc) ? cc : [cc];
     if (tags) payload.tags = tags;
 
+    if (!resend) {
+      console.warn('[Email] Resend not configured (missing API key)');
+      return { success: false, error: 'Resend not configured' };
+    }
     const { data, error } = await resend.emails.send(payload as any);
 
     if (error) {
@@ -86,6 +90,9 @@ export async function sendEmail(options: SendEmailOptions): Promise<SendEmailRes
  */
 export async function verifyResendApiKey(): Promise<{ valid: boolean; error?: string }> {
   try {
+    if (!resend) {
+      return { valid: false, error: 'Resend not configured (missing API key)' };
+    }
     const { data, error } = await resend.domains.list();
     if (error) {
       // "restricted_api_key" means the key is valid but send-only
