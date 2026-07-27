@@ -2,14 +2,28 @@ import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
+import mysql from "mysql2/promise";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
 // Lazily create the drizzle instance so local tooling can run without a DB.
+// Handles DATABASE_URL with ssl JSON parameter that Docker may mangle.
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
-      _db = drizzle(process.env.DATABASE_URL);
+      // Strip ssl parameter from URL and add it programmatically
+      let dbUrl = process.env.DATABASE_URL;
+      const sslMatch = dbUrl.match(/[?&]ssl=.*$/);
+      if (sslMatch) {
+        dbUrl = dbUrl.replace(/[?&]ssl=.*$/, '');
+      }
+      const pool = mysql.createPool({
+        uri: dbUrl,
+        ssl: { rejectUnauthorized: true },
+        waitForConnections: true,
+        connectionLimit: 10,
+      });
+      _db = drizzle(pool as any);
     } catch (error) {
       console.warn("[Database] Failed to connect:", error);
       _db = null;
