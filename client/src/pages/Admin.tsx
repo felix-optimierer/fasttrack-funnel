@@ -1,7 +1,7 @@
 // ADMIN-DASHBOARD (/admin) — 6-Tab Dashboard: Übersicht, Funnel, Submissions, CRM, Ad-Kosten, Einstellungen
 import { useState, useMemo, useCallback, DragEvent } from "react";
 import { DateRangePicker, type DateRangeValue } from "@/components/DateRangePicker";
-import { format, startOfWeek, subDays } from "date-fns";
+import { format, startOfWeek, startOfQuarter, subDays, parseISO, getISOWeek, getQuarter, getYear } from "date-fns";
 import { useLocation } from "wouter";
 import { SEO } from "@/components/SEO";
 import { trpc } from "@/lib/trpc";
@@ -21,6 +21,7 @@ import {
 } from "recharts";
 
 type Tab = "overview" | "funnel" | "submissions" | "crm" | "adcosts" | "settings";
+type ChartAggregation = "daily" | "weekly" | "quarterly";
 
 const CHANNEL_LABEL: Record<string, string> = {
   "ki-report": "KI-Report", "exit-plan": "Exit-Plan", "traumwebseite": "Traumwebseite",
@@ -191,10 +192,89 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   );
 }
 
+/* ─── AGGREGATION HELPER ──────────────────────────────────────────────────── */
+function aggregateChartData(dailyData: Record<string, any>[], aggregation: ChartAggregation): Record<string, any>[] {
+  if (aggregation === "daily" || dailyData.length === 0) return dailyData;
+
+  const groups = new Map<string, Record<string, any>[]>();
+  for (const point of dailyData) {
+    const d = parseISO(point.day);
+    let key: string;
+    if (aggregation === "weekly") {
+      const week = getISOWeek(d);
+      const year = getYear(d);
+      key = `${year}-KW${String(week).padStart(2, "0")}`;
+    } else {
+      const q = getQuarter(d);
+      const year = getYear(d);
+      key = `Q${q}/${year}`;
+    }
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key)!.push(point);
+  }
+
+  return Array.from(groups.entries()).map(([label, points]) => {
+    const merged: Record<string, any> = { day: label };
+    // Sum all numeric fields except cr_*, tr_*, cpl_* (those need recalculation)
+    for (const point of points) {
+      for (const [k, v] of Object.entries(point)) {
+        if (k === "day") continue;
+        if (typeof v === "number") {
+          merged[k] = (merged[k] ?? 0) + v;
+        }
+      }
+    }
+    // Recalculate rate fields from aggregated totals
+    for (const ch of ["ki-report", "exit-plan", "traumwebseite"]) {
+      const visitors = merged[`visitors_${ch}`] ?? 0;
+      const leads = merged[`leads_${ch}`] ?? 0;
+      const spend = merged[`spend_${ch}`] ?? 0;
+      const appts = merged[`appts_${ch}`] ?? 0;
+      if (visitors > 0) merged[`cr_${ch}`] = parseFloat(((leads / visitors) * 100).toFixed(1));
+      if (leads > 0) merged[`cpl_${ch}`] = parseFloat((spend / leads / 100).toFixed(2));
+      if (leads > 0) merged[`tr_${ch}`] = parseFloat(((appts / leads) * 100).toFixed(1));
+    }
+    // Overall totals
+    if (merged.total_visitors > 0 && merged.total_leads > 0) {
+      merged.total_cr = parseFloat(((merged.total_leads / merged.total_visitors) * 100).toFixed(1));
+    }
+    if (merged.total_leads > 0 && merged.total_spend > 0) {
+      merged.total_cpl = parseFloat((merged.total_spend / merged.total_leads / 100).toFixed(2));
+    }
+    return merged;
+  });
+}
+
+function AggregationSwitcher({ value, onChange }: { value: ChartAggregation; onChange: (v: ChartAggregation) => void }) {
+  const options: { value: ChartAggregation; label: string }[] = [
+    { value: "daily", label: "Täglich" },
+    { value: "weekly", label: "Wöchentlich" },
+    { value: "quarterly", label: "Quartalsweise" },
+  ];
+  return (
+    <div className="inline-flex rounded-lg border border-border bg-card p-0.5">
+      {options.map((o) => (
+        <button
+          key={o.value}
+          onClick={() => onChange(o.value)}
+          className={`rounded-md px-3 py-1.5 text-[11px] font-semibold transition ${
+            value === o.value
+              ? "bg-gradient-to-b from-[#e3c75a] to-[#c9a227] text-navy"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════════
    OVERVIEW TAB — KPI Tiles + Per-Channel Funnel + Charts
    ═══════════════════════════════════════════════════════════════════════════════ */
 function OverviewTab({ dateRange }: { dateRange: DateRangeValue }) {
+  const [aggregation, setAggregation] = useState<ChartAggregation>("daily");
   const funnelQuery = trpc.admin.funnelStats.useQuery({ startDate: dateRange.startDate, endDate: dateRange.endDate });
   const seriesQuery = trpc.admin.channelSeries.useQuery({ startDate: dateRange.startDate, endDate: dateRange.endDate });
 
@@ -208,48 +288,69 @@ function OverviewTab({ dateRange }: { dateRange: DateRangeValue }) {
     return { totalVisitors: totals.visitors, totalLeads: totals.leads, totalAppointments: totals.appointments, avgCr, avgTerminCr, avgCpl, totalSpend: totals.adSpendCents };
   }, [funnelQuery.data]);
 
-  // Chart data
+  // Chart data - include raw values for aggregation
   const chartData = useMemo(() => {
     if (!seriesQuery.data) return [];
     const dayMap = new Map<string, Record<string, any>>();
     for (const point of seriesQuery.data) {
-      if (!dayMap.has(point.day)) dayMap.set(point.day, { day: point.day, total_leads: 0, total_visitors: 0, total_day_leads: 0 });
+      if (!dayMap.has(point.day)) dayMap.set(point.day, { day: point.day, total_leads: 0, total_visitors: 0, total_spend: 0 });
       const entry = dayMap.get(point.day)!;
       const ch = point.channel;
       const cr = point.visitors > 0 ? (point.leads / point.visitors) * 100 : 0;
+      const cpl = point.leads > 0 ? point.adSpendCents / point.leads / 100 : 0;
       entry[`cr_${ch}`] = parseFloat(cr.toFixed(1));
+      entry[`cpl_${ch}`] = parseFloat(cpl.toFixed(2));
       entry[`leads_${ch}`] = point.leads;
+      entry[`visitors_${ch}`] = point.visitors;
+      entry[`spend_${ch}`] = point.adSpendCents;
       entry.total_leads += point.leads;
       entry.total_visitors += point.visitors;
+      entry.total_spend += point.adSpendCents;
     }
     return Array.from(dayMap.values()).sort((a, b) => a.day.localeCompare(b.day));
   }, [seriesQuery.data]);
 
+  // Aggregated display data
+  const displayData = useMemo(() => aggregateChartData(chartData, aggregation), [chartData, aggregation]);
+
   // Average calculations for reference lines
   const avgLeadsPerDay = useMemo(() => {
-    if (chartData.length === 0) return 0;
-    const total = chartData.reduce((sum, d) => sum + (d.total_leads || 0), 0);
-    return parseFloat((total / chartData.length).toFixed(1));
-  }, [chartData]);
+    if (displayData.length === 0) return 0;
+    const total = displayData.reduce((sum, d) => sum + (d.total_leads || 0), 0);
+    return parseFloat((total / displayData.length).toFixed(1));
+  }, [displayData]);
 
   const avgCrPerDay = useMemo(() => {
-    if (chartData.length === 0) return 0;
-    const daysWithData = chartData.filter(d => d.total_visitors > 0);
+    if (displayData.length === 0) return 0;
+    const daysWithData = displayData.filter(d => d.total_visitors > 0);
     if (daysWithData.length === 0) return 0;
     const avgCrs = daysWithData.reduce((sum, d) => {
       const cr = d.total_visitors > 0 ? (d.total_leads / d.total_visitors) * 100 : 0;
       return sum + cr;
     }, 0);
     return parseFloat((avgCrs / daysWithData.length).toFixed(1));
-  }, [chartData]);
+  }, [displayData]);
 
   const weightedOverallCr = useMemo(() => {
-    if (chartData.length === 0) return 0;
-    const totalVisitors = chartData.reduce((sum, d) => sum + (d.total_visitors || 0), 0);
-    const totalLeads = chartData.reduce((sum, d) => sum + (d.total_leads || 0), 0);
+    if (displayData.length === 0) return 0;
+    const totalVisitors = displayData.reduce((sum, d) => sum + (d.total_visitors || 0), 0);
+    const totalLeads = displayData.reduce((sum, d) => sum + (d.total_leads || 0), 0);
     if (totalVisitors === 0) return 0;
     return parseFloat(((totalLeads / totalVisitors) * 100).toFixed(1));
-  }, [chartData]);
+  }, [displayData]);
+
+  const avgCpl = useMemo(() => {
+    if (displayData.length === 0) return 0;
+    const totalSpend = displayData.reduce((sum, d) => sum + (d.total_spend || 0), 0);
+    const totalLeads = displayData.reduce((sum, d) => sum + (d.total_leads || 0), 0);
+    if (totalLeads === 0) return 0;
+    return parseFloat((totalSpend / totalLeads / 100).toFixed(2));
+  }, [displayData]);
+
+  const tickFormatter = useCallback((v: string) => {
+    if (aggregation === "daily") return v.slice(5);
+    return v;
+  }, [aggregation]);
 
   if (funnelQuery.isLoading) {
     return <div className="flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-gold" /></div>;
@@ -275,14 +376,22 @@ function OverviewTab({ dateRange }: { dateRange: DateRangeValue }) {
         {funnelQuery.data?.channels.map((ch) => <ChannelFunnelCard key={ch.channel} data={ch} />)}
       </div>
 
-      {/* Charts */}
+      {/* Aggregation Switcher */}
       {chartData.length > 0 && (
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">Diagramme</h3>
+          <AggregationSwitcher value={aggregation} onChange={setAggregation} />
+        </div>
+      )}
+
+      {/* Charts */}
+      {displayData.length > 0 && (
         <div className="grid gap-6 lg:grid-cols-2">
           <ChartCard title="LP-Conversion-Rate (%)" subtitle={`Ø Tages-CR: ${avgCrPerDay}% · Gewichteter Gesamt-CR: ${weightedOverallCr}%`}>
             <ResponsiveContainer width="100%" height={240}>
-              <LineChart data={chartData}>
+              <LineChart data={displayData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                <XAxis dataKey="day" tick={{ fill: "#9fb2c7", fontSize: 11 }} tickFormatter={(v) => v.slice(5)} />
+                <XAxis dataKey="day" tick={{ fill: "#9fb2c7", fontSize: 11 }} tickFormatter={tickFormatter} />
                 <YAxis tick={{ fill: "#9fb2c7", fontSize: 11 }} unit="%" />
                 <Tooltip contentStyle={{ backgroundColor: "#0e2138", border: "1px solid rgba(201,162,39,0.3)", borderRadius: 8 }} labelStyle={{ color: "#f4f1e8" }} />
                 <Legend />
@@ -297,9 +406,9 @@ function OverviewTab({ dateRange }: { dateRange: DateRangeValue }) {
 
           <ChartCard title="Leads pro Tag (Gesamt)" subtitle={`Ø ${avgLeadsPerDay} Leads/Tag`}>
             <ResponsiveContainer width="100%" height={240}>
-              <ComposedChart data={chartData}>
+              <ComposedChart data={displayData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                <XAxis dataKey="day" tick={{ fill: "#9fb2c7", fontSize: 11 }} tickFormatter={(v) => v.slice(5)} />
+                <XAxis dataKey="day" tick={{ fill: "#9fb2c7", fontSize: 11 }} tickFormatter={tickFormatter} />
                 <YAxis tick={{ fill: "#9fb2c7", fontSize: 11 }} />
                 <Tooltip contentStyle={{ backgroundColor: "#0e2138", border: "1px solid rgba(201,162,39,0.3)", borderRadius: 8 }} labelStyle={{ color: "#f4f1e8" }} />
                 <Legend />
@@ -309,6 +418,22 @@ function OverviewTab({ dateRange }: { dateRange: DateRangeValue }) {
                 ))}
                 <ReferenceLine y={avgLeadsPerDay} stroke="#f4f1e8" strokeDasharray="6 4" strokeWidth={1.5} label={{ value: `Ø ${avgLeadsPerDay}`, position: "right", fill: "#f4f1e8", fontSize: 10 }} />
               </ComposedChart>
+            </ResponsiveContainer>
+          </ChartCard>
+
+          <ChartCard title="CPL (€)" subtitle={`Ø ${avgCpl.toFixed(2)} € pro Lead`}>
+            <ResponsiveContainer width="100%" height={240}>
+              <BarChart data={displayData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                <XAxis dataKey="day" tick={{ fill: "#9fb2c7", fontSize: 11 }} tickFormatter={tickFormatter} />
+                <YAxis tick={{ fill: "#9fb2c7", fontSize: 11 }} unit="€" />
+                <Tooltip contentStyle={{ backgroundColor: "#0e2138", border: "1px solid rgba(201,162,39,0.3)", borderRadius: 8 }} labelStyle={{ color: "#f4f1e8" }} formatter={(value: number) => [`${value.toFixed(2)} €`, undefined]} />
+                <Legend />
+                {(["ki-report", "exit-plan", "traumwebseite"] as const).map((ch) => (
+                  <Bar key={ch} dataKey={`cpl_${ch}`} name={CHANNEL_LABEL[ch]} fill={CHANNEL_COLORS[ch]} radius={[4, 4, 0, 0]} />
+                ))}
+                <ReferenceLine y={avgCpl} stroke="#f4f1e8" strokeDasharray="6 4" strokeWidth={1.5} label={{ value: `Ø ${avgCpl.toFixed(2)}€`, position: "right", fill: "#f4f1e8", fontSize: 10 }} />
+              </BarChart>
             </ResponsiveContainer>
           </ChartCard>
         </div>
@@ -330,6 +455,7 @@ function KpiTile({ icon, label, value, accent }: { icon: React.ReactNode; label:
    FUNNEL TAB — Per-Channel Funnel + Charts + UTM Pivot
    ═══════════════════════════════════════════════════════════════════════════════ */
 function FunnelTab({ dateRange }: { dateRange: DateRangeValue }) {
+  const [aggregation, setAggregation] = useState<ChartAggregation>("daily");
   const funnelQuery = trpc.admin.funnelStats.useQuery({ startDate: dateRange.startDate, endDate: dateRange.endDate });
   const fullFunnelQuery = trpc.admin.fullFunnelStats.useQuery({ startDate: dateRange.startDate, endDate: dateRange.endDate });
   const utmPivotQuery = trpc.admin.utmPivot.useQuery({ startDate: dateRange.startDate, endDate: dateRange.endDate });
@@ -348,9 +474,21 @@ function FunnelTab({ dateRange }: { dateRange: DateRangeValue }) {
       entry[`tr_${ch}`] = parseFloat(tr.toFixed(1));
       const cpl = point.leads > 0 ? point.adSpendCents / point.leads / 100 : 0;
       entry[`cpl_${ch}`] = parseFloat(cpl.toFixed(2));
+      // Raw values for aggregation
+      entry[`visitors_${ch}`] = point.visitors;
+      entry[`leads_${ch}`] = point.leads;
+      entry[`spend_${ch}`] = point.adSpendCents;
+      entry[`appts_${ch}`] = point.appointments;
     }
     return Array.from(dayMap.values()).sort((a, b) => a.day.localeCompare(b.day));
   }, [seriesQuery.data]);
+
+  const displayData = useMemo(() => aggregateChartData(chartData, aggregation), [chartData, aggregation]);
+
+  const tickFormatter = useCallback((v: string) => {
+    if (aggregation === "daily") return v.slice(5);
+    return v;
+  }, [aggregation]);
 
   return (
     <div className="space-y-6">
@@ -418,14 +556,19 @@ function FunnelTab({ dateRange }: { dateRange: DateRangeValue }) {
         )}
       </div>
 
-      {/* Charts */}
+      {/* Aggregation Switcher + Charts */}
       {chartData.length > 0 && (
         <div className="space-y-6">
-          <ChartCard title="LP-Conversion-Rate (%)" subtitle="Leads / Besucher pro Tag">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">Diagramme</h3>
+            <AggregationSwitcher value={aggregation} onChange={setAggregation} />
+          </div>
+
+          <ChartCard title="LP-Conversion-Rate (%)" subtitle="Leads / Besucher">
             <ResponsiveContainer width="100%" height={240}>
-              <LineChart data={chartData}>
+              <LineChart data={displayData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                <XAxis dataKey="day" tick={{ fill: "#9fb2c7", fontSize: 11 }} tickFormatter={(v) => v.slice(5)} />
+                <XAxis dataKey="day" tick={{ fill: "#9fb2c7", fontSize: 11 }} tickFormatter={tickFormatter} />
                 <YAxis tick={{ fill: "#9fb2c7", fontSize: 11 }} unit="%" />
                 <Tooltip contentStyle={{ backgroundColor: "#0e2138", border: "1px solid rgba(201,162,39,0.3)", borderRadius: 8 }} labelStyle={{ color: "#f4f1e8" }} />
                 <Legend />
@@ -436,11 +579,11 @@ function FunnelTab({ dateRange }: { dateRange: DateRangeValue }) {
             </ResponsiveContainer>
           </ChartCard>
 
-          <ChartCard title="Termin-Rate (%)" subtitle="Termine / Leads pro Tag">
+          <ChartCard title="Termin-Rate (%)" subtitle="Termine / Leads">
             <ResponsiveContainer width="100%" height={240}>
-              <LineChart data={chartData}>
+              <LineChart data={displayData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                <XAxis dataKey="day" tick={{ fill: "#9fb2c7", fontSize: 11 }} tickFormatter={(v) => v.slice(5)} />
+                <XAxis dataKey="day" tick={{ fill: "#9fb2c7", fontSize: 11 }} tickFormatter={tickFormatter} />
                 <YAxis tick={{ fill: "#9fb2c7", fontSize: 11 }} unit="%" />
                 <Tooltip contentStyle={{ backgroundColor: "#0e2138", border: "1px solid rgba(201,162,39,0.3)", borderRadius: 8 }} labelStyle={{ color: "#f4f1e8" }} />
                 <Legend />
@@ -451,18 +594,18 @@ function FunnelTab({ dateRange }: { dateRange: DateRangeValue }) {
             </ResponsiveContainer>
           </ChartCard>
 
-          <ChartCard title="CPL (€)" subtitle="Cost per Lead pro Tag">
+          <ChartCard title="CPL (€)" subtitle="Cost per Lead">
             <ResponsiveContainer width="100%" height={240}>
-              <LineChart data={chartData}>
+              <BarChart data={displayData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                <XAxis dataKey="day" tick={{ fill: "#9fb2c7", fontSize: 11 }} tickFormatter={(v) => v.slice(5)} />
+                <XAxis dataKey="day" tick={{ fill: "#9fb2c7", fontSize: 11 }} tickFormatter={tickFormatter} />
                 <YAxis tick={{ fill: "#9fb2c7", fontSize: 11 }} unit="€" />
-                <Tooltip contentStyle={{ backgroundColor: "#0e2138", border: "1px solid rgba(201,162,39,0.3)", borderRadius: 8 }} labelStyle={{ color: "#f4f1e8" }} />
+                <Tooltip contentStyle={{ backgroundColor: "#0e2138", border: "1px solid rgba(201,162,39,0.3)", borderRadius: 8 }} labelStyle={{ color: "#f4f1e8" }} formatter={(value: number) => [`${value.toFixed(2)} €`, undefined]} />
                 <Legend />
                 {(["ki-report", "exit-plan", "traumwebseite"] as const).map((ch) => (
-                  <Line key={ch} type="monotone" dataKey={`cpl_${ch}`} name={CHANNEL_LABEL[ch]} stroke={CHANNEL_COLORS[ch]} strokeWidth={2} dot={false} />
+                  <Bar key={ch} dataKey={`cpl_${ch}`} name={CHANNEL_LABEL[ch]} fill={CHANNEL_COLORS[ch]} radius={[4, 4, 0, 0]} />
                 ))}
-              </LineChart>
+              </BarChart>
             </ResponsiveContainer>
           </ChartCard>
         </div>

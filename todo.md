@@ -575,3 +575,10 @@
 - [x] UTM-Parameter und alle Lead-Daten aus SalesSuite extrahieren
 - [x] 16 Leads in TiDB-Datenbank nachgetragen (mit UTM-Parametern, Telefon, Referrer, fbclid)
 - [x] Nachgetragene Daten verifiziert (499 Leads total, alle 16 korrekt in DB)
+
+## CPL-Balkendiagramm + Zeitaggregations-Switcher
+
+- [x] CPL-Balkendiagramm hinzugefügt (Cost-per-Lead als Balken pro Tag/Woche/Quartal)
+- [x] Zeitaggregations-Switcher in allen Diagrammen: täglich / wöchentlich / quartalsweise
+- [x] Switcher in Übersicht (Overview) integriert
+- [x] Switcher in Funnelübersicht integriert
