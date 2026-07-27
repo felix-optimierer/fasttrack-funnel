@@ -7,10 +7,12 @@ import type { Request, Response } from "express";
 import { setAdSpend } from "./funnel-db";
 
 // Campaign → Funnel (channel) mapping
+// Active campaigns on act_2652745474927267 (Critical Physio / Bewegungsoptimierer GmbH)
 export const CAMPAIGN_FUNNEL_MAP: Record<string, { channel: string; campaignId: string }> = {
-  "120250432788160563": { channel: "traumwebseite", campaignId: "120250432788160563" },
-  "120250479972680563": { channel: "exit-plan", campaignId: "120250479972680563" },
-  // KI-Report wird später hinzugefügt
+  "120250432788160563": { channel: "traumwebseite", campaignId: "120250432788160563" },  // FB_14.07.2026 | VSL_Leads Traumwebseite | A+ V1
+  "120250479972680563": { channel: "exit-plan", campaignId: "120250479972680563" },      // FB_15.07.2026 | LM_Exit-Plan | V1
+  "120250746019280563": { channel: "exit-plan", campaignId: "120250746019280563" },      // FB_24.07.2026 BO | Evergreen Retargeting
+  // KI-Report wird später hinzugefügt wenn Kampagne aktiv
 };
 
 export const AD_ACCOUNT_ID = "act_2652745474927267";

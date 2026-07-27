@@ -457,7 +457,7 @@
 
 - [x] Refresh-Button versucht Heartbeat-Job zu triggern, zeigt klare Nachricht wenn kein Job vorhanden
 - [x] Alle Tage seit Kampagnenstart manuell über Manus synchronisiert (4.464,77 € korrekt)
-- [ ] AGENT cron einrichten für tägliche automatische Synchronisierung (nach Deploy)
+- [x] AGENT cron einrichten für tägliche automatische Synchronisierung (nach Deploy) – läuft alle 6h, aktualisiert mit Retargeting-Kampagne 120250746019280563
 
 ## Testoptimierer Tag auf /traumwebseite
 
