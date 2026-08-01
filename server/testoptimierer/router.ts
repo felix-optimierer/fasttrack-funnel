@@ -526,13 +526,13 @@ export const testoptimiererRouter = router({
         return { elements: detected, pageTitle };
       }
 
-      // External page: use cheerio (original approach)
+      // External page: fetch HTML + detect SPA
       let html: string;
       try {
         const resp = await fetch(input.url, {
           headers: {
-            "User-Agent": "Mozilla/5.0 (compatible; Testoptimierer/1.0)",
-            "Accept": "text/html,application/xhtml+xml",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
           },
           redirect: "follow",
         });
@@ -547,75 +547,278 @@ export const testoptimiererRouter = router({
 
       const $ = cheerio.load(html);
       const detected: DetectedElement[] = [];
+      const pageTitle = $("title").text() || "";
 
-      // Detect main headline (h1)
-      const h1 = $("h1").first();
-      if (h1.length && h1.text().trim()) {
-        detected.push({
-          elementType: "main_headline",
-          cssSelector: "h1",
-          currentText: h1.text().trim(),
-          label: "Haupt-Headline (H1)",
-        });
-      }
+      // Check if this is a SPA with empty body (only a root div, no real content)
+      const bodyText = $("body").text().replace(/\s+/g, " ").trim();
+      const hasRootDiv = $("#root, #app, #__next, #__nuxt").length > 0;
+      const isEmptySPA = hasRootDiv && bodyText.length < 50;
 
-      // Detect sub-headline (first p after h1, or p.italic, or h2)
-      const subHeadline = $("main p.italic, p.italic").first();
-      if (subHeadline.length && subHeadline.text().trim()) {
-        detected.push({
-          elementType: "sub_headline",
-          cssSelector: "p.italic",
-          currentText: subHeadline.text().trim(),
-          label: "Sub-Headline (italic)",
-        });
-      } else {
-        const h2 = $("h2").first();
-        if (h2.length && h2.text().trim()) {
+      if (!isEmptySPA) {
+        // Traditional SSR page: use cheerio to detect elements
+        const h1 = $("h1").first();
+        if (h1.length && h1.text().trim()) {
+          detected.push({
+            elementType: "main_headline",
+            cssSelector: "h1",
+            currentText: h1.text().trim(),
+            label: "Haupt-Headline (H1)",
+          });
+        }
+
+        const subHeadline = $("main p.italic, p.italic").first();
+        if (subHeadline.length && subHeadline.text().trim()) {
           detected.push({
             elementType: "sub_headline",
-            cssSelector: "h2",
-            currentText: h2.text().trim(),
-            label: "Sub-Headline (H2)",
+            cssSelector: "p.italic",
+            currentText: subHeadline.text().trim(),
+            label: "Sub-Headline (italic)",
+          });
+        } else {
+          const h2 = $("h2").first();
+          if (h2.length && h2.text().trim()) {
+            detected.push({
+              elementType: "sub_headline",
+              cssSelector: "h2",
+              currentText: h2.text().trim(),
+              label: "Sub-Headline (H2)",
+            });
+          }
+        }
+
+        const preHeadline = $("h1").prev("div, span, p").first();
+        if (preHeadline.length && preHeadline.text().trim().length < 100) {
+          detected.push({
+            elementType: "pre_headline",
+            cssSelector: generateSelector($, preHeadline),
+            currentText: preHeadline.text().trim(),
+            label: "Pre-Headline (Badge)",
           });
         }
-      }
 
-      // Detect pre-headline (badge/span before h1)
-      const preHeadline = $("h1").prev("div, span, p").first();
-      if (preHeadline.length && preHeadline.text().trim().length < 100) {
-        detected.push({
-          elementType: "pre_headline",
-          cssSelector: generateSelector($, preHeadline),
-          currentText: preHeadline.text().trim(),
-          label: "Pre-Headline (Badge)",
-        });
-      }
-
-      // Detect CTA button
-      const ctaButton = $("button[type='submit'], a.cta, button.cta, form button").first();
-      if (ctaButton.length && ctaButton.text().trim()) {
-        detected.push({
-          elementType: "cta",
-          cssSelector: generateSelector($, ctaButton),
-          currentText: ctaButton.text().trim(),
-          label: "CTA-Button",
-        });
-      } else {
-        const anyButton = $("button").filter((_, el) => {
-          const text = $(el).text().trim();
-          return text.length > 2 && text.length < 60;
-        }).first();
-        if (anyButton.length) {
+        const ctaButton = $("button[type='submit'], a.cta, button.cta, form button").first();
+        if (ctaButton.length && ctaButton.text().trim()) {
           detected.push({
             elementType: "cta",
-            cssSelector: generateSelector($, anyButton),
-            currentText: anyButton.text().trim(),
+            cssSelector: generateSelector($, ctaButton),
+            currentText: ctaButton.text().trim(),
             label: "CTA-Button",
           });
+        } else {
+          const anyButton = $("button").filter((_, el) => {
+            const text = $(el).text().trim();
+            return text.length > 2 && text.length < 60;
+          }).first();
+          if (anyButton.length) {
+            detected.push({
+              elementType: "cta",
+              cssSelector: generateSelector($, anyButton),
+              currentText: anyButton.text().trim(),
+              label: "CTA-Button",
+            });
+          }
+        }
+
+        return { elements: detected, pageTitle };
+      }
+
+      // ─── SPA DETECTION: Fetch JS bundle and use LLM to identify elements ───
+
+      // 1. Find the main JS bundle URL from script tags
+      const scriptTags = $("script[src]").toArray();
+      let bundleUrl: string | null = null;
+      for (const script of scriptTags) {
+        const src = $(script).attr("src") || "";
+        // Look for typical Vite/Webpack bundle patterns
+        if (src.match(/\/assets\/index[-.][a-zA-Z0-9_]+\.js$/) ||
+            src.match(/\/static\/js\/main[-.][a-zA-Z0-9]+\.js$/) ||
+            src.match(/\/_next\/static\/chunks\/pages\//)) {
+          bundleUrl = src.startsWith("http") ? src : new URL(src, input.url).href;
+          break;
         }
       }
 
-      return { elements: detected, pageTitle: $("title").text() || "" };
+      if (!bundleUrl) {
+        // Try module scripts (type="module" with crossorigin)
+        const moduleScripts = $("script[type='module'][crossorigin]").toArray();
+        for (const script of moduleScripts) {
+          const src = $(script).attr("src") || "";
+          if (src.includes("/assets/") || src.includes("/static/")) {
+            bundleUrl = src.startsWith("http") ? src : new URL(src, input.url).href;
+            break;
+          }
+        }
+      }
+
+      if (!bundleUrl) {
+        return {
+          elements: [],
+          pageTitle,
+          spaDetected: true,
+          error: "SPA erkannt, aber kein JavaScript-Bundle gefunden. Elemente können nach der Projekterstellung manuell hinzugefügt werden.",
+        };
+      }
+
+      // 2. Fetch the JS bundle
+      let bundleContent: string;
+      try {
+        const bundleResp = await fetch(bundleUrl, {
+          headers: { "User-Agent": "Mozilla/5.0 (compatible; Testoptimierer/1.0)" },
+        });
+        if (!bundleResp.ok) throw new Error(`HTTP ${bundleResp.status}`);
+        bundleContent = await bundleResp.text();
+      } catch (err: any) {
+        return {
+          elements: [],
+          pageTitle,
+          spaDetected: true,
+          error: `SPA erkannt, aber Bundle konnte nicht geladen werden: ${err.message}`,
+        };
+      }
+
+      // 3. Extract string literals from the bundle (natural language content only)
+      const stringLiterals: string[] = [];
+      // Match double-quoted strings (10-300 chars, no backslash escapes)
+      const doubleQuoteRegex = /"([^"\\]{10,300})"/g;
+      let regMatch: RegExpExecArray | null;
+      while ((regMatch = doubleQuoteRegex.exec(bundleContent)) !== null) {
+        const text = regMatch[1];
+        // STRICT FILTERS: Only natural language text content
+        // Must contain at least one space (real text has spaces)
+        if (!text.includes(" ")) continue;
+        // Must start with uppercase letter, digit, or > (German text)
+        if (!(/^[A-ZÄÖÜ\d>]/).test(text)) continue;
+        // Must NOT contain code patterns
+        if (text.includes("(")) continue;
+        if (text.includes(")")) continue;
+        if (text.includes(";")) continue;
+        if (text.includes("=")) continue;
+        if (text.includes("<")) continue;
+        if (text.includes(">") && !text.startsWith(">")) continue;
+        if (text.includes("|")) continue;
+        if (text.includes("&")) continue;
+        if (text.includes("//")) continue;
+        if ((/\.[a-z]{2,4}$/).test(text)) continue; // file extensions
+        // Must have at least 3 words
+        if (text.split(/\s+/).length < 3) continue;
+        // Must be mostly alphabetic (>60%)
+        const alphaCount = (text.match(/[a-zA-ZäöüÄÖÜß]/g) || []).length;
+        if (alphaCount / text.length < 0.6) continue;
+
+        stringLiterals.push(text);
+        if (stringLiterals.length > 200) break;
+      }
+
+      // Deduplicate and limit to 100 most relevant strings
+      const uniqueStrings = Array.from(new Set(stringLiterals)).slice(0, 100);
+
+      if (uniqueStrings.length === 0) {
+        return {
+          elements: [],
+          pageTitle,
+          spaDetected: true,
+          error: "SPA erkannt, aber keine Textinhalte im Bundle gefunden.",
+        };
+      }
+
+      // 4. Use LLM to identify testable elements from the extracted strings
+      const llmPrompt = `Du bist ein Conversion-Optimierungs-Experte. Analysiere die folgenden Textinhalte, die aus dem JavaScript-Bundle einer Webseite extrahiert wurden.
+
+Webseite: ${input.url}
+Seitentitel: ${pageTitle}
+
+Extrahierte Texte:
+${uniqueStrings.map((s, i) => `${i + 1}. "${s}"`).join("\n")}
+
+Identifiziere die wichtigsten testbaren Elemente der Seite. Suche nach:
+1. **main_headline**: Die Haupt-Überschrift (H1) der Seite – der prominenteste, kürzeste Headline-Text
+2. **sub_headline**: Eine ergänzende Unter-Überschrift oder Beschreibung direkt unter der Headline
+3. **pre_headline**: Ein Badge/Label über der Headline (z.B. "LIVE am...", "NEU:", "Limitiert")
+4. **cta**: Call-to-Action Button-Texte (kurz, handlungsauffordernd wie "Jetzt sichern", "Anmelden")
+
+Antworte AUSSCHLIESSLICH im folgenden JSON-Format (Array von Objekten):
+[
+  {
+    "elementType": "main_headline" | "pre_headline" | "sub_headline" | "cta",
+    "currentText": "Der exakte Text aus der Liste oben",
+    "label": "Beschreibender Name für das Element",
+    "cssSelector": "Ein passender CSS-Selektor (h1, h2, p, button, etc.)"
+  }
+]
+
+Regeln:
+- Maximal 6 Elemente insgesamt
+- Für CTAs: Wähle den prominentesten/ersten CTA-Button-Text (kurz, handlungsauffordernd)
+- Für main_headline: Wähle den längsten, aussagekräftigsten Satz der als Haupt-Überschrift fungiert (NICHT den Seitentitel/Markennamen)
+- Für sub_headline: Wähle einen erklärenden Satz der die Headline ergänzt
+- Für pre_headline: Wähle ein kurzes Badge/Label (z.B. Datum, "LIVE", "NEU")
+- cssSelector MUSS spezifisch genug sein um das ERSTE passende Element zu finden:
+  * Nutze "section:first-of-type h1" oder "main h1" statt nur "h1"
+  * Nutze "section:first-of-type button" oder "header ~ section button" statt nur "button"
+  * Nutze "section:first-of-type p" für die Sub-Headline
+  * Der Selektor muss das Element im Hero-Bereich (oberer Teil der Seite) treffen
+- Wenn ein CTA mehrfach vorkommt, nimm ihn nur einmal
+- Antworte NUR mit dem JSON-Array, kein anderer Text`;
+
+      try {
+        const llmResponse = await invokeLLM({
+          messages: [
+            { role: "system", content: "Du bist ein präziser JSON-Generator. Antworte ausschließlich mit validem JSON." },
+            { role: "user", content: llmPrompt },
+          ],
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "detected_elements",
+              strict: true,
+              schema: {
+                type: "object",
+                properties: {
+                  elements: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        elementType: { type: "string", enum: ["main_headline", "pre_headline", "sub_headline", "cta"] },
+                        currentText: { type: "string" },
+                        label: { type: "string" },
+                        cssSelector: { type: "string" },
+                      },
+                      required: ["elementType", "currentText", "label", "cssSelector"],
+                      additionalProperties: false,
+                    },
+                  },
+                },
+                required: ["elements"],
+                additionalProperties: false,
+              },
+            },
+          },
+        });
+
+        const rawContent = llmResponse.choices?.[0]?.message?.content;
+        if (!rawContent || typeof rawContent !== "string") {
+          return { elements: [], pageTitle, spaDetected: true, error: "LLM-Analyse fehlgeschlagen (leere Antwort)." };
+        }
+
+        const parsed = JSON.parse(rawContent);
+        const llmElements: DetectedElement[] = (parsed.elements || []).map((el: any) => ({
+          elementType: el.elementType as DetectedElement["elementType"],
+          cssSelector: el.cssSelector,
+          currentText: el.currentText,
+          label: el.label,
+        }));
+
+        return { elements: llmElements, pageTitle, spaDetected: true };
+      } catch (err: any) {
+        return {
+          elements: [],
+          pageTitle,
+          spaDetected: true,
+          error: `SPA-Analyse fehlgeschlagen: ${err.message}`,
+        };
+      }
+
     }),
 
   // ─── SUGGEST VARIANT ──────────────────────────────────────────────────────

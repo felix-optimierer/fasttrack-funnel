@@ -582,3 +582,9 @@
 - [x] Zeitaggregations-Switcher in allen Diagrammen: täglich / wöchentlich / quartalsweise
 - [x] Switcher in Übersicht (Overview) integriert
 - [x] Switcher in Funnelübersicht integriert
+
+## Testoptimierer Scanner-Fix für externe SPAs
+
+- [x] Scanner erkennt keine Elemente auf externen SPAs (physiofreiheit.de/revolution) – Fix implementiert
+- [x] Headlines, Subheadlines und CTA-Buttons auf gerenderten Seiten automatisch erkennen (via LLM + Bundle-Analyse)
+- [x] Getestet mit physiofreiheit.de/revolution + physiofreiheit.de (4-6 Elemente erkannt)
