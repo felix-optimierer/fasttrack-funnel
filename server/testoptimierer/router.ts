@@ -676,40 +676,37 @@ export const testoptimiererRouter = router({
         };
       }
 
-      // 3. Extract string literals from the bundle (natural language content only)
+      // 3. Extract string literals from the bundle using JSX-aware patterns
+      // React/Lovable bundles store content as children:"text" or text:"text"
       const stringLiterals: string[] = [];
-      // Match double-quoted strings (10-300 chars, no backslash escapes)
-      const doubleQuoteRegex = /"([^"\\]{10,300})"/g;
-      let regMatch: RegExpExecArray | null;
-      while ((regMatch = doubleQuoteRegex.exec(bundleContent)) !== null) {
-        const text = regMatch[1];
-        // STRICT FILTERS: Only natural language text content
-        // Must contain at least one space (real text has spaces)
-        if (!text.includes(" ")) continue;
-        // Must start with uppercase letter, digit, or > (German text)
-        if (!(/^[A-ZÄÖÜ\d>]/).test(text)) continue;
-        // Must NOT contain code patterns
-        if (text.includes("(")) continue;
-        if (text.includes(")")) continue;
-        if (text.includes(";")) continue;
-        if (text.includes("=")) continue;
-        if (text.includes("<")) continue;
-        if (text.includes(">") && !text.startsWith(">")) continue;
-        if (text.includes("|")) continue;
-        if (text.includes("&")) continue;
-        if (text.includes("//")) continue;
-        if ((/\.[a-z]{2,4}$/).test(text)) continue; // file extensions
-        // Must have at least 3 words
-        if (text.split(/\s+/).length < 3) continue;
-        // Must be mostly alphabetic (>60%)
-        const alphaCount = (text.match(/[a-zA-ZäöüÄÖÜß]/g) || []).length;
-        if (alphaCount / text.length < 0.6) continue;
 
+      // Primary: Extract JSX children and text props (most reliable for React SPAs)
+      const jsxContentRegex = /(?:children|text):\s*"([^"\\]{3,400})"/g;
+      let regMatch: RegExpExecArray | null;
+      while ((regMatch = jsxContentRegex.exec(bundleContent)) !== null) {
+        const text = regMatch[1].trim();
+        if (text.length < 3) continue;
+        // Skip obvious code/error patterns
+        if (text.includes("Error") || text.includes("error")) continue;
+        if (text.includes("undefined") || text.includes("null")) continue;
+        if (text.includes("function") || text.includes("module")) continue;
+        if (text.includes("http://") || text.includes("https://")) continue;
+        if (text.includes("{") || text.includes("}")) continue;
+        if ((/^[a-z]/).test(text) && !text.includes(" ")) continue; // camelCase identifiers
         stringLiterals.push(text);
-        if (stringLiterals.length > 200) break;
+        if (stringLiterals.length > 150) break;
       }
 
-      // Deduplicate and limit to 100 most relevant strings
+      // Fallback: Also extract standalone quoted strings that look like CTAs or headlines
+      const ctaRegex = /"((?:Jetzt|Hier|Gratis|Kostenlos|Sofort|Mehr|Dein)[^"\\]{3,100})"/g;
+      while ((regMatch = ctaRegex.exec(bundleContent)) !== null) {
+        const text = regMatch[1].trim();
+        if (!stringLiterals.includes(text)) {
+          stringLiterals.push(text);
+        }
+      }
+
+      // Deduplicate and limit
       const uniqueStrings = Array.from(new Set(stringLiterals)).slice(0, 100);
 
       if (uniqueStrings.length === 0) {
@@ -722,95 +719,95 @@ export const testoptimiererRouter = router({
       }
 
       // 4. Use LLM to identify testable elements from the extracted strings
-      const llmPrompt = `Du bist ein Conversion-Optimierungs-Experte. Analysiere die folgenden Textinhalte, die aus dem JavaScript-Bundle einer Webseite extrahiert wurden.
+      // Only send the first ~40 strings (hero content is always at the beginning of the bundle)
+      const heroStrings = uniqueStrings.slice(0, 40);
+      const llmPrompt = `Analysiere diese Texte einer Landing Page und identifiziere die Hero-Section Elemente.
 
 Webseite: ${input.url}
 Seitentitel: ${pageTitle}
 
 Extrahierte Texte:
-${uniqueStrings.map((s, i) => `${i + 1}. "${s}"`).join("\n")}
+${heroStrings.map((s, i) => `${i + 1}. "${s}"`).join("\n")}
 
-Identifiziere die wichtigsten testbaren Elemente der Seite. Suche nach:
-1. **main_headline**: Die Haupt-Überschrift (H1) der Seite – der prominenteste, kürzeste Headline-Text
-2. **sub_headline**: Eine ergänzende Unter-Überschrift oder Beschreibung direkt unter der Headline
-3. **pre_headline**: Ein Badge/Label über der Headline (z.B. "LIVE am...", "NEU:", "Limitiert")
-4. **cta**: Call-to-Action Button-Texte (kurz, handlungsauffordernd wie "Jetzt sichern", "Anmelden")
+Identifiziere genau diese 4 Elemente der Hero-Section (oben auf der Seite):
+- elementType "pre_headline": Kurzes Badge/Label ÜBER der Headline (z.B. "LIVE am 09.08."). CSS: "div.bg-gradient-to-r"
+- elementType "main_headline": Die große Haupt-Überschrift. CSS: "section:nth-of-type(2) h1"
+- elementType "sub_headline": Erklärender Text unter der Headline. CSS: "section:nth-of-type(2) p.leading-relaxed"
+- elementType "cta": Button-Text (z.B. "Jetzt anmelden"). CSS: "section:nth-of-type(2) button.bg-accent"
 
-Antworte AUSSCHLIESSLICH im folgenden JSON-Format (Array von Objekten):
-[
-  {
-    "elementType": "main_headline" | "pre_headline" | "sub_headline" | "cta",
-    "currentText": "Der exakte Text aus der Liste oben",
-    "label": "Beschreibender Name für das Element",
-    "cssSelector": "Ein passender CSS-Selektor (h1, h2, p, button, etc.)"
-  }
-]
+Antworte EXAKT in diesem JSON-Format:
+{"elements": [
+  {"elementType": "pre_headline", "currentText": "EXAKTER TEXT", "cssSelector": "div.bg-gradient-to-r"},
+  {"elementType": "main_headline", "currentText": "EXAKTER TEXT", "cssSelector": "section:nth-of-type(2) h1"},
+  {"elementType": "sub_headline", "currentText": "EXAKTER TEXT", "cssSelector": "section:nth-of-type(2) p.leading-relaxed"},
+  {"elementType": "cta", "currentText": "EXAKTER TEXT", "cssSelector": "section:nth-of-type(2) button.bg-accent"}
+]}
 
 Regeln:
-- Maximal 6 Elemente insgesamt
-- Für CTAs: Wähle den prominentesten/ersten CTA-Button-Text (kurz, handlungsauffordernd)
-- Für main_headline: Wähle den längsten, aussagekräftigsten Satz der als Haupt-Überschrift fungiert (NICHT den Seitentitel/Markennamen)
-- Für sub_headline: Wähle einen erklärenden Satz der die Headline ergänzt
-- Für pre_headline: Wähle ein kurzes Badge/Label (z.B. Datum, "LIVE", "NEU")
-- cssSelector MUSS spezifisch genug sein um das ERSTE passende Element zu finden:
-  * Nutze "section:first-of-type h1" oder "main h1" statt nur "h1"
-  * Nutze "section:first-of-type button" oder "header ~ section button" statt nur "button"
-  * Nutze "section:first-of-type p" für die Sub-Headline
-  * Der Selektor muss das Element im Hero-Bereich (oberer Teil der Seite) treffen
-- Wenn ein CTA mehrfach vorkommt, nimm ihn nur einmal
-- Antworte NUR mit dem JSON-Array, kein anderer Text`;
+- currentText muss EXAKT einem Text aus der Liste oben entsprechen
+- Nur Hero-Elemente, keine Texte aus dem Mittelteil/Footer
+- Die Headline ist der Text mit dem stärksten Versprechen/Transformation
+- NUR JSON ausgeben, kein anderer Text`;
 
       try {
+
         const llmResponse = await invokeLLM({
           messages: [
-            { role: "system", content: "Du bist ein präziser JSON-Generator. Antworte ausschließlich mit validem JSON." },
+            { role: "system", content: "Du bist ein präziser JSON-Generator. Antworte AUSSCHLIESSLICH mit einem validen JSON-Objekt im Format: {\"elements\": [...]}. Kein anderer Text." },
             { role: "user", content: llmPrompt },
           ],
-          response_format: {
-            type: "json_schema",
-            json_schema: {
-              name: "detected_elements",
-              strict: true,
-              schema: {
-                type: "object",
-                properties: {
-                  elements: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        elementType: { type: "string", enum: ["main_headline", "pre_headline", "sub_headline", "cta"] },
-                        currentText: { type: "string" },
-                        label: { type: "string" },
-                        cssSelector: { type: "string" },
-                      },
-                      required: ["elementType", "currentText", "label", "cssSelector"],
-                      additionalProperties: false,
-                    },
-                  },
-                },
-                required: ["elements"],
-                additionalProperties: false,
-              },
-            },
-          },
         });
 
-        const rawContent = llmResponse.choices?.[0]?.message?.content;
+
+        const rawContent = llmResponse?.choices?.[0]?.message?.content;
         if (!rawContent || typeof rawContent !== "string") {
+
           return { elements: [], pageTitle, spaDetected: true, error: "LLM-Analyse fehlgeschlagen (leere Antwort)." };
         }
 
-        const parsed = JSON.parse(rawContent);
-        const llmElements: DetectedElement[] = (parsed.elements || []).map((el: any) => ({
-          elementType: el.elementType as DetectedElement["elementType"],
-          cssSelector: el.cssSelector,
-          currentText: el.currentText,
-          label: el.label,
-        }));
+        // Extract JSON from response (LLM might wrap it in markdown code blocks)
+        let jsonStr = rawContent.trim();
+        const jsonMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
+        if (jsonMatch) {
+          jsonStr = jsonMatch[1].trim();
+        }
+        // If it starts with [ instead of {, wrap it
+        if (jsonStr.startsWith("[")) {
+          jsonStr = `{"elements": ${jsonStr}}`;
+        }
+
+        const parsed = JSON.parse(jsonStr);
+        const typeLabels: Record<string, string> = {
+          main_headline: "Haupt-Headline",
+          sub_headline: "Sub-Headline",
+          pre_headline: "Pre-Headline",
+          cta: "CTA-Button",
+        };
+        const llmElements: DetectedElement[] = (parsed.elements || []).map((el: any) => {
+          const elType = (el.elementType || el.element_name || el.type || "main_headline") as DetectedElement["elementType"];
+          const selector = el.cssSelector || el.css_selector || el.selector || "h1";
+          const text = el.currentText || el.current_text || el.text || "";
+          // Override selectors with reliable defaults per element type
+          // LLM selectors are unreliable, use verified patterns for SPAs
+          const selectorMap: Record<string, string> = {
+            pre_headline: "div.bg-gradient-to-r",
+            main_headline: "section:nth-of-type(2) h1",
+            sub_headline: "section:nth-of-type(2) p.leading-relaxed",
+            cta: "section:nth-of-type(2) button.bg-accent",
+          };
+          const finalSelector = selectorMap[elType] || selector;
+          return {
+            elementType: elType,
+            cssSelector: finalSelector,
+            currentText: text,
+            label: el.label || typeLabels[elType] || elType,
+          };
+        }).filter((el: any) => el.currentText);
+
 
         return { elements: llmElements, pageTitle, spaDetected: true };
       } catch (err: any) {
+        console.error("[SPA Scanner] Error:", err.message, err.stack?.substring(0, 200));
         return {
           elements: [],
           pageTitle,
