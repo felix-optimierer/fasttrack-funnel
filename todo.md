@@ -588,3 +588,10 @@
 - [x] Scanner erkennt keine Elemente auf externen SPAs (physiofreiheit.de/revolution) – Fix implementiert
 - [x] Headlines, Subheadlines und CTA-Buttons auf gerenderten Seiten automatisch erkennen (via LLM + Bundle-Analyse)
 - [x] Getestet mit physiofreiheit.de/revolution + physiofreiheit.de (4-6 Elemente erkannt)
+
+## Meta Ads Kampagnen-Zuordnung korrigieren
+
+- [ ] CAMPAIGN_FUNNEL_MAP korrigieren: Retargeting-Kampagne 120250746019280563 ist NICHT Exit-Plan, sondern eigene Kategorie (evergreen-retargeting)
+- [ ] Umfrage-Kampagne als 4. Kampagne hinzufügen (ID aus Meta Ads ermitteln)
+- [ ] Exit-Plan Ad-Spend der letzten Tage korrekt synchronisieren
+- [ ] Redeploy auf Hetzner nach Fix

@@ -11,7 +11,8 @@ import { setAdSpend } from "./funnel-db";
 export const CAMPAIGN_FUNNEL_MAP: Record<string, { channel: string; campaignId: string }> = {
   "120250432788160563": { channel: "traumwebseite", campaignId: "120250432788160563" },  // FB_14.07.2026 | VSL_Leads Traumwebseite | A+ V1
   "120250479972680563": { channel: "exit-plan", campaignId: "120250479972680563" },      // FB_15.07.2026 | LM_Exit-Plan | V1
-  "120250746019280563": { channel: "exit-plan", campaignId: "120250746019280563" },      // FB_24.07.2026 BO | Evergreen Retargeting
+  "120250746019280563": { channel: "praxis-umfrage", campaignId: "120250746019280563" }, // FB_24.07.2026 BO | Evergreen Retargeting Praxisinhaber Umfrage – Kopie
+  "120240630952240563": { channel: "praxis-umfrage", campaignId: "120240630952240563" }, // BO | Praxisinhaber Umfrage (ältere Kampagne)
   // KI-Report wird später hinzugefügt wenn Kampagne aktiv
 };
 
