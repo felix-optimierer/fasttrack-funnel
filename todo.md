@@ -591,7 +591,10 @@
 
 ## Meta Ads Kampagnen-Zuordnung korrigieren
 
-- [ ] CAMPAIGN_FUNNEL_MAP korrigieren: Retargeting-Kampagne 120250746019280563 ist NICHT Exit-Plan, sondern eigene Kategorie (evergreen-retargeting)
-- [ ] Umfrage-Kampagne als 4. Kampagne hinzufügen (ID aus Meta Ads ermitteln)
-- [ ] Exit-Plan Ad-Spend der letzten Tage korrekt synchronisieren
-- [ ] Redeploy auf Hetzner nach Fix
+- [x] CAMPAIGN_FUNNEL_MAP korrigieren: Retargeting-Kampagne 120250746019280563 → praxis-umfrage (nicht exit-plan)
+- [x] Umfrage-Kampagne als 4. Kampagne hinzugefügt (120240630952240563 "BO | Praxisinhaber Umfrage" → praxis-umfrage)
+- [x] Exit-Plan Ad-Spend der letzten Tage korrekt synchronisiert (Jul 24 - Aug 3, alle Werte aus Meta API verifiziert)
+- [x] Praxis-Umfrage Ad-Spend eingefügt (Jul 24 - Aug 3)
+- [x] Heartbeat-Job erstellt: ad-costs-sync (alle 6h, 00:30/06:30/12:30/18:30 UTC)
+- [x] Sync-Handler erweitert: Auto-Fetch von Meta API wenn kein Body übergeben
+- [x] Redeploy auf Hetzner (Deployment #20 finished)
