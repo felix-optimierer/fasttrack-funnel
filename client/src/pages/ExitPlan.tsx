@@ -10,7 +10,7 @@ import { usePageView } from "@/hooks/usePageView";
 import { LeadPopup } from "@/components/LeadPopup";
 
 const BG_BLURRED_URL = "/manus-storage/exit-plan-bg-optimized_47209fe8.webp";
-const MOCKUP_URL = "/manus-storage/exit-plan-mockup_34bc569f.webp";
+const MOCKUP_URL = "/manus-storage/exit-plan-mockup_be5b5130.webp";
 
 const BENEFITS = [
   "Der 5-Schritte-Plan: Von Kassensystem-Abhängigkeit zum Hybrid-Modell",

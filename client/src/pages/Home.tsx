@@ -8,8 +8,8 @@ import { Logo, GoldButton, DoubleSeals, Footer } from "@/components/funnel";
 import { ArrowRight, ExternalLink } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 
-const KI_REPORT_MOCKUP = "/manus-storage/ki-report-mockup_537345be.webp";
-const EXIT_PLAN_MOCKUP = "/manus-storage/exit-plan-mockup_34bc569f.webp";
+const KI_REPORT_MOCKUP = "/manus-storage/ki-report-mockup_d908aa59.webp";
+const EXIT_PLAN_MOCKUP = "/manus-storage/exit-plan-mockup_be5b5130.webp";
 
 const TRAUMWEBSEITE_MOCKUP = "/manus-storage/traumwebseite-mockup_2e12bd15.webp";
 
