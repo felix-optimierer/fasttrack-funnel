@@ -84,7 +84,7 @@ export default function DankeExitPlan() {
           </div>
 
           {/* WhatsApp-Button — UNTER dem Badge */}
-          <div className="mb-10">
+          <div className="mb-6">
             <a
               href={WHATSAPP_URL}
               target="_blank"
@@ -99,17 +99,17 @@ export default function DankeExitPlan() {
           </div>
 
           {/* Trennlinie */}
-          <div className="mx-auto mb-8 max-w-md border-t border-border/30" />
+          <div className="mx-auto mb-5 max-w-md border-t border-border/30" />
 
           {/* CTA: Praxisanalyse buchen — GANZ UNTEN */}
-          <h2 className="mx-auto max-w-2xl text-balance text-xl font-bold leading-[1.2] md:text-2xl mb-6">
+          <h2 className="mx-auto max-w-2xl text-balance text-lg font-bold leading-[1.2] md:text-xl mb-4">
             Sichere dir jetzt deine{" "}
             <span className="text-gradient-gold">kostenlose 1:1 KI-Praxisanalyse</span>
           </h2>
 
           <GoldButton
             glow
-            className="mx-auto"
+            className="mx-auto !w-auto !max-w-fit"
             onClick={() => navigate("/termin")}
           >
             Jetzt deine kostenlose Praxisanalyse buchen
