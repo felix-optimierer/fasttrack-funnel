@@ -604,5 +604,5 @@
 - [x] /termin Seite erstellen: Calendly-Embed für KI-Report UND Exit-Plan Buchungen
 - [x] Calendly von Danke-Seite entfernen, stattdessen Button "KI-Praxisanalyse buchen" → /termin
 - [x] Routen in App.tsx registrieren
-- [ ] Redeploy auf Hetzner
+- [x] Redeploy auf Hetzner (Deployment #25 finished)
 - [x] /danke-exit-plan Seite erstellen: Wistia-Video (gbgtl8rg7j), Headline, Badge, WhatsApp-Button, CTA "Jetzt deine kostenlose Praxisanalyse buchen" → /termin

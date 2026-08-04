@@ -70,12 +70,20 @@ export default function DankeKiReport() {
             </span>
           </h1>
 
-          {/* Badge: Subheadline */}
-          <div className="mt-5 mb-8 inline-flex items-center gap-2 rounded-xl border border-gold/40 bg-card/70 px-5 py-3 text-xs font-semibold text-gold/90 backdrop-blur md:text-sm max-w-2xl text-center leading-relaxed">
+          {/* Wistia Video — OBEN */}
+          <div className="mx-auto mt-8 max-w-3xl mb-8">
+            <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
+              {/* @ts-ignore - Wistia custom element */}
+              <wistia-player media-id="6f29tx1vos" aspect="1.7777777777777777"></wistia-player>
+            </div>
+          </div>
+
+          {/* Badge: Subheadline — UNTER dem Video */}
+          <div className="mb-6 inline-flex items-center gap-2 rounded-xl border border-gold/40 bg-card/70 px-5 py-3 text-xs font-semibold text-gold/90 backdrop-blur md:text-sm max-w-2xl text-center leading-relaxed">
             Klicke auf den Button und sende uns eine WhatsApp-Nachricht, um anschließend den KI-Report 2026 zu erhalten und schaue dir unbedingt die kurze Nachricht von Robin an.
           </div>
 
-          {/* WhatsApp-Button */}
+          {/* WhatsApp-Button — UNTER dem Badge */}
           <div className="mb-10">
             <a
               href={WHATSAPP_URL}
@@ -90,18 +98,10 @@ export default function DankeKiReport() {
             </a>
           </div>
 
-          {/* Wistia Video */}
-          <div className="mx-auto max-w-3xl mb-10">
-            <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
-              {/* @ts-ignore - Wistia custom element */}
-              <wistia-player media-id="6f29tx1vos" aspect="1.7777777777777777"></wistia-player>
-            </div>
-          </div>
-
           {/* Trennlinie */}
           <div className="mx-auto mb-8 max-w-md border-t border-border/30" />
 
-          {/* CTA: KI-Praxisanalyse buchen */}
+          {/* CTA: KI-Praxisanalyse buchen — GANZ UNTEN */}
           <h2 className="mx-auto max-w-2xl text-balance text-xl font-bold leading-[1.2] md:text-2xl mb-6">
             Sichere dir jetzt deine{" "}
             <span className="text-gradient-gold">kostenlose 1:1 KI-Praxisanalyse</span>
