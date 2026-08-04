@@ -67,10 +67,6 @@ export default function Termin() {
             <span className="text-gradient-gold">kostenlose 1:1 KI-Praxisanalyse</span>
           </h1>
 
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-base mb-8">
-            Wähle einen freien Termin und erfahre in einem persönlichen Gespräch, wie du mit KI-Agenten deine Praxis auf das nächste Level bringst – ohne Technikkenntnisse.
-          </p>
-
           {/* Calendly-Bereich */}
           <div className="mx-auto max-w-3xl">
             <div
