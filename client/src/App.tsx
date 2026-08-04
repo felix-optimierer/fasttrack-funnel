@@ -18,6 +18,9 @@ const WebseiteTermin = lazy(() => import("./pages/WebseiteTermin"));
 const KiReportTermin = lazy(() => import("./pages/KiReportTermin"));
 const ExitPlanTermin = lazy(() => import("./pages/ExitPlanTermin"));
 const DankeTermin = lazy(() => import("./pages/DankeTermin"));
+const DankeKiReport = lazy(() => import("./pages/DankeKiReport"));
+const DankeExitPlan = lazy(() => import("./pages/DankeExitPlan"));
+const Termin = lazy(() => import("./pages/Termin"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Testoptimierer = lazy(() => import("./pages/Testoptimierer"));
 const TestoptimiererScorecard = lazy(() => import("./pages/TestoptimiererScorecard"));
@@ -58,6 +61,9 @@ function Router() {
           <Route path="/ki-report-termin" component={KiReportTermin} />
           <Route path="/exit-plan-termin" component={ExitPlanTermin} />
           <Route path="/danke-termin" component={DankeTermin} />
+          <Route path="/danke-ki-report" component={DankeKiReport} />
+          <Route path="/danke-exit-plan" component={DankeExitPlan} />
+          <Route path="/termin" component={Termin} />
           <Route path="/admin" component={Admin} />
           <Route path="/exit-plan" component={ExitPlan} />
           <Route path="/ki-report" component={KiReport} />

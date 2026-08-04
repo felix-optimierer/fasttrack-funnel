@@ -215,6 +215,7 @@ export const appRouter = router({
             "home", "vsl", "termin", "webseite-termin",
             "ki-report-termin", "exit-plan-termin",
             "exit-plan", "ki-report", "traumwebseite",
+            "danke-ki-report", "danke-exit-plan",
           ]),
           visitorId: z.string().max(64).optional(),
           utmSource: z.string().max(255).optional(),

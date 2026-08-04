@@ -598,3 +598,11 @@
 - [x] Heartbeat-Job erstellt: ad-costs-sync (alle 6h, 00:30/06:30/12:30/18:30 UTC)
 - [x] Sync-Handler erweitert: Auto-Fetch von Meta API wenn kein Body übergeben
 - [x] Redeploy auf Hetzner (Deployment #20 finished)
+
+## Danke-KI-Report + Termin-Seite
+- [x] /danke-ki-report Seite erstellen: Wistia-Video (6f29tx1vos), Headline mit VORNAME, Badge-Subheadline, WhatsApp-Button
+- [x] /termin Seite erstellen: Calendly-Embed für KI-Report UND Exit-Plan Buchungen
+- [x] Calendly von Danke-Seite entfernen, stattdessen Button "KI-Praxisanalyse buchen" → /termin
+- [x] Routen in App.tsx registrieren
+- [ ] Redeploy auf Hetzner
+- [x] /danke-exit-plan Seite erstellen: Wistia-Video (gbgtl8rg7j), Headline, Badge, WhatsApp-Button, CTA "Jetzt deine kostenlose Praxisanalyse buchen" → /termin
