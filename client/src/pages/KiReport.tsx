@@ -212,7 +212,7 @@ export default function KiReport() {
         headline="An wen dürfen wir den KI-Report senden?"
         subtext="Die Inhalte kommen per WhatsApp deswegen gib bitte deine WhatsApp Nummer ein"
         source="ki-report"
-        redirectTo="/ki-report-termin"
+        redirectTo="/danke-ki-report"
       />
     </div>
     </>
