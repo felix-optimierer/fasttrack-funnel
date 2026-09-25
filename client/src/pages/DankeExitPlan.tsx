@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useLocation, useSearch } from "wouter";
 import { SEO } from "@/components/SEO";
 import { ASSETS } from "@/lib/site";
-import { Logo, GoldButton, DoubleSeals, Footer } from "@/components/funnel";
+import { Logo, GoldButton, TripleSeals, Footer } from "@/components/funnel";
 import { ArrowRight } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 
@@ -118,9 +118,9 @@ export default function DankeExitPlan() {
 
           {/* TÜV-Siegel */}
           <div className="mt-10 flex flex-col items-center gap-2 sm:gap-3">
-            <DoubleSeals />
+            <TripleSeals />
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">
-              Doppelt TÜV-zertifiziert
+              Dreifach TÜV-zertifiziert
             </p>
           </div>
         </section>

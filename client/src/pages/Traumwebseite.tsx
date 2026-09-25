@@ -1,11 +1,11 @@
 // OPT-IN PAGE — maximal on point (Vorbild: ecomscaling.org/sta).
-// Headline "Definitiver Weg ...", >100x bewiesen oben, CTA -> 9 Fallstudien, Doppel-TÜV-Siegel unter dem Formular.
+// Headline "Definitiver Weg ...", >200x bewiesen oben, CTA -> 9 Fallstudien, Dreifach-TÜV-Siegel unter dem Formular.
 import { useEffect, useState } from "react";
 import { SEO } from "@/components/SEO";
 import { SEO_CONFIG } from "@/lib/seo-config";
 import { useLocation } from "wouter";
 import { ASSETS } from "@/lib/site";
-import { Logo, GoldButton, DoubleSeals, Footer } from "@/components/funnel";
+import { Logo, GoldButton, TripleSeals, Footer } from "@/components/funnel";
 import { Lock, ArrowRight, Check } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
@@ -76,9 +76,9 @@ export default function Traumwebseite() {
       </header>
 
       <main className="container flex flex-1 flex-col items-center justify-center pb-6 pt-1 text-center">
-        {/* >100x bewiesen oben – mobil einzeilig */}
+        {/* >200x bewiesen oben – mobil einzeilig */}
         <div className="mb-3 inline-flex max-w-full items-center gap-1.5 whitespace-nowrap rounded-full border border-gold/40 bg-card/70 px-3 py-1.5 text-[11px] font-semibold text-gold backdrop-blur sm:gap-2 sm:px-4 sm:text-sm">
-          &gt;100× bewiesen
+          &gt;200× bewiesen
           <span className="font-normal text-muted-foreground">
             <span className="sm:hidden">(Beweise: nächste Seite)</span>
             <span className="hidden sm:inline">
@@ -180,9 +180,9 @@ export default function Traumwebseite() {
 
         {/* Echte TÜV-Rheinland-Siegel unter dem Formular */}
         <div className="mt-4 flex flex-col items-center gap-2 sm:mt-5 sm:gap-3">
-          <DoubleSeals />
+          <TripleSeals />
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">
-            Doppelt TÜV-zertifiziert
+            Dreifach TÜV-zertifiziert
           </p>
         </div>
       </main>

@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { SEO } from "@/components/SEO";
 import { SEO_CONFIG } from "@/lib/seo-config";
 import { ASSETS } from "@/lib/site";
-import { Logo, DoubleSeals, Footer } from "@/components/funnel";
+import { Logo, TripleSeals, Footer } from "@/components/funnel";
 import { CalendarCheck, Mail, Video, CheckCircle2 } from "lucide-react";
 
 const STEPS = [
@@ -82,9 +82,9 @@ export default function DankeTermin() {
 
           {/* TÜV-Siegel */}
           <div className="mt-12 flex flex-col items-center gap-2 sm:gap-3">
-            <DoubleSeals />
+            <TripleSeals />
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">
-              Doppelt TÜV-zertifiziert
+              Dreifach TÜV-zertifiziert
             </p>
           </div>
         </section>

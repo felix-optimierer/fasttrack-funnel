@@ -17,9 +17,10 @@ export const ASSETS = {
     "https://d2xsxph8kpxj0f.cloudfront.net/310519663184004032/n4HsdnCPFsDhTY9NVz5q9i/seal-a-CvFa5z9RWcoR87SGy3i4nB.webp",
   sealB:
     "https://d2xsxph8kpxj0f.cloudfront.net/310519663184004032/n4HsdnCPFsDhTY9NVz5q9i/seal-b-DhsEryTV6E7xcirMM4E2fH.webp",
-  // Echte TÜV Rheinland Zertifikate (ID 0217466534 & 0217466539)
+  // Echte TÜV Rheinland Zertifikate (ID 0217466534, 0217466539 & 0217466756)
   tuv1: "/manus-storage/tuv-1-round-optimized_397e1cab.webp",
   tuv2: "/manus-storage/tuv-2-round-optimized_4a0bf183.webp",
+  tuv3: "/manus-storage/tuv-rheinland-verkaufspsychologie-felix-brandt-optimized_43e7aac9.webp",
   // Echte Fallstudien-Bilder (von den Original-Webseiten)
   caseTorben: "/manus-storage/torben_moeller_ef873c93.jpeg",
   caseReichl: "/manus-storage/alexander_reichl_c936ba49.webp",
@@ -42,12 +43,12 @@ export const BRAND = {
 export const HOOK = {
   promise: "Traumwebseite mit KI-Agenten in unter 60 Minuten",
   without: "ohne Technikkenntnisse, ohne Agentur, ohne Baukasten",
-  trust: "Über 100× bewiesen · Doppelt TÜV-zertifiziert",
+  trust: "Über 200× bewiesen · Dreifach TÜV-zertifiziert",
 };
 
 export const PROOF_STATS = [
-  { value: "100+", label: "begleitete Physiopraxen" },
-  { value: "2×", label: "TÜV-zertifiziert" },
+  { value: "200+", label: "begleitete Physiopraxen" },
+  { value: "3×", label: "TÜV-zertifiziert" },
   { value: "60 Min", label: "bis zur eigenen Webseite" },
   { value: "0 €", label: "Agenturkosten" },
 ];

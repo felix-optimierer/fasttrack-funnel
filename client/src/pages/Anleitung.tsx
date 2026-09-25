@@ -11,7 +11,7 @@ import {
   ProofBar,
   CaseGrid,
   TrustBadges,
-  DoubleSeals,
+  TripleSeals,
   Footer,
 } from "@/components/funnel";
 import { Calendar, ArrowRight } from "lucide-react";
@@ -107,7 +107,7 @@ export default function Anleitung() {
           {/* Sub-Headline – kompakter */}
           <h1 className="mx-auto max-w-2xl text-balance text-lg font-extrabold leading-[1.2] md:text-2xl">
             Wie schon{" "}
-            <span className="text-gradient-gold">&gt;100 unserer Kunden</span>{" "}
+            <span className="text-gradient-gold">&gt;200 unserer Kunden</span>{" "}
             DSGVO-konforme Praxis-Webseiten in 2026 mit KI-Agenten durch die
             neusten KI-Modelle gebaut haben
           </h1>
@@ -182,9 +182,9 @@ export default function Anleitung() {
 
             {/* Echte TÜV-Rheinland-Siegel unter dem Video */}
             <div className="mt-6 flex flex-col items-center gap-2.5">
-              <DoubleSeals />
+              <TripleSeals />
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                Doppelt TÜV-zertifiziert
+                Dreifach TÜV-zertifiziert
               </p>
             </div>
           </div>
@@ -205,7 +205,7 @@ export default function Anleitung() {
             Echte Praxen. Echte Ergebnisse.
           </h2>
           <p className="mb-9 text-center text-sm text-muted-foreground">
-            Über 100× bewiesen – hier sind echte Stimmen unserer Kunden.
+            Über 200× bewiesen – hier sind echte Stimmen unserer Kunden.
           </p>
           <CaseGrid />
         </div>

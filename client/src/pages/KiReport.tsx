@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { SEO } from "@/components/SEO";
 import { SEO_CONFIG } from "@/lib/seo-config";
 import { ASSETS } from "@/lib/site";
-import { Logo, GoldButton, DoubleSeals, Footer } from "@/components/funnel";
+import { Logo, GoldButton, TripleSeals, Footer } from "@/components/funnel";
 import { Download, Check } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 import { LeadPopup } from "@/components/LeadPopup";
@@ -144,9 +144,9 @@ export default function KiReport() {
 
             {/* === MOBILE: TÜV-Siegel direkt nach Button === */}
             <div className="mb-4 flex flex-col items-start gap-2 lg:hidden">
-              <DoubleSeals />
+              <TripleSeals />
               <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                Doppelt TÜV-zertifiziert
+                Dreifach TÜV-zertifiziert
               </p>
             </div>
 
@@ -179,9 +179,9 @@ export default function KiReport() {
 
             {/* === DESKTOP: TÜV-Siegel unter den Häkchen === */}
             <div className="mt-5 hidden flex-col items-start gap-2 lg:flex">
-              <DoubleSeals />
+              <TripleSeals />
               <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                Doppelt TÜV-zertifiziert
+                Dreifach TÜV-zertifiziert
               </p>
             </div>
           </div>

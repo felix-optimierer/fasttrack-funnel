@@ -4,7 +4,7 @@ import { SEO } from "@/components/SEO";
 import { SEO_CONFIG } from "@/lib/seo-config";
 import { useLocation } from "wouter";
 import { ASSETS } from "@/lib/site";
-import { Logo, GoldButton, DoubleSeals, Footer } from "@/components/funnel";
+import { Logo, GoldButton, TripleSeals, Footer } from "@/components/funnel";
 import { ArrowRight, ExternalLink } from "lucide-react";
 import { usePageView } from "@/hooks/usePageView";
 
@@ -33,7 +33,7 @@ const OFFERS = [
   {
     title: "Der 5-Schritte Exit-Plan",
     description:
-      "Der exakte Plan, mit dem 100+ Praxis-Inhaber ihre Behandlungszeit reduziert haben bei mehr Gewinn auf dem Konto.",
+      "Der exakte Plan, mit dem 200+ Praxis-Inhaber ihre Behandlungszeit reduziert haben bei mehr Gewinn auf dem Konto.",
     cta: "Exit-Plan kostenlos sichern",
     href: "/exit-plan",
     mockup: EXIT_PLAN_MOCKUP,
@@ -111,9 +111,9 @@ export default function Home() {
 
         {/* TÜV-Siegel */}
         <div className="mt-8 flex flex-col items-center gap-2 sm:mt-10 sm:gap-3">
-          <DoubleSeals />
+          <TripleSeals />
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">
-            Doppelt TÜV-zertifiziert
+            Dreifach TÜV-zertifiziert
           </p>
         </div>
 
@@ -123,7 +123,7 @@ export default function Home() {
             Du willst mehr über uns erfahren?
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Schau auf unserer Webseite vorbei und erfahre, wie wir über 100
+            Schau auf unserer Webseite vorbei und erfahre, wie wir über 200
             Physiopraxen bei der Digitalisierung begleitet haben.
           </p>
           <a

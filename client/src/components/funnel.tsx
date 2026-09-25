@@ -72,10 +72,10 @@ export function TrustBadges() {
   return (
     <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-muted-foreground">
       <span className="inline-flex items-center gap-2">
-        <ShieldCheck className="h-4 w-4 text-gold" /> Doppelt TÜV-zertifiziert
+        <ShieldCheck className="h-4 w-4 text-gold" /> Dreifach TÜV-zertifiziert
       </span>
       <span className="inline-flex items-center gap-2">
-        <Star className="h-4 w-4 text-gold" /> 100+ begleitete Praxen
+        <Star className="h-4 w-4 text-gold" /> 200+ begleitete Praxen
       </span>
       <span className="inline-flex items-center gap-2">
         <ShieldCheck className="h-4 w-4 text-gold" /> 100 % Klartext, kein Agentur-Blabla
@@ -171,13 +171,16 @@ export function CaseGrid() {
   );
 }
 
-export function DoubleSeals({
+export function TripleSeals({
   className = "",
 }: {
   className?: string;
 }) {
   return (
-    <div className={`flex flex-wrap items-center justify-center gap-3 ${className}`}>
+    <div
+      className={`grid grid-cols-2 items-center justify-items-center gap-3 sm:flex sm:flex-wrap sm:justify-center ${className}`}
+      aria-label="Drei TÜV-Rheinland-Zertifizierungen"
+    >
       <a
         href="https://www.certipedia.com/quality_marks/0217466534"
         target="_blank"
@@ -186,7 +189,7 @@ export function DoubleSeals({
       >
         <img
           src={ASSETS.tuv1}
-          alt="TÜV Rheinland zertifiziert – ID 0217466534"
+          alt="TÜV Rheinland Business Development Professional – Robin Nürnberg, ID 0217466534"
           width={434}
           height={160}
           className="h-14 w-auto rounded-sm shadow-lg md:h-20"
@@ -200,9 +203,23 @@ export function DoubleSeals({
       >
         <img
           src={ASSETS.tuv2}
-          alt="TÜV Rheinland zertifiziert – ID 0217466539"
+          alt="TÜV Rheinland Business Development Professional – Felix Brandt, ID 0217466539"
           width={434}
           height={160}
+          className="h-14 w-auto rounded-sm shadow-lg md:h-20"
+        />
+      </a>
+      <a
+        href="https://www.certipedia.com/quality_marks/0217466756"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="col-span-2 transition hover:brightness-105 sm:col-auto"
+      >
+        <img
+          src={ASSETS.tuv3}
+          alt="TÜV Rheinland Experte für Verkaufspsychologie – Felix Brandt, ID 0217466756"
+          width={868}
+          height={318}
           className="h-14 w-auto rounded-sm shadow-lg md:h-20"
         />
       </a>

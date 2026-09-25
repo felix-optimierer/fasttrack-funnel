@@ -16,13 +16,13 @@ export const SEO_CONFIG: Record<string, PageSEO> = {
   home: {
     title: `Kostenlose Inhalte für Physiotherapie-Praxisinhaber | ${BRAND}`,
     description:
-      "Sichere dir kostenlose Inhalte von Physio Freiheit: KI-Report 2026, Exit-Plan und Traumwebseite-Anleitung für Physiotherapie-Praxisinhaber. Doppelt TÜV-zertifiziert.",
+      "Sichere dir kostenlose Inhalte von Physio Freiheit: KI-Report 2026, Exit-Plan und Traumwebseite-Anleitung für Physiotherapie-Praxisinhaber. Dreifach TÜV-zertifiziert.",
     canonical: `${BASE_URL}/`,
   },
   traumwebseite: {
     title: `Traumwebseite in 60 Minuten per KI-Agent | ${BRAND}`,
     description:
-      "Als Praxisinhaber deine DSGVO-konforme Praxis-Webseite in unter 60 Minuten per KI-Agent bauen lassen – ohne Technikkenntnisse, ohne Agentur, ohne Baukasten. Über 100x bewiesen.",
+      "Als Praxisinhaber deine DSGVO-konforme Praxis-Webseite in unter 60 Minuten per KI-Agent bauen lassen – ohne Technikkenntnisse, ohne Agentur, ohne Baukasten. Über 200x bewiesen.",
     canonical: `${BASE_URL}/traumwebseite`,
   },
   anleitung: {
@@ -40,7 +40,7 @@ export const SEO_CONFIG: Record<string, PageSEO> = {
   exitPlan: {
     title: `Der 5-Schritte Exit-Plan für Praxisinhaber | ${BRAND}`,
     description:
-      "Der exakte Plan, mit dem über 100 Praxisinhaber ihre Behandlungszeit reduziert und mehr Gewinn auf dem Konto haben. Jetzt kostenlos sichern.",
+      "Der exakte Plan, mit dem über 200 Praxisinhaber ihre Behandlungszeit reduziert und mehr Gewinn auf dem Konto haben. Jetzt kostenlos sichern.",
     canonical: `${BASE_URL}/exit-plan`,
   },
   webseiteTermin: {
