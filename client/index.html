@@ -39,6 +39,23 @@
     <meta name="twitter:description" content="KI-Report 2026, Exit-Plan und Traumwebseite-Anleitung – kostenlos für Physiotherapie-Praxisinhaber. Dreifach TÜV-zertifiziert." />
     <meta name="twitter:image" content="/manus-storage/og-image_4af61512.png" />
     <meta name="twitter:image:alt" content="Physio Freiheit – Kostenlose Inhalte für Praxisinhaber" />
+    <style>
+      .seo-legal-nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: .65rem 1.25rem;
+        padding: 0 1rem 1.5rem;
+        background: #06101e;
+        color: #aeb8c5;
+        font: 400 .75rem/1.5 system-ui, sans-serif;
+        text-align: center;
+      }
+      .seo-legal-nav a { color: inherit; text-decoration: none; }
+      .seo-legal-nav a:hover, .seo-legal-nav a:focus-visible { color: #e3c75a; text-decoration: underline; }
+      .seo-legal-nav[hidden] { display: none; }
+      body:has(> .seo-legal-nav:not([hidden])) .fallback-legal-links { display: none; }
+    </style>
     <!-- Fonts: Lokal gehostet (DSGVO-konform) – @font-face in index.css -->
 
     <!-- Vibetrack Tracker (Header) – Tracking & Cookie-Consent-Management -->
@@ -47,6 +64,7 @@
 
   <body>
     <div id="root"></div>
+    <!--seo-legal-navigation-->
     <script type="module" src="/src/main.tsx"></script>
 
     <!-- Vibetrack Cookie-Banner (Body) – zeigt Cookie-Consent-Banner -->

@@ -235,7 +235,7 @@ export function Footer() {
         <p className="text-xs text-muted-foreground">
           © {new Date().getFullYear()} {BRAND.parent} – Alle Rechte vorbehalten.
         </p>
-        <div className="flex gap-5 text-xs text-muted-foreground">
+        <div className="fallback-legal-links flex gap-5 text-xs text-muted-foreground">
           <a href="/impressum" className="hover:text-gold">Impressum</a>
           <a href="/datenschutz" className="hover:text-gold">Datenschutz</a>
         </div>

@@ -39,6 +39,15 @@ function ScrollToTop() {
   return null;
 }
 
+function SyncSeoLegalNavigation() {
+  const [location] = useLocation();
+  useEffect(() => {
+    const nav = document.querySelector<HTMLElement>(".seo-legal-nav");
+    if (nav) nav.hidden = !["/", "/impressum", "/datenschutz"].includes(location);
+  }, [location]);
+  return null;
+}
+
 // Minimal loading fallback (same bg as app to avoid flash)
 function LazyFallback() {
   return (
@@ -53,6 +62,7 @@ function Router() {
   return (
     <>
       <ScrollToTop />
+      <SyncSeoLegalNavigation />
       <Suspense fallback={<LazyFallback />}>
         <Switch>
           <Route path="/" component={Home} />
