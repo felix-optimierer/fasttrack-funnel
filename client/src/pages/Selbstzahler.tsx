@@ -31,28 +31,26 @@ export default function Selbstzahler() {
       >
         <header className="container flex items-center py-3"><Logo /></header>
         <main className="container flex flex-1 flex-col justify-center pb-10 pt-5 lg:py-10">
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-12">
+          <div data-selbstzahler-intro className="mb-7 w-full lg:mb-9">
+            <div className="mb-4 inline-block rounded-sm border border-gold/50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-gold sm:text-[11px]">
+              Für Physiopraxis-Inhaber mit angestellten Therapeuten
+            </div>
+            <p className="mb-2 text-base font-semibold text-gold sm:text-lg">Kostenloser Report enthüllt:</p>
+            <h1 aria-describedby="selbstzahler-ziel-hinweis" className="w-full font-display text-3xl font-extrabold leading-[1.12] tracking-tight text-foreground sm:text-[2.5rem] lg:text-5xl xl:text-[3.25rem]">
+              Wie deine Angestellten-Therapeuten endlich täglich{" "}
+              <span className="text-gradient-gold">Selbstzahler-Angebote verkaufen</span>{" "}
+              für <span className="text-gradient-gold">1.000 € extra Gewinn pro Therapeut im Monat</span>
+            </h1>
+            <p id="selbstzahler-ziel-hinweis" className="mt-3 max-w-4xl text-xs leading-relaxed text-muted-foreground">
+              Gewinnziel, keine Ergebnisgarantie. Ob und in welcher Höhe du zusätzlichen Gewinn erzielst, hängt von deinen individuellen Angeboten, deiner Marge und deiner Umsetzung ab.
+            </p>
+          </div>
+          <div data-selbstzahler-content className="flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-12">
             <div className="w-full max-w-2xl lg:max-w-xl lg:flex-[1.3]">
-              <div className="mb-4 inline-block rounded-sm border border-gold/50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-gold sm:text-[11px]">
-                Für Physiopraxis-Inhaber mit angestellten Therapeuten
-              </div>
-              <h1 className="mb-5 font-display text-3xl font-extrabold leading-[1.12] tracking-tight text-foreground sm:text-[2.5rem] lg:text-[2.8rem]">
-                <span className="mb-2 block text-base font-semibold tracking-normal text-gold sm:text-lg">Kostenloser Report enthüllt:</span>
-                Wie deine Angestellten-Therapeuten endlich täglich{" "}
-                <span className="text-gradient-gold">Selbstzahler-Angebote verkaufen</span>
-              </h1>
               <p className="mb-5 text-sm leading-relaxed text-muted-foreground sm:text-base">
                 Dein Team behandelt den ganzen Tag. Doch wenn es um Selbstzahler-Angebote geht, bleibt vieles an dir hängen?
                 Entdecke, wie deine Therapeuten passende Angebote im Praxisalltag ansprechen und du dir ein zusätzliches Umsatzstandbein aufbaust.
               </p>
-              <div className="mb-5 rounded-xl border border-gold/30 bg-gold/10 p-4">
-                <p aria-describedby="selbstzahler-ziel-hinweis" className="text-lg font-extrabold leading-snug text-gold sm:text-xl">
-                  Dein Ziel: 1.000 € extra Gewinn pro Therapeut im Monat
-                </p>
-                <p id="selbstzahler-ziel-hinweis" className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  Das ist ein Ziel, keine Ergebnisgarantie. Ob und in welcher Höhe du zusätzlichen Gewinn erzielst, hängt von deinen individuellen Angeboten, deiner Marge und deiner Umsetzung ab.
-                </p>
-              </div>
               <GoldButton glow className="mb-3 sm:!w-auto sm:!max-w-fit" onClick={() => setPopupOpen(true)}>
                 Kostenlosen Report sichern <ArrowRight className="h-5 w-5 shrink-0" aria-hidden="true" />
               </GoldButton>

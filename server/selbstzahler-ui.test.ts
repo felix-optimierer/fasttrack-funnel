@@ -60,14 +60,27 @@ describe("Selbstzahler V1", () => {
     expect(text).not.toMatch(DELAYED_OR_IMMEDIATE_COPY);
   });
 
-  it("pairs the prominent profit target directly with an individual-results disclaimer", () => {
+  it("includes the requested profit goal in the full headline with a linked disclaimer and no goal box", () => {
     const html = renderToStaticMarkup(createElement(Selbstzahler));
     const text = plainText(html);
-    expect(text).toContain("Dein Ziel: 1.000 € extra Gewinn pro Therapeut im Monat");
-    expect(html).toMatch(/<p aria-describedby="selbstzahler-ziel-hinweis"[^>]*>[\s\S]*?Dein Ziel: 1\.000 € extra Gewinn pro Therapeut im Monat\s*<\/p>\s*<p id="selbstzahler-ziel-hinweis"[^>]*>/);
-    expect(text).toContain("Das ist ein Ziel, keine Ergebnisgarantie.");
+    const headline = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)?.[1];
+    expect(plainText(headline || "").trim()).toBe("Wie deine Angestellten-Therapeuten endlich täglich Selbstzahler-Angebote verkaufen für 1.000 € extra Gewinn pro Therapeut im Monat");
+    expect(html).toMatch(/<h1 aria-describedby="selbstzahler-ziel-hinweis"[^>]*>/);
+    expect(html).toContain('id="selbstzahler-ziel-hinweis"');
+    expect(text).toContain("Gewinnziel, keine Ergebnisgarantie.");
     expect(text).toContain("deinen individuellen Angeboten, deiner Marge und deiner Umsetzung");
     expect(text).not.toMatch(/Studie|garantierte[rsn]? (Gewinn|Ertrag)/i);
+    expect(text).not.toContain("Dein Ziel:");
+    expect(pageSource("Selbstzahler")).not.toContain('rounded-xl border border-gold/30 bg-gold/10 p-4');
+  });
+
+  it("places the full-width headline above, not inside, the narrower content columns", () => {
+    const html = renderToStaticMarkup(createElement(Selbstzahler));
+    const source = pageSource("Selbstzahler");
+    expect(html.indexOf("data-selbstzahler-intro")).toBeLessThan(html.indexOf("<h1"));
+    expect(html.indexOf("</h1>")).toBeLessThan(html.indexOf("data-selbstzahler-content"));
+    expect(html).toMatch(/<h1[^>]*class="w-full /);
+    expect(source).toContain('data-selbstzahler-intro className="mb-7 w-full lg:mb-9"');
   });
 
   it("keeps source and thank-you redirect specific to the new funnel", () => {
