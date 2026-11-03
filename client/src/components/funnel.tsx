@@ -227,11 +227,12 @@ export function TripleSeals({
   );
 }
 
-export function Footer() {
+export function Footer({ footnote }: { footnote?: React.ReactNode } = {}) {
   return (
     <footer className="border-t border-border bg-navy-deep py-8">
       <div className="container flex flex-col items-center gap-3 text-center">
         <Logo />
+        {footnote}
         <p className="text-xs text-muted-foreground">
           © {new Date().getFullYear()} {BRAND.parent} – Alle Rechte vorbehalten.
         </p>

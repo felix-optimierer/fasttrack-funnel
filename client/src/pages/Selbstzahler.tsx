@@ -40,10 +40,8 @@ export default function Selbstzahler() {
               Wie deine Angestellten-Therapeuten endlich täglich{" "}
               <span className="text-gradient-gold">Selbstzahler-Angebote verkaufen</span>{" "}
               für <span className="text-gradient-gold">1.000 € extra Gewinn pro Therapeut im Monat</span>
+              <sup className="ml-0.5 text-[0.45em] leading-none"><a href="#selbstzahler-ziel-hinweis" aria-label="Hinweis zum Gewinnziel" className="text-gold hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold">*</a></sup>
             </h1>
-            <p id="selbstzahler-ziel-hinweis" className="mt-3 max-w-4xl text-xs leading-relaxed text-muted-foreground">
-              Gewinnziel, keine Ergebnisgarantie. Ob und in welcher Höhe du zusätzlichen Gewinn erzielst, hängt von deinen individuellen Angeboten, deiner Marge und deiner Umsetzung ab.
-            </p>
           </div>
           <div data-selbstzahler-content className="flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-12">
             <div className="w-full max-w-2xl lg:max-w-xl lg:flex-[1.3]">
@@ -85,7 +83,11 @@ export default function Selbstzahler() {
             <div className="hidden w-full max-w-md flex-1 lg:block"><SelbstzahlerReportPreview /></div>
           </div>
         </main>
-        <Footer />
+        <Footer footnote={
+          <p id="selbstzahler-ziel-hinweis" role="note" className="max-w-2xl scroll-mt-6 text-xs leading-relaxed text-muted-foreground">
+            * Gewinnziel, keine Ergebnisgarantie. Ob und in welcher Höhe du zusätzlichen Gewinn erzielst, hängt von deinen individuellen Angeboten, deiner Marge und deiner Umsetzung ab.
+          </p>
+        } />
         <LeadPopup
           open={popupOpen}
           onClose={() => setPopupOpen(false)}

@@ -14,7 +14,7 @@ import DankeSelbstzahler from "../client/src/pages/DankeSelbstzahler";
 import Home from "../client/src/pages/Home";
 import Termin from "../client/src/pages/Termin";
 import { LeadPopup } from "../client/src/components/LeadPopup";
-import { TripleSeals } from "../client/src/components/funnel";
+import { TripleSeals, Footer } from "../client/src/components/funnel";
 import { SEO_CONFIG } from "../client/src/lib/seo-config";
 
 const CTA = "Kostenlosen Report sichern";
@@ -64,7 +64,7 @@ describe("Selbstzahler V1", () => {
     const html = renderToStaticMarkup(createElement(Selbstzahler));
     const text = plainText(html);
     const headline = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)?.[1];
-    expect(plainText(headline || "").trim()).toBe("Wie deine Angestellten-Therapeuten endlich täglich Selbstzahler-Angebote verkaufen für 1.000 € extra Gewinn pro Therapeut im Monat");
+    expect(plainText((headline || "").replace(/<sup\b[^>]*>[\s\S]*?<\/sup>/, "")).trim()).toBe("Wie deine Angestellten-Therapeuten endlich täglich Selbstzahler-Angebote verkaufen für 1.000 € extra Gewinn pro Therapeut im Monat");
     expect(html).toMatch(/<h1 aria-describedby="selbstzahler-ziel-hinweis"[^>]*>/);
     expect(html).toContain('id="selbstzahler-ziel-hinweis"');
     expect(text).toContain("Gewinnziel, keine Ergebnisgarantie.");
@@ -72,6 +72,25 @@ describe("Selbstzahler V1", () => {
     expect(text).not.toMatch(/Studie|garantierte[rsn]? (Gewinn|Ertrag)/i);
     expect(text).not.toContain("Dein Ziel:");
     expect(pageSource("Selbstzahler")).not.toContain('rounded-xl border border-gold/30 bg-gold/10 p-4');
+  });
+
+  it("links the headline star to one note below the footer logo, not near the headline or CTA", () => {
+    const html = renderToStaticMarkup(createElement(Selbstzahler));
+    const main = html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)?.[1] || "";
+    const footer = html.match(/<footer\b[^>]*>([\s\S]*?)<\/footer>/)?.[1] || "";
+    expect(main).toContain('href="#selbstzahler-ziel-hinweis"');
+    expect(main).not.toContain("Gewinnziel, keine Ergebnisgarantie.");
+    expect(main).not.toContain('id="selbstzahler-ziel-hinweis"');
+    expect(footer).toContain("* Gewinnziel, keine Ergebnisgarantie.");
+    expect(footer.indexOf("<img")).toBeLessThan(footer.indexOf('id="selbstzahler-ziel-hinweis"'));
+    expect(footer.indexOf('id="selbstzahler-ziel-hinweis"')).toBeLessThan(footer.indexOf("©"));
+    expect(html.match(/id="selbstzahler-ziel-hinweis"/g)).toHaveLength(1);
+  });
+
+  it("leaves shared footers on other pages without the Selbstzahler footnote", () => {
+    expect(renderToStaticMarkup(createElement(Footer))).not.toContain("Gewinnziel");
+    expect(renderToStaticMarkup(createElement(Home))).not.toContain("selbstzahler-ziel-hinweis");
+    expect(renderToStaticMarkup(createElement(DankeSelbstzahler))).not.toContain("selbstzahler-ziel-hinweis");
   });
 
   it("places the full-width headline above, not inside, the narrower content columns", () => {
