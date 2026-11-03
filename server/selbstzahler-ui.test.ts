@@ -16,6 +16,8 @@ import Termin from "../client/src/pages/Termin";
 import { LeadPopup } from "../client/src/components/LeadPopup";
 import { TripleSeals, Footer } from "../client/src/components/funnel";
 import { SEO_CONFIG } from "../client/src/lib/seo-config";
+import { ASSETS } from "../client/src/lib/site";
+import { SelbstzahlerReportPreview } from "../client/src/components/SelbstzahlerReportPreview";
 
 const CTA = "Kostenlosen Report sichern";
 const DELAYED_OR_IMMEDIATE_COPY = /vormerk|merke dir|finalisiert|finalen Schliff|nächste Woche|Fertigstellung|sofort|herunterladen|Download|in Kürze.*zugestellt/i;
@@ -56,8 +58,33 @@ describe("Selbstzahler V1", () => {
     expect(text).toContain("Endlich kassenunabhängige Online-Umsätze in deiner Physiopraxis");
     expect(html).toMatch(/<button[^>]*>[\s\S]*?<span[^>]*>Kostenlosen Report sichern /);
     expect(text).toContain(CTA);
-    expect(text).toContain("Mockup folgt");
+    expect(html).toContain(ASSETS.selbstzahlerMockup);
+    expect(text).not.toContain("Mockup folgt");
     expect(text).not.toMatch(DELAYED_OR_IMMEDIATE_COPY);
+  });
+
+  it("uses the optimized report mockup on the landing page and home card without placeholder styling", () => {
+    for (const compact of [false, true]) {
+      const html = renderToStaticMarkup(createElement(SelbstzahlerReportPreview, { compact }));
+      expect(html).toContain(ASSETS.selbstzahlerMockup);
+      expect(html).toContain('width="1400" height="1400"');
+      expect(html).toContain("KI-generiertes Mockup des Selbstzahler-Reports");
+      expect(html).toContain("object-contain");
+      expect(html).not.toMatch(/Mockup folgt|border-dashed|Platzhalter/);
+    }
+    expect(renderToStaticMarkup(createElement(Home))).toContain(ASSETS.selbstzahlerMockup);
+    expect(ASSETS.selbstzahlerMockup).toMatch(/^\/manus-storage\/.+\.webp$/);
+  });
+
+  it("uses its own decorative report-page collage behind responsive contrast overlays", () => {
+    const html = renderToStaticMarkup(createElement(Selbstzahler));
+    expect(html).toContain("data-selbstzahler-background");
+    expect(html).toContain(ASSETS.selbstzahlerBg);
+    expect(html).toContain('width="1920" height="1080" alt=""');
+    expect(html).toContain("pointer-events-none");
+    expect(html).toContain("isolate");
+    expect(ASSETS.selbstzahlerBg).toMatch(/^\/manus-storage\/.+\.webp$/);
+    expect(pageSource("Selbstzahler")).not.toContain("ASSETS.heroBg");
   });
 
   it("includes the requested profit goal in the full headline with a linked disclaimer and no goal box", () => {

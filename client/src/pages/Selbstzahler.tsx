@@ -21,14 +21,20 @@ export default function Selbstzahler() {
   return (
     <>
       <SEO {...SEO_CONFIG.selbstzahler} />
-      <div
-        className="relative flex min-h-screen flex-col overflow-hidden"
-        style={{
-          backgroundImage: `linear-gradient(110deg, rgba(6,15,28,0.98) 0%, rgba(6,15,28,0.94) 48%, rgba(6,15,28,0.78) 100%), url(${ASSETS.heroBg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
+      <div className="relative isolate flex min-h-screen flex-col overflow-hidden bg-navy-deep">
+        <div data-selbstzahler-background className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+          <img
+            src={ASSETS.selbstzahlerBg}
+            width={1920}
+            height={1080}
+            alt=""
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover object-right lg:object-center"
+          />
+          <div className="absolute inset-0 hidden lg:block" style={{ background: "linear-gradient(to right, rgba(6,15,28,0.94) 0%, rgba(6,15,28,0.86) 38%, rgba(6,15,28,0.3) 100%)" }} />
+          <div className="absolute inset-0 hidden lg:block" style={{ background: "linear-gradient(to bottom, rgba(6,15,28,0.88) 0%, rgba(6,15,28,0.72) 24%, rgba(6,15,28,0.12) 55%, rgba(6,15,28,0.08) 100%)" }} />
+          <div className="absolute inset-0 lg:hidden" style={{ background: "linear-gradient(to bottom, rgba(6,15,28,0.92) 0%, rgba(6,15,28,0.78) 30%, rgba(6,15,28,0.6) 60%, rgba(6,15,28,0.68) 100%)" }} />
+        </div>
         <header className="container flex items-center py-3"><Logo /></header>
         <main className="container flex flex-1 flex-col justify-center pb-10 pt-5 lg:py-10">
           <div data-selbstzahler-intro className="mb-7 w-full lg:mb-9">
