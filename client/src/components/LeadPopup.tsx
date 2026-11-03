@@ -1,6 +1,6 @@
 // Lead-Popup: Overlay-Formular mit Name, E-Mail, WhatsApp, Checkbox, Validierung.
-// Wird von /exit-plan und /ki-report verwendet.
-import { useState, useEffect } from "react";
+// Wird von den Report-Landingpages verwendet.
+import { useState, useEffect, useId } from "react";
 import { X, Download } from "lucide-react";
 import { GoldButton } from "@/components/funnel";
 import { trpc } from "@/lib/trpc";
@@ -19,6 +19,8 @@ interface LeadPopupProps {
   source: string;
   /** Redirect-URL nach erfolgreichem Submit (z.B. "/ki-report-termin") */
   redirectTo?: string;
+  /** Individuelle Beschriftung, z.B. für einen noch nicht veröffentlichten Report. */
+  submitLabel?: string;
 }
 
 interface FormErrors {
@@ -38,7 +40,8 @@ function validatePhone(phone: string): boolean {
   return /^\d{8,15}$/.test(digits);
 }
 
-export function LeadPopup({ open, onClose, headline, subtext, source, redirectTo }: LeadPopupProps) {
+export function LeadPopup({ open, onClose, headline, subtext, source, redirectTo, submitLabel = "Jetzt kostenlos herunterladen" }: LeadPopupProps) {
+  const titleId = useId();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -128,7 +131,7 @@ export function LeadPopup({ open, onClose, headline, subtext, source, redirectTo
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
       onClick={(e) => { if (e.target === e.currentTarget) handleClose(); }}
     >
-      <div className="relative w-full max-w-lg rounded-2xl bg-white p-5 pt-3 shadow-2xl sm:p-8 sm:pt-4 animate-in fade-in zoom-in-95 duration-200">
+      <div role="dialog" aria-modal="true" aria-labelledby={titleId} className="relative max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-5 pt-3 shadow-2xl sm:p-8 sm:pt-4 animate-in fade-in zoom-in-95 duration-200">
         {/* X-Close – eigene Zeile über der Headline */}
         <div className="mb-2 flex justify-end">
           <button
@@ -159,7 +162,7 @@ export function LeadPopup({ open, onClose, headline, subtext, source, redirectTo
         ) : (
           <>
             {/* Headline */}
-            <h2 className="mb-1 text-center text-xl font-extrabold uppercase text-neutral-900 sm:text-2xl">
+            <h2 id={titleId} className="mb-1 text-center text-xl font-extrabold uppercase text-neutral-900 sm:text-2xl">
               {headline}
             </h2>
             {subtext && (
@@ -234,7 +237,7 @@ export function LeadPopup({ open, onClose, headline, subtext, source, redirectTo
                 disabled={leadMutation.isPending}
               >
                 <Download className="h-5 w-5" />
-                {leadMutation.isPending ? "Wird gesendet..." : "Jetzt kostenlos herunterladen"}
+                {leadMutation.isPending ? "Wird gesendet..." : submitLabel}
               </GoldButton>
 
               {/* Trust-Hinweise – immer einzeilig */}

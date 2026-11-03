@@ -13,19 +13,22 @@ import {
 } from "../drizzle/schema";
 
 // ─── CHANNELS ──────────────────────────────────────────────────────────────────
-export const CHANNELS = ["ki-report", "exit-plan", "traumwebseite"] as const;
+export const CHANNELS = ["ki-report", "exit-plan", "traumwebseite", "selbstzahler"] as const;
 export type Channel = (typeof CHANNELS)[number];
 
 const CHANNEL_PAGES: Record<Channel, string[]> = {
   "ki-report": ["ki-report", "ki-report-termin"],
   "exit-plan": ["exit-plan", "exit-plan-termin"],
   "traumwebseite": ["traumwebseite", "webseite-termin"],
+  // Thank-you views are tracked separately, not counted as LP visitors.
+  "selbstzahler": ["selbstzahler"],
 };
 
 const CHANNEL_SOURCES: Record<Channel, string[]> = {
   "ki-report": ["ki-report"],
   "exit-plan": ["exit-plan"],
   "traumwebseite": ["home", "traumwebseite"],
+  "selbstzahler": ["selbstzahler"],
 };
 
 // ─── LEADS ─────────────────────────────────────────────────────────────────────

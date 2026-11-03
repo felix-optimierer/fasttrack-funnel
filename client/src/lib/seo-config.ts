@@ -16,7 +16,7 @@ export const SEO_CONFIG: Record<string, PageSEO> = {
   home: {
     title: `Kostenlose Inhalte für Physiotherapie-Praxisinhaber | ${BRAND}`,
     description:
-      "Sichere dir kostenlose Inhalte von Physio Freiheit: KI-Report 2026, Exit-Plan und Traumwebseite-Anleitung für Physiotherapie-Praxisinhaber. Dreifach TÜV-zertifiziert.",
+      "Kostenlose Inhalte für Physiopraxis-Inhaber: KI-Report, Exit-Plan, Traumwebseite und Selbstzahler-Report. Dreifach TÜV-zertifiziert.",
     canonical: `${BASE_URL}/`,
   },
   traumwebseite: {
@@ -42,6 +42,18 @@ export const SEO_CONFIG: Record<string, PageSEO> = {
     description:
       "Der exakte Plan, mit dem über 200 Praxisinhaber ihre Behandlungszeit reduziert und mehr Gewinn auf dem Konto haben. Jetzt kostenlos sichern.",
     canonical: `${BASE_URL}/exit-plan`,
+  },
+  selbstzahler: {
+    title: `Selbstzahler-Angebote mit deinem Praxisteam verkaufen | ${BRAND}`,
+    description:
+      "Kostenloser Report für Physiopraxis-Inhaber: Wie dein Team Selbstzahler-Angebote verkauft und du kassenunabhängige Online-Umsätze aufbaust. Jetzt vormerken.",
+    canonical: `${BASE_URL}/selbstzahler`,
+  },
+  dankeSelbstzahler: {
+    title: `Selbstzahler-Report vorgemerkt – Deine nächsten Schritte | ${BRAND}`,
+    description:
+      "Dein Selbstzahler-Report wird finalisiert. Buche in der Zwischenzeit deine kostenlose Praxisanalyse und passe die Strategie auf deine Physiopraxis an.",
+    canonical: `${BASE_URL}/danke-selbstzahler`,
   },
   webseiteTermin: {
     title: `Kostenlose KI-Praxisanalyse buchen | ${BRAND}`,

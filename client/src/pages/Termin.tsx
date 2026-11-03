@@ -1,6 +1,6 @@
 // TERMIN PAGE — Zentrale Buchungsseite für KI-Praxisanalyse (KI-Report + Exit-Plan)
 import { useEffect } from "react";
-import { useLocation } from "wouter";
+import { useLocation, useSearch } from "wouter";
 import { SEO } from "@/components/SEO";
 import { ASSETS } from "@/lib/site";
 import { Logo, TripleSeals, Footer } from "@/components/funnel";
@@ -12,6 +12,9 @@ const CALENDLY_URL =
 
 export default function Termin() {
   const [, navigate] = useLocation();
+  const search = useSearch();
+  const isSelbstzahler = new URLSearchParams(search).get("quelle") === "selbstzahler";
+  const bookingUrl = isSelbstzahler ? `${CALENDLY_URL}?utm_source=funnel&utm_campaign=selbstzahler` : CALENDLY_URL;
 
   usePageView("termin");
 
@@ -45,8 +48,9 @@ export default function Termin() {
   return (
     <>
     <SEO
-      title="Kostenlose KI-Praxisanalyse buchen | PhysioFreiheit"
-      description="Buche jetzt deine kostenlose 1:1 KI-Praxisanalyse und erfahre, wie du mit KI deine Praxis auf das nächste Level bringst."
+      title={isSelbstzahler ? "Kostenlose Selbstzahler-Praxisanalyse buchen | PhysioFreiheit" : "Kostenlose KI-Praxisanalyse buchen | PhysioFreiheit"}
+      description={isSelbstzahler ? "Passe die Selbstzahler-Strategie auf deine Physiopraxis an. Buche deine kostenlose Praxisanalyse." : "Buche jetzt deine kostenlose 1:1 KI-Praxisanalyse und erfahre, wie du mit KI deine Praxis auf das nächste Level bringst."}
+      canonical="https://go.physiofreiheit.de/termin"
     />
     <div className="min-h-screen">
       <header className="container flex items-center justify-center py-3 md:py-4">
@@ -64,14 +68,14 @@ export default function Termin() {
           {/* Headline */}
           <h1 className="mx-auto max-w-2xl text-balance text-2xl font-extrabold leading-[1.15] md:text-4xl">
             Buche jetzt deine{" "}
-            <span className="text-gradient-gold">kostenlose 1:1 KI-Praxisanalyse</span>
+            <span className="text-gradient-gold">{isSelbstzahler ? "kostenlose 1:1 Praxisanalyse" : "kostenlose 1:1 KI-Praxisanalyse"}</span>
           </h1>
 
           {/* Calendly-Bereich */}
           <div className="mx-auto max-w-3xl">
             <div
               className="calendly-inline-widget overflow-hidden rounded-2xl border border-border bg-card shadow-2xl"
-              data-url={CALENDLY_URL}
+              data-url={bookingUrl}
               style={{ minWidth: "320px", height: "700px" }}
             />
           </div>

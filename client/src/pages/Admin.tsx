@@ -23,12 +23,17 @@ import {
 type Tab = "overview" | "funnel" | "submissions" | "crm" | "adcosts" | "settings";
 type ChartAggregation = "daily" | "weekly" | "quarterly";
 
+const FUNNEL_CHANNELS = ["ki-report", "exit-plan", "traumwebseite", "selbstzahler"] as const;
+type FunnelChannel = (typeof FUNNEL_CHANNELS)[number];
+
 const CHANNEL_LABEL: Record<string, string> = {
   "ki-report": "KI-Report", "exit-plan": "Exit-Plan", "traumwebseite": "Traumwebseite",
+  "selbstzahler": "Selbstzahler",
 };
 
 const CHANNEL_COLORS: Record<string, string> = {
   "ki-report": "#c9a227", "exit-plan": "#22c55e", "traumwebseite": "#3b82f6",
+  "selbstzahler": "#a78bfa",
 };
 
 const CRM_STATUSES = [
@@ -225,7 +230,7 @@ function aggregateChartData(dailyData: Record<string, any>[], aggregation: Chart
       }
     }
     // Recalculate rate fields from aggregated totals
-    for (const ch of ["ki-report", "exit-plan", "traumwebseite"]) {
+    for (const ch of FUNNEL_CHANNELS) {
       const visitors = merged[`visitors_${ch}`] ?? 0;
       const leads = merged[`leads_${ch}`] ?? 0;
       const spend = merged[`spend_${ch}`] ?? 0;
@@ -372,7 +377,7 @@ function OverviewTab({ dateRange }: { dateRange: DateRangeValue }) {
       )}
 
       {/* Per-Channel Funnel Cards */}
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {funnelQuery.data?.channels.map((ch) => <ChannelFunnelCard key={ch.channel} data={ch} />)}
       </div>
 
@@ -395,7 +400,7 @@ function OverviewTab({ dateRange }: { dateRange: DateRangeValue }) {
                 <YAxis tick={{ fill: "#9fb2c7", fontSize: 11 }} unit="%" />
                 <Tooltip contentStyle={{ backgroundColor: "#0e2138", border: "1px solid rgba(201,162,39,0.3)", borderRadius: 8 }} labelStyle={{ color: "#f4f1e8" }} />
                 <Legend />
-                {(["ki-report", "exit-plan", "traumwebseite"] as const).map((ch) => (
+                {FUNNEL_CHANNELS.map((ch) => (
                   <Line key={ch} type="monotone" dataKey={`cr_${ch}`} name={CHANNEL_LABEL[ch]} stroke={CHANNEL_COLORS[ch]} strokeWidth={2} dot={false} />
                 ))}
                 <ReferenceLine y={avgCrPerDay} stroke="#f4f1e8" strokeDasharray="6 4" strokeWidth={1.5} label={{ value: `Ø ${avgCrPerDay}%`, position: "right", fill: "#f4f1e8", fontSize: 10 }} />
@@ -413,7 +418,7 @@ function OverviewTab({ dateRange }: { dateRange: DateRangeValue }) {
                 <Tooltip contentStyle={{ backgroundColor: "#0e2138", border: "1px solid rgba(201,162,39,0.3)", borderRadius: 8 }} labelStyle={{ color: "#f4f1e8" }} />
                 <Legend />
                 <Bar dataKey="total_leads" name="Gesamt Leads" fill="#c9a227" radius={[4, 4, 0, 0]} />
-                {(["ki-report", "exit-plan", "traumwebseite"] as const).map((ch) => (
+                {FUNNEL_CHANNELS.map((ch) => (
                   <Bar key={ch} dataKey={`leads_${ch}`} name={CHANNEL_LABEL[ch]} fill={CHANNEL_COLORS[ch]} radius={[2, 2, 0, 0]} stackId="channels" />
                 ))}
                 <ReferenceLine y={avgLeadsPerDay} stroke="#f4f1e8" strokeDasharray="6 4" strokeWidth={1.5} label={{ value: `Ø ${avgLeadsPerDay}`, position: "right", fill: "#f4f1e8", fontSize: 10 }} />
@@ -429,7 +434,7 @@ function OverviewTab({ dateRange }: { dateRange: DateRangeValue }) {
                 <YAxis tick={{ fill: "#9fb2c7", fontSize: 11 }} unit="€" />
                 <Tooltip contentStyle={{ backgroundColor: "#0e2138", border: "1px solid rgba(201,162,39,0.3)", borderRadius: 8 }} labelStyle={{ color: "#f4f1e8" }} formatter={(value: number) => [`${value.toFixed(2)} €`, undefined]} />
                 <Legend />
-                {(["ki-report", "exit-plan", "traumwebseite"] as const).map((ch) => (
+                {FUNNEL_CHANNELS.map((ch) => (
                   <Bar key={ch} dataKey={`cpl_${ch}`} name={CHANNEL_LABEL[ch]} fill={CHANNEL_COLORS[ch]} radius={[4, 4, 0, 0]} />
                 ))}
                 <ReferenceLine y={avgCpl} stroke="#f4f1e8" strokeDasharray="6 4" strokeWidth={1.5} label={{ value: `Ø ${avgCpl.toFixed(2)}€`, position: "right", fill: "#f4f1e8", fontSize: 10 }} />
@@ -548,9 +553,9 @@ function FunnelTab({ dateRange }: { dateRange: DateRangeValue }) {
       </section>
 
       {/* Per-Channel Funnel Cards */}
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {funnelQuery.isLoading ? (
-          <div className="col-span-3 flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-gold" /></div>
+          <div className="col-span-full flex items-center justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-gold" /></div>
         ) : (
           funnelQuery.data?.channels.map((ch) => <ChannelFunnelCard key={ch.channel} data={ch} />)
         )}
@@ -572,7 +577,7 @@ function FunnelTab({ dateRange }: { dateRange: DateRangeValue }) {
                 <YAxis tick={{ fill: "#9fb2c7", fontSize: 11 }} unit="%" />
                 <Tooltip contentStyle={{ backgroundColor: "#0e2138", border: "1px solid rgba(201,162,39,0.3)", borderRadius: 8 }} labelStyle={{ color: "#f4f1e8" }} />
                 <Legend />
-                {(["ki-report", "exit-plan", "traumwebseite"] as const).map((ch) => (
+                {FUNNEL_CHANNELS.map((ch) => (
                   <Line key={ch} type="monotone" dataKey={`cr_${ch}`} name={CHANNEL_LABEL[ch]} stroke={CHANNEL_COLORS[ch]} strokeWidth={2} dot={false} />
                 ))}
               </LineChart>
@@ -587,7 +592,7 @@ function FunnelTab({ dateRange }: { dateRange: DateRangeValue }) {
                 <YAxis tick={{ fill: "#9fb2c7", fontSize: 11 }} unit="%" />
                 <Tooltip contentStyle={{ backgroundColor: "#0e2138", border: "1px solid rgba(201,162,39,0.3)", borderRadius: 8 }} labelStyle={{ color: "#f4f1e8" }} />
                 <Legend />
-                {(["ki-report", "exit-plan", "traumwebseite"] as const).map((ch) => (
+                {FUNNEL_CHANNELS.map((ch) => (
                   <Line key={ch} type="monotone" dataKey={`tr_${ch}`} name={CHANNEL_LABEL[ch]} stroke={CHANNEL_COLORS[ch]} strokeWidth={2} dot={false} />
                 ))}
               </LineChart>
@@ -602,7 +607,7 @@ function FunnelTab({ dateRange }: { dateRange: DateRangeValue }) {
                 <YAxis tick={{ fill: "#9fb2c7", fontSize: 11 }} unit="€" />
                 <Tooltip contentStyle={{ backgroundColor: "#0e2138", border: "1px solid rgba(201,162,39,0.3)", borderRadius: 8 }} labelStyle={{ color: "#f4f1e8" }} formatter={(value: number) => [`${value.toFixed(2)} €`, undefined]} />
                 <Legend />
-                {(["ki-report", "exit-plan", "traumwebseite"] as const).map((ch) => (
+                {FUNNEL_CHANNELS.map((ch) => (
                   <Bar key={ch} dataKey={`cpl_${ch}`} name={CHANNEL_LABEL[ch]} fill={CHANNEL_COLORS[ch]} radius={[4, 4, 0, 0]} />
                 ))}
               </BarChart>
@@ -870,6 +875,7 @@ function SubmissionsTab() {
           { value: "ki-report", label: "KI-Report" },
           { value: "exit-plan", label: "Exit-Plan" },
           { value: "traumwebseite", label: "Traumwebseite" },
+          { value: "selbstzahler", label: "Selbstzahler" },
           { value: "home", label: "Home" },
         ]} />
         <FilterSelect label="CRM" value={crmFilter} onChange={(v) => { setCrmFilter(v); setPage(0); }} options={[
@@ -1472,8 +1478,11 @@ function SettingsTab() {
         <p className="mb-5 text-xs text-muted-foreground">
           Jeder neue Lead wird per POST (JSON) an die jeweilige Kanal-URL gesendet. Felder: id, name, email, phone, source, utmSource, utmMedium, utmCampaign, createdAt.
         </p>
+        <p className="mb-5 text-xs text-muted-foreground">
+          Selbstzahler (V1): Ohne Kanal-URL greift nur ein vorhandener globaler Webhook mit unveränderter Quelle. Die separate Make-Automation für Sheets/Slack benötigt MAKE_WEBHOOK_SELBSTZAHLER. KlickTipp bleibt bis zu einer bestätigten eigenen Quellen-/Tag-Zuordnung aus; im CRM wird kein fremdes Funnel-Feld gesetzt.
+        </p>
         <div className="space-y-4">
-          {(["ki-report", "exit-plan", "traumwebseite"] as const).map((ch) => (
+          {FUNNEL_CHANNELS.map((ch) => (
             <ChannelWebhookRow key={ch} channel={ch} />
           ))}
         </div>
@@ -1482,7 +1491,7 @@ function SettingsTab() {
   );
 }
 
-function ChannelWebhookRow({ channel }: { channel: "ki-report" | "exit-plan" | "traumwebseite" }) {
+function ChannelWebhookRow({ channel }: { channel: FunnelChannel }) {
   const utils = trpc.useUtils();
   const webhookQuery = trpc.admin.getWebhook.useQuery({ channel });
   const setWebhook = trpc.admin.setWebhook.useMutation();

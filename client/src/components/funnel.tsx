@@ -178,49 +178,49 @@ export function TripleSeals({
 }) {
   return (
     <div
-      className={`grid grid-cols-2 items-center justify-items-center gap-3 sm:flex sm:flex-wrap sm:justify-center ${className}`}
+      className={`grid w-full max-w-lg grid-cols-3 items-center gap-2 sm:gap-3 ${className}`}
       aria-label="Drei TÜV-Rheinland-Zertifizierungen"
     >
       <a
         href="https://www.certipedia.com/quality_marks/0217466534"
         target="_blank"
         rel="noopener noreferrer"
-        className="transition hover:brightness-105"
+        className="min-w-0 rounded-sm transition hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         <img
           src={ASSETS.tuv1}
           alt="TÜV Rheinland Business Development Professional – Robin Nürnberg, ID 0217466534"
           width={434}
           height={160}
-          className="h-14 w-auto rounded-sm shadow-lg md:h-20"
+          className="h-10 w-full max-w-full rounded-sm object-contain shadow-lg md:h-12"
         />
       </a>
       <a
         href="https://www.certipedia.com/quality_marks/0217466539"
         target="_blank"
         rel="noopener noreferrer"
-        className="transition hover:brightness-105"
+        className="min-w-0 rounded-sm transition hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         <img
           src={ASSETS.tuv2}
           alt="TÜV Rheinland Business Development Professional – Felix Brandt, ID 0217466539"
           width={434}
           height={160}
-          className="h-14 w-auto rounded-sm shadow-lg md:h-20"
+          className="h-10 w-full max-w-full rounded-sm object-contain shadow-lg md:h-12"
         />
       </a>
       <a
         href="https://www.certipedia.com/quality_marks/0217466756"
         target="_blank"
         rel="noopener noreferrer"
-        className="col-span-2 transition hover:brightness-105 sm:col-auto"
+        className="min-w-0 rounded-sm transition hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         <img
           src={ASSETS.tuv3}
           alt="TÜV Rheinland Experte für Verkaufspsychologie – Felix Brandt, ID 0217466756"
           width={868}
           height={318}
-          className="h-14 w-auto rounded-sm shadow-lg md:h-20"
+          className="h-10 w-full max-w-full rounded-sm object-contain shadow-lg md:h-12"
         />
       </a>
     </div>

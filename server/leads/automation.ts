@@ -9,7 +9,7 @@
  */
 
 // ─── Types ───────────────────────────────────────────────────────────────────
-export type FunnelType = "ki-report" | "exit-plan" | "traumwebseite";
+export type FunnelType = "ki-report" | "exit-plan" | "traumwebseite" | "selbstzahler";
 
 export interface LeadData {
   firstName: string;
@@ -17,6 +17,8 @@ export interface LeadData {
   email: string;
   phone: string;
   funnel: FunnelType;
+  /** Original opt-in source, retained alongside the normalized funnel. */
+  source?: string;
   utmSource?: string;
   utmMedium?: string;
   utmCampaign?: string;
@@ -32,9 +34,9 @@ export interface LeadData {
 }
 
 export interface AutomationResult {
-  klicktipp: { success: boolean; error?: string };
+  klicktipp: { success: boolean; error?: string; skipped?: boolean };
   salesSuite: { success: boolean; error?: string; contactId?: string; dealId?: string };
-  makeWebhook: { success: boolean; error?: string };
+  makeWebhook: { success: boolean; error?: string; skipped?: boolean };
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -47,7 +49,8 @@ const PHASE_ANFRAGE = "cmr0xq73101oe8u01s0bobpab"; // "Anfrage eingegangen"
 const PHASE_VERKAUFT = "cmr0xq73101oj8u01a4dzu7qa"; // "Verkauft"
 
 // Funnel → SalesSuite custom field mapping
-const FUNNEL_FIELD_MAP: Record<FunnelType, string> = {
+// No Selbstzahler custom-field ID is known. Generic CRM source/deal/note remain usable.
+const FUNNEL_FIELD_MAP: Partial<Record<FunnelType, string>> = {
   "ki-report": "x_leadmagnet_ki_report",
   "exit-plan": "x_leadmagnet_exit_plan",
   "traumwebseite": "x_vsl_traumwebseite_lead",
@@ -58,14 +61,15 @@ const FUNNEL_DISPLAY: Record<FunnelType, string> = {
   "ki-report": "LM_KI-Report",
   "exit-plan": "LM_Exit-Plan",
   "traumwebseite": "VSL_Traumwebseite",
+  "selbstzahler": "Selbstzahler",
 };
 
-// Make.com Webhook URLs per funnel (configured via env or DB settings)
-// These are set in the admin dashboard under Webhook-Einstellungen per channel
-const MAKE_WEBHOOK_URLS: Record<FunnelType, string | undefined> = {
-  "traumwebseite": process.env.MAKE_WEBHOOK_TRAUMWEBSEITE || undefined,
-  "ki-report": process.env.MAKE_WEBHOOK_KI_REPORT || undefined,
-  "exit-plan": process.env.MAKE_WEBHOOK_EXIT_PLAN || undefined,
+// Automation Make webhooks use env vars; Admin channel webhooks are a separate forwarding path.
+const MAKE_WEBHOOK_ENV: Record<FunnelType, string> = {
+  "traumwebseite": "MAKE_WEBHOOK_TRAUMWEBSEITE",
+  "ki-report": "MAKE_WEBHOOK_KI_REPORT",
+  "exit-plan": "MAKE_WEBHOOK_EXIT_PLAN",
+  "selbstzahler": "MAKE_WEBHOOK_SELBSTZAHLER",
 };
 
 // ─── Phone Validation & Normalization ────────────────────────────────────────
@@ -148,7 +152,14 @@ export function validateEmail(email: string): boolean {
 }
 
 // ─── KlickTipp Integration ──────────────────────────────────────────────────
-async function processKlickTipp(lead: LeadData): Promise<{ success: boolean; error?: string }> {
+async function processKlickTipp(lead: LeadData): Promise<AutomationResult["klicktipp"]> {
+  if (lead.funnel === "selbstzahler") {
+    // The generic signin request carries no funnel source. Do not silently subscribe to
+    // another offer's follow-up or guess a tag, list, campaign, or download assignment.
+    const error = "KlickTipp skipped for selbstzahler: dedicated source/tag mapping is not configured";
+    console.warn(`[LeadAutomation] ${error}`);
+    return { success: false, skipped: true, error };
+  }
   const apiKey = process.env.KLICKTIPP_API_KEY;
   if (!apiKey) return { success: false, error: "KLICKTIPP_API_KEY not set" };
 
@@ -201,6 +212,9 @@ async function processSalesSuite(
 
   const now = new Date().toISOString();
   const funnelField = FUNNEL_FIELD_MAP[lead.funnel];
+  if (!funnelField) {
+    console.warn(`[LeadAutomation] SalesSuite custom field omitted for ${lead.funnel}: no verified field mapping configured; source/deal/note retained.`);
+  }
 
   try {
     // 1. Check if contact exists by email
@@ -233,7 +247,7 @@ async function processSalesSuite(
           referer: lead.referrer || null,
           leadSource: `Fast-Track Funnel: ${FUNNEL_DISPLAY[lead.funnel]}`,
           x_lead_erhalten_am: now.split("T")[0], // Date only
-          [funnelField]: now,
+          ...(funnelField ? { [funnelField]: now } : {}),
         },
         contactPerson: {
           firstName: lead.firstName,
@@ -277,9 +291,11 @@ async function processSalesSuite(
     } else {
       // Update existing contact with leadmagnet field + phone + UTM
       const patchBody: Record<string, any> = {
-        [funnelField]: now,
+        ...(funnelField ? { [funnelField]: now } : {}),
         phone: lead.phone,
       };
+      // Without a dedicated custom field, retain this funnel in the generic source too.
+      if (!funnelField) patchBody.leadSource = `Fast-Track Funnel: ${FUNNEL_DISPLAY[lead.funnel]}`;
       // Also update UTM if provided
       if (lead.utmSource) patchBody.utm_source = lead.utmSource;
       if (lead.utmMedium) patchBody.utm_medium = lead.utmMedium;
@@ -348,7 +364,7 @@ async function processSalesSuite(
     // 5. Add note (with phone validation warning if applicable)
     const noteParam = dealId ? `dealId=${dealId}` : `contactId=${contactId}`;
     const noteDate = new Date().toLocaleString("de-DE", { timeZone: "Europe/Berlin" });
-    let noteHtml = `<p>Hat sich am <strong>${noteDate}</strong> den <strong>${FUNNEL_DISPLAY[lead.funnel]}</strong> von <strong>Bewegungsoptimierer</strong> eingetragen.</p>`;
+    let noteHtml = `<p>Hat sich am <strong>${noteDate}</strong> für den Funnel <strong>${FUNNEL_DISPLAY[lead.funnel]}</strong> von <strong>Bewegungsoptimierer</strong> eingetragen (Funnel: ${lead.funnel}).</p>`;
 
     // Append phone validation warning if number is invalid
     if (phoneResult && !phoneResult.isValid) {
@@ -373,10 +389,12 @@ async function processSalesSuite(
  * Sends ALL lead data to the Make.com webhook for this funnel.
  * Make handles: Slack notification to #pf-neue-leads + Google Sheets append.
  */
-async function processMakeWebhook(lead: LeadData): Promise<{ success: boolean; error?: string }> {
-  const webhookUrl = MAKE_WEBHOOK_URLS[lead.funnel];
+async function processMakeWebhook(lead: LeadData): Promise<AutomationResult["makeWebhook"]> {
+  const webhookUrl = process.env[MAKE_WEBHOOK_ENV[lead.funnel]];
   if (!webhookUrl) {
-    return { success: false, error: `No Make webhook URL configured for funnel: ${lead.funnel}` };
+    const error = `No Make webhook URL configured for funnel: ${lead.funnel}`;
+    console.warn(`[LeadAutomation] ${error}; Sheets/Slack automation skipped.`);
+    return { success: false, skipped: true, error };
   }
 
   try {
@@ -388,6 +406,7 @@ async function processMakeWebhook(lead: LeadData): Promise<{ success: boolean; e
       email: lead.email,
       phone: lead.phone,
       funnel: lead.funnel,
+      source: lead.source ?? lead.funnel,
       funnelDisplay: FUNNEL_DISPLAY[lead.funnel],
       // UTM data
       utmSource: lead.utmSource || "",

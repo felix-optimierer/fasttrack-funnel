@@ -6,6 +6,7 @@ import { useLocation } from "wouter";
 import { ASSETS } from "@/lib/site";
 import { Logo, GoldButton, TripleSeals, Footer } from "@/components/funnel";
 import { ArrowRight, ExternalLink } from "lucide-react";
+import { SelbstzahlerReportPreview } from "@/components/SelbstzahlerReportPreview";
 import { usePageView } from "@/hooks/usePageView";
 
 const KI_REPORT_MOCKUP = "/manus-storage/ki-report-mockup_d908aa59.webp";
@@ -37,6 +38,14 @@ const OFFERS = [
     cta: "Exit-Plan kostenlos sichern",
     href: "/exit-plan",
     mockup: EXIT_PLAN_MOCKUP,
+  },
+  {
+    title: "Der Selbstzahler-Report",
+    description:
+      "Wie dein Praxisteam Selbstzahler-Angebote verkauft. Für mehr Gewinn und kassenunabhängige Online-Umsätze. Versand nach Fertigstellung nächste Woche.",
+    cta: "Report kostenlos vormerken",
+    href: "/selbstzahler",
+    mockup: null,
   },
 ];
 
@@ -70,36 +79,36 @@ export default function Home() {
           <span className="text-gradient-gold">kostenlosen Inhalte</span>
         </h1>
 
-        {/* 3 Container */}
-        <div className="mx-auto mt-8 grid w-full max-w-5xl gap-6 md:mt-12 md:grid-cols-3">
+        {/* Kostenlose Inhalte */}
+        <div className="mx-auto mt-8 grid w-full max-w-5xl gap-6 md:mt-12 md:grid-cols-2 xl:max-w-7xl xl:grid-cols-4">
           {OFFERS.map((offer) => (
             <div
               key={offer.href}
               className="group flex flex-col items-center rounded-2xl border border-border bg-card/80 p-5 text-center shadow-xl backdrop-blur transition hover:border-gold/50 hover:shadow-gold/10"
             >
               {/* Mockup */}
-              <div className="mb-2 flex h-52 items-center justify-center md:h-60">
-                <img
+              <div className="mb-2 flex h-52 w-full items-center justify-center md:h-60">
+                {offer.mockup ? <img
                   src={offer.mockup}
                   alt={offer.title}
                   width={768}
                   height={768}
                   loading="lazy"
                   className="max-h-full w-auto object-contain drop-shadow-lg transition group-hover:scale-[1.03]"
-                />
+                /> : <SelbstzahlerReportPreview compact />}
               </div>
 
               {/* Text */}
               <h2 className="text-lg font-bold leading-snug md:text-xl">
                 {offer.title}
               </h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              <p className="mb-5 mt-2 text-sm leading-relaxed text-muted-foreground">
                 {offer.description}
               </p>
 
               {/* CTA */}
               <GoldButton
-                className="mt-5 w-full"
+                className="mt-auto w-full"
                 onClick={() => navigate(offer.href)}
               >
                 {offer.cta}

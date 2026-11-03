@@ -50,7 +50,9 @@ import { processLeadAutomation, type FunnelType } from "./leads/automation";
 
 const periodSchema = z.enum(["day", "week", "month"]);
 const dateRangeSchema = z.object({ startDate: z.string(), endDate: z.string() });
-const channelSchema = z.enum(["ki-report", "exit-plan", "traumwebseite"]);
+const channelSchema = z.enum(CHANNELS);
+// Ad-spend entry remains limited to the existing paid channels in V1.
+const adSpendChannelSchema = z.enum(["ki-report", "exit-plan", "traumwebseite"]);
 
 async function assertAdmin(req: any) {
   const ok = await isAdminRequest(req);
@@ -135,6 +137,14 @@ export const appRouter = router({
           crmStatus: "new",
         });
 
+        if (id === null) {
+          // No confirmed insert means no success, forwarding, or follow-up automation.
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Deine Anfrage konnte gerade nicht gespeichert werden. Bitte versuche es später erneut.",
+          });
+        }
+
         const payload = {
           event: "new_lead",
           id,
@@ -173,9 +183,15 @@ export const appRouter = router({
           "ki-report": "ki-report",
           "exit-plan": "exit-plan",
           "traumwebseite": "traumwebseite",
+          "selbstzahler": "selbstzahler",
           "home": "traumwebseite",
         };
-        const funnel: FunnelType = funnelMap[source] || "traumwebseite";
+        const funnel = Object.hasOwn(funnelMap, source) ? funnelMap[source] : undefined;
+        if (!funnel) {
+          // Keep the stored/webhook source, but never route an unknown funnel to another offer.
+          console.warn("[LeadAutomation] Unknown source; funnel automation skipped.");
+          return { success: true, id } as const;
+        }
 
         // Fire-and-forget: run automation pipeline in background
         processLeadAutomation({
@@ -184,6 +200,7 @@ export const appRouter = router({
           email: input.email,
           phone: input.phone,
           funnel,
+          source,
           utmSource: input.utmSource,
           utmMedium: input.utmMedium,
           utmCampaign: input.utmCampaign,
@@ -216,6 +233,7 @@ export const appRouter = router({
             "ki-report-termin", "exit-plan-termin",
             "exit-plan", "ki-report", "traumwebseite",
             "danke-ki-report", "danke-exit-plan",
+            "selbstzahler", "danke-selbstzahler",
           ]),
           visitorId: z.string().max(64).optional(),
           utmSource: z.string().max(255).optional(),
@@ -477,7 +495,7 @@ export const appRouter = router({
     // ─── Ad Spend ───────────────────────────────────────────────────────
     setAdSpend: publicProcedure
       .input(z.object({
-        channel: channelSchema,
+        channel: adSpendChannelSchema,
         date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
         amountCents: z.number().int().min(0),
         campaignName: z.string().max(255).optional(),

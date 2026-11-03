@@ -20,6 +20,8 @@ const ExitPlanTermin = lazy(() => import("./pages/ExitPlanTermin"));
 const DankeTermin = lazy(() => import("./pages/DankeTermin"));
 const DankeKiReport = lazy(() => import("./pages/DankeKiReport"));
 const DankeExitPlan = lazy(() => import("./pages/DankeExitPlan"));
+const Selbstzahler = lazy(() => import("./pages/Selbstzahler"));
+const DankeSelbstzahler = lazy(() => import("./pages/DankeSelbstzahler"));
 const Termin = lazy(() => import("./pages/Termin"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Testoptimierer = lazy(() => import("./pages/Testoptimierer"));
@@ -73,6 +75,8 @@ function Router() {
           <Route path="/danke-termin" component={DankeTermin} />
           <Route path="/danke-ki-report" component={DankeKiReport} />
           <Route path="/danke-exit-plan" component={DankeExitPlan} />
+          <Route path="/danke-selbstzahler" component={DankeSelbstzahler} />
+          <Route path="/selbstzahler" component={Selbstzahler} />
           <Route path="/termin" component={Termin} />
           <Route path="/admin" component={Admin} />
           <Route path="/exit-plan" component={ExitPlan} />
