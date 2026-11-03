@@ -46,7 +46,7 @@ export const SEO_CONFIG: Record<string, PageSEO> = {
   selbstzahler: {
     title: `Selbstzahler-Angebote mit deinem Praxisteam verkaufen | ${BRAND}`,
     description:
-      "Kostenloser Report für Physiopraxis-Inhaber: Wie dein Team Selbstzahler-Angebote verkauft und du kassenunabhängige Online-Umsätze aufbaust. Jetzt vormerken.",
+      "Kostenloser Report für Physiopraxis-Inhaber: Wie dein Team Selbstzahler-Angebote verkauft und du kassenunabhängige Online-Umsätze aufbaust. Kostenlosen Report sichern.",
     canonical: `${BASE_URL}/selbstzahler`,
   },
   dankeSelbstzahler: {

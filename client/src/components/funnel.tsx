@@ -178,7 +178,7 @@ export function TripleSeals({
 }) {
   return (
     <div
-      className={`grid w-full max-w-lg grid-cols-3 items-center gap-2 sm:gap-3 ${className}`}
+      className={`grid w-full min-w-0 max-w-2xl grid-cols-3 items-center gap-2 sm:gap-3 ${className}`}
       aria-label="Drei TÜV-Rheinland-Zertifizierungen"
     >
       <a
@@ -192,7 +192,7 @@ export function TripleSeals({
           alt="TÜV Rheinland Business Development Professional – Robin Nürnberg, ID 0217466534"
           width={434}
           height={160}
-          className="h-10 w-full max-w-full rounded-sm object-contain shadow-lg md:h-12"
+          className="block aspect-[217/80] h-auto max-h-18 w-full max-w-full rounded-sm object-contain shadow-lg"
         />
       </a>
       <a
@@ -206,7 +206,7 @@ export function TripleSeals({
           alt="TÜV Rheinland Business Development Professional – Felix Brandt, ID 0217466539"
           width={434}
           height={160}
-          className="h-10 w-full max-w-full rounded-sm object-contain shadow-lg md:h-12"
+          className="block aspect-[217/80] h-auto max-h-18 w-full max-w-full rounded-sm object-contain shadow-lg"
         />
       </a>
       <a
@@ -220,7 +220,7 @@ export function TripleSeals({
           alt="TÜV Rheinland Experte für Verkaufspsychologie – Felix Brandt, ID 0217466756"
           width={868}
           height={318}
-          className="h-10 w-full max-w-full rounded-sm object-contain shadow-lg md:h-12"
+          className="block aspect-[434/159] h-auto max-h-18 w-full max-w-full rounded-sm object-contain shadow-lg"
         />
       </a>
     </div>

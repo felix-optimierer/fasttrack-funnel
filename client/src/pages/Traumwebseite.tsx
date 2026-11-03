@@ -179,7 +179,7 @@ export default function Traumwebseite() {
         </form>
 
         {/* Echte TÜV-Rheinland-Siegel unter dem Formular */}
-        <div className="mt-4 flex flex-col items-center gap-2 sm:mt-5 sm:gap-3">
+        <div className="mt-4 flex w-full max-w-2xl flex-col items-center gap-2 sm:mt-5 sm:gap-3">
           <TripleSeals />
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">
             Dreifach TÜV-zertifiziert

@@ -42,8 +42,8 @@ const OFFERS = [
   {
     title: "Der Selbstzahler-Report",
     description:
-      "Wie dein Praxisteam Selbstzahler-Angebote verkauft. Für mehr Gewinn und kassenunabhängige Online-Umsätze. Versand nach Fertigstellung nächste Woche.",
-    cta: "Report kostenlos vormerken",
+      "Wie dein Praxisteam Selbstzahler-Angebote verkauft. Für mehr Gewinn und kassenunabhängige Online-Umsätze.",
+    cta: "Kostenlosen Report sichern",
     href: "/selbstzahler",
     mockup: null,
   },
@@ -119,7 +119,7 @@ export default function Home() {
         </div>
 
         {/* TÜV-Siegel */}
-        <div className="mt-8 flex flex-col items-center gap-2 sm:mt-10 sm:gap-3">
+        <div className="mt-8 flex w-full max-w-2xl flex-col items-center gap-2 sm:mt-10 sm:gap-3">
           <TripleSeals />
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">
             Dreifach TÜV-zertifiziert

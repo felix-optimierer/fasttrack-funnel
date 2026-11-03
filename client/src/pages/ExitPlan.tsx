@@ -97,7 +97,7 @@ export default function ExitPlan() {
       <main className="container relative flex min-h-[calc(100vh-3.5rem)] flex-col justify-center pb-8 pt-4">
         <div className="flex flex-col lg:flex-row lg:items-center lg:gap-8">
           {/* === Left Column: Text content (limited width) === */}
-          <div className="max-w-lg lg:max-w-xl lg:flex-[1.3]">
+          <div className="w-full min-w-0 max-w-2xl lg:max-w-xl lg:flex-[1.3]">
             {/* Header Badge */}
             <div className="mb-3 inline-block rounded-sm border border-gold/50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-gold md:text-[11px] md:whitespace-nowrap">
               Internes Dokument (inkl. Umsetzungs-Roadmap)
@@ -144,7 +144,7 @@ export default function ExitPlan() {
             </GoldButton>
 
             {/* === MOBILE: TÜV-Siegel direkt nach Button === */}
-            <div className="mb-4 flex flex-col items-start gap-2 lg:hidden">
+            <div className="mb-4 flex w-full flex-col items-start gap-2 lg:hidden">
               <TripleSeals />
               <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Dreifach TÜV-zertifiziert
@@ -179,7 +179,7 @@ export default function ExitPlan() {
             </ul>
 
             {/* === DESKTOP: TÜV-Siegel unter den Häkchen === */}
-            <div className="mt-5 hidden flex-col items-start gap-2 lg:flex">
+            <div className="mt-5 hidden w-full flex-col items-start gap-2 lg:flex">
               <TripleSeals />
               <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Dreifach TÜV-zertifiziert

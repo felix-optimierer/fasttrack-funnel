@@ -32,7 +32,7 @@ export default function Selbstzahler() {
         <header className="container flex items-center py-3"><Logo /></header>
         <main className="container flex flex-1 flex-col justify-center pb-10 pt-5 lg:py-10">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-12">
-            <div className="w-full max-w-xl lg:flex-[1.3]">
+            <div className="w-full max-w-2xl lg:max-w-xl lg:flex-[1.3]">
               <div className="mb-4 inline-block rounded-sm border border-gold/50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-gold sm:text-[11px]">
                 Für Physiopraxis-Inhaber mit angestellten Therapeuten
               </div>
@@ -45,13 +45,21 @@ export default function Selbstzahler() {
                 Dein Team behandelt den ganzen Tag. Doch wenn es um Selbstzahler-Angebote geht, bleibt vieles an dir hängen?
                 Entdecke, wie deine Therapeuten passende Angebote im Praxisalltag ansprechen und du dir ein zusätzliches Umsatzstandbein aufbaust.
               </p>
+              <div className="mb-5 rounded-xl border border-gold/30 bg-gold/10 p-4">
+                <p aria-describedby="selbstzahler-ziel-hinweis" className="text-lg font-extrabold leading-snug text-gold sm:text-xl">
+                  Dein Ziel: 1.000 € extra Gewinn pro Therapeut im Monat
+                </p>
+                <p id="selbstzahler-ziel-hinweis" className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                  Das ist ein Ziel, keine Ergebnisgarantie. Ob und in welcher Höhe du zusätzlichen Gewinn erzielst, hängt von deinen individuellen Angeboten, deiner Marge und deiner Umsetzung ab.
+                </p>
+              </div>
               <GoldButton glow className="mb-3 sm:!w-auto sm:!max-w-fit" onClick={() => setPopupOpen(true)}>
-                Report kostenlos vormerken <ArrowRight className="h-5 w-5 shrink-0" aria-hidden="true" />
+                Kostenlosen Report sichern <ArrowRight className="h-5 w-5 shrink-0" aria-hidden="true" />
               </GoldButton>
               <p className="mb-5 text-xs leading-relaxed text-muted-foreground">
-                Der Report wird gerade finalisiert. Versand nächste Woche nach Fertigstellung. 100 % kostenlos.
+                100 % kostenlos &amp; unverbindlich.
               </p>
-              <div className="mb-6 flex flex-col items-start gap-2 lg:hidden">
+              <div className="mb-6 flex w-full flex-col items-start gap-2 lg:hidden">
                 <TripleSeals />
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Dreifach TÜV-zertifiziert</p>
               </div>
@@ -67,7 +75,7 @@ export default function Selbstzahler() {
                   </li>
                 ))}
               </ul>
-              <div className="mt-6 hidden flex-col items-start gap-2 lg:flex">
+              <div className="mt-6 hidden w-full flex-col items-start gap-2 lg:flex">
                 <TripleSeals />
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Dreifach TÜV-zertifiziert</p>
               </div>
@@ -84,10 +92,10 @@ export default function Selbstzahler() {
           open={popupOpen}
           onClose={() => setPopupOpen(false)}
           headline="An wen dürfen wir den Selbstzahler-Report senden?"
-          subtext="Merke dir den kostenlosen Report vor. Sobald er nächste Woche fertig ist, melden wir uns bei dir. Bitte gib dafür auch deine WhatsApp-Nummer an."
+          subtext="Sichere dir den kostenlosen Report. Bitte gib dafür deine Kontaktdaten inklusive WhatsApp-Nummer an."
           source="selbstzahler"
           redirectTo="/danke-selbstzahler"
-          submitLabel="Report kostenlos vormerken"
+          submitLabel="Kostenlosen Report sichern"
         />
       </div>
     </>
